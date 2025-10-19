@@ -8,7 +8,6 @@ import { CustomizerContextProvider } from "@/app/context/CustomizerContext";
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import "../utils/i18n";
 import NextTopLoader from 'nextjs-toploader';
-import { Toaster } from "@/app/components/shadcn-ui/Default-Ui/toaster"
 import { ReduxProvider } from "@/store/provider";
 
 const manrope = Manrope({ subsets: ["latin"] });
@@ -39,7 +38,6 @@ export default function RootLayout({
               <NextTopLoader color="var(--color-primary)" />
               <CustomizerContextProvider>{children}</CustomizerContextProvider>
             </ThemeProvider>
-            <Toaster />
           </NotificationProvider>
         </ReduxProvider>
       </body>
