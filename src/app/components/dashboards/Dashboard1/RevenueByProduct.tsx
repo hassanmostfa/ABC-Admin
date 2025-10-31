@@ -4,15 +4,11 @@ import CardBox from "../../shared/CardBox";
 import { Badge, Select, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { Icon } from "@iconify/react";
 
-import product1 from "/images/products/dash-prd-1.jpg";
-import product2 from "/images/products/dash-prd-2.jpg";
-import product3 from "/images/products/dash-prd-3.jpg";
-import product4 from "/images/products/dash-prd-4.jpg";
 
 import Image from "next/image";
 import SimpleBar from "simplebar-react";
 
-const RevenueByProduct = () => {
+export default function RevenueByProduct() {
   const dropdownItems = ["Sep 2024", "Oct 2024", "Nov 2024"];
   // Custom Tab
   const [activeTab, setActiveTab] = useState("App");
@@ -22,7 +18,7 @@ const RevenueByProduct = () => {
 
   const ProductTableData = [
     {
-      img: product1,
+      img: '/images/products/dash-prd-1.jpg',
       project: "Minecraf App",
       name: "Jason Roy",
       progrsss: "73.2%",
@@ -32,7 +28,7 @@ const RevenueByProduct = () => {
       money: "$3.5K",
     },
     {
-      img: product2,
+      img: '/images/products/dash-prd-2.jpg',
       project: "Web App Project",
       name: "Mathew Flintoff",
       progrsss: "73.2%",
@@ -42,7 +38,7 @@ const RevenueByProduct = () => {
       money: "$24.5K",
     },
     {
-      img: product3,
+      img: '/images/products/dash-prd-3.jpg',
       project: "Modernize Dashboard",
       name: "Anil Kumar",
       progrsss: "73.2%",
@@ -52,7 +48,7 @@ const RevenueByProduct = () => {
       money: "$12.8K",
     },
     {
-      img: product4,
+      img: '/public/images/products/dash-prd-4.jpg',
       project: "Dashboard Co",
       name: "George Cruize",
       progrsss: "73.2%",
@@ -65,7 +61,7 @@ const RevenueByProduct = () => {
 
   const ProductTableData2 = [
     {
-      img: product2,
+      img: '/images/products/dash-prd-2.jpg',
       project: "Web App Project",
       name: "Mathew Flintoff",
       progrsss: "73.2%",
@@ -75,7 +71,7 @@ const RevenueByProduct = () => {
       money: "$24.5K",
     },
     {
-      img: product3,
+      img: '/images/products/dash-prd-3.jpg',
       project: "Modernize Dashboard",
       name: "Anil Kumar",
       progrsss: "73.2%",
@@ -85,7 +81,7 @@ const RevenueByProduct = () => {
       money: "$12.8K",
     },
     {
-      img: product1,
+      img: '/images/products/dash-prd-1.jpg',
       project: "Minecraf App",
       name: "Jason Roy",
       progrsss: "73.2%",
@@ -96,7 +92,7 @@ const RevenueByProduct = () => {
     },
 
     {
-      img: product4,
+      img: '/images/products/dash-prd-4.jpg',
       project: "Dashboard Co",
       name: "George Cruize",
       progrsss: "73.2%",
@@ -418,6 +414,4 @@ const RevenueByProduct = () => {
       </CardBox>
     </>
   );
-};
-
-export default RevenueByProduct;
+}
