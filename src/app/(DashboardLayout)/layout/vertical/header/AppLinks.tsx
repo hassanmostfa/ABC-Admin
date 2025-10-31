@@ -6,7 +6,7 @@ import * as AppsData from "./Data";
 import Link from "next/link";
 import { Drawer } from "flowbite-react";
 import SimpleBar from "simplebar-react";
-import MegamenuImg from "/public/images/backgrounds/mega-dd-bg.jpg";
+import MegamenuImg from "/images/backgrounds/mega-dd-bg.jpg";
 const AppLinks = () => {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);

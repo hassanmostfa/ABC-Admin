@@ -4,10 +4,10 @@ import CardBox from "../../shared/CardBox";
 import { Badge, Select, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { Icon } from "@iconify/react";
 
-import product1 from "/public/images/products/dash-prd-1.jpg";
-import product2 from "/public/images/products/dash-prd-2.jpg";
-import product3 from "/public/images/products/dash-prd-3.jpg";
-import product4 from "/public/images/products/dash-prd-4.jpg";
+import product1 from "/images/products/dash-prd-1.jpg";
+import product2 from "/images/products/dash-prd-2.jpg";
+import product3 from "/images/products/dash-prd-3.jpg";
+import product4 from "/images/products/dash-prd-4.jpg";
 
 import Image from "next/image";
 import SimpleBar from "simplebar-react";

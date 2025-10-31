@@ -3,7 +3,7 @@ import React from "react";
 import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import Background from '/public/images/backgrounds/welcome-bg.png';
+import Background from '/images/backgrounds/welcome-bg.png';
 
 
 const WelcomeBox = () => {

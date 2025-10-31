@@ -2,7 +2,7 @@
 import { Carousel } from "flowbite-react";
 import Image from "next/image";
 import React from "react";
-import AuthSlide from "/public/images/backgrounds/login-side.png";
+import AuthSlide from "/images/backgrounds/login-side.png";
 import { Button } from "flowbite-react";
 import { usePathname } from "next/navigation";
 
