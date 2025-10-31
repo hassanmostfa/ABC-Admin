@@ -72,6 +72,8 @@ export default function AppLinks() {
                     src={'/images/backgrounds/mega-dd-bg.jpg'}
                     alt="image"
                     className="h-full w-full"
+                    width={300}
+                    height={300}
                   />
                 </div>
               </div>

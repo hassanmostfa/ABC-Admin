@@ -99,6 +99,7 @@ export interface UpdateCharityRequest {
 }
 
 export const charitiesApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getCharities: builder.query<CharitiesResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; per_page?: number }>({
       query: ({ search, page = 1, sort_by, sort_order, per_page }) => ({

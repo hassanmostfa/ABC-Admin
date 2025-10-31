@@ -7,16 +7,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 
-interface EditCharityPageProps {
-  params: {
-    id: string;
-  };
-}
-
-const EditCharityPage = ({ params }: EditCharityPageProps) => {
+export default function EditCharityPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { showNotification } = useNotification();
-  const charityId = parseInt(params.id);
+  const charityId = parseInt(params?.id);
 
   const { data: charityData, isLoading: loadingCharity, error } = useGetCharityByIdQuery(charityId);
   const [updateCharity, { isLoading: updating }] = useUpdateCharityMutation();
@@ -448,6 +442,4 @@ const EditCharityPage = ({ params }: EditCharityPageProps) => {
       </form>
     </div>
   );
-};
-
-export default EditCharityPage;
+  }

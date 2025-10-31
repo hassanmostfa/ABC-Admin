@@ -54,6 +54,7 @@ export interface UpdateGovernorateRequest {
 }
 
 export const governoratesApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getGovernorates: builder.query<GovernoratesResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; per_page?: number }>({
       query: ({ search, page = 1, sort_by, sort_order, per_page }) => ({

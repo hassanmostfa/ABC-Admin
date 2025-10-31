@@ -45,6 +45,7 @@ export interface UpdateCountryRequest {
 }
 
 export const countriesApi = apiSlice.injectEndpoints({
+  overrideExisting: true, // ✅ Add this line to fix the error
   endpoints: (builder) => ({
     getCountries: builder.query<CountriesResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; per_page?: number }>({
       query: ({ search, page = 1, sort_by, sort_order, per_page }) => ({
@@ -97,6 +98,7 @@ export const countriesApi = apiSlice.injectEndpoints({
     }),
   }),
 });
+
 
 export const {
   useGetCountriesQuery,

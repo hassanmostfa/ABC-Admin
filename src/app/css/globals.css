@@ -2,17 +2,6 @@
 @plugin 'flowbite-react/plugin/tailwindcss';
 @source '../../../.flowbite-react/class-list.json';
 
-/* RTL Select Styling */
-.rtl-select {
-  direction: rtl;
-  text-align: right;
-}
-
-.rtl-select option {
-  direction: rtl;
-  text-align: right;
-}
-
 @import './layouts/container.css' layer(utilities);
 @import './layouts/sidebar.css' layer(utilities);
 @import './layouts/horizontal.css' layer(utilities);
@@ -27,11 +16,6 @@
 @import './theme/dark.css' layer(utilities);
 @import './override/reboot.css' layer(utilities);
 @import './layouts/rtl.css' layer(utilities);
-
-/* Cairo font for Arabic */
-* {
-  font-family: var(--font-cairo), 'Manrope', sans-serif;
-}
 
 @custom-variant dark (&:is(.dark *));
 

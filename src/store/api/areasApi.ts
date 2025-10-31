@@ -68,6 +68,7 @@ export interface UpdateAreaRequest {
 }
 
 export const areasApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getAreas: builder.query<AreasResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; per_page?: number }>({
       query: ({ search, page = 1, sort_by, sort_order, per_page }) => ({
