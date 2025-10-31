@@ -6,13 +6,13 @@ import * as AppsData from "./Data";
 import Link from "next/link";
 import { Drawer } from "flowbite-react";
 import SimpleBar from "simplebar-react";
-import MegamenuImg from "/images/backgrounds/mega-dd-bg.jpg";
-const AppLinks = () => {
+
+export default function AppLinks() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
 
   return (
-    <>
+    <>  
       <div className="relative group ">
         <span className="h-10 w-10 text-darklink  dark:text-white text-sm hover:text-primary  hover:bg-lightprimary dark:hover:text-primary dark:hover:bg-darkminisidebar  rounded-full flex justify-center items-center cursor-pointer group-hover:bg-lightprimary group-hover:text-primary xl:flex hidden">
           <Icon icon="solar:widget-3-line-duotone" height={20} />
@@ -69,7 +69,7 @@ const AppLinks = () => {
                 </div>
                 <div className="xl:col-span-4 col-span-12  flex items-strech h-[300px] lg:block hidden">
                   <Image
-                    src={MegamenuImg}
+                    src={'/images/backgrounds/mega-dd-bg.jpg'}
                     alt="image"
                     className="h-full w-full"
                   />
@@ -81,6 +81,4 @@ const AppLinks = () => {
       </div>
     </>
   );
-};
-
-export default AppLinks;
+}

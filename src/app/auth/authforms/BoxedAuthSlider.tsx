@@ -2,17 +2,16 @@
 import { Carousel } from "flowbite-react";
 import Image from "next/image";
 import React from "react";
-import AuthSlide from "/images/backgrounds/login-side.png";
 import { Button } from "flowbite-react";
 import { usePathname } from "next/navigation";
 
-const BoxedAuthSlider = () => {
+export default function BoxedAuthSlider() {
   const pathname = usePathname();
   return (
     <>
       <div className="max-w-md mx-auto h-full flex flex-col justify-center items-center boxed-auth">
         <Image
-          src={AuthSlide}
+          src={'/images/backgrounds/login-side.png'}
           alt="auth"
           className={`${
             pathname == "/auth/auth2/forgot-password" ||
@@ -27,6 +26,4 @@ const BoxedAuthSlider = () => {
       </div>
     </>
   );
-};
-
-export default BoxedAuthSlider;
+}
