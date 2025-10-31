@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = "https://abc.ghazlaapp.com/api";
 
 // Helper function to build full URL
 const buildUrl = (endpoint: string) => {

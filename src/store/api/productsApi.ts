@@ -159,7 +159,7 @@ export const productsApi = apiSlice.injectEndpoints({
             console.log(`  ${key}:`, value);
           }
           
-          const response = await fetch(`http://127.0.0.1:8000/api/admin/products/${id}`, {
+          const response = await fetch(`https://abc.ghazlaapp.com/api/admin/products/${id}`, {
             method: 'POST',
             headers,
             body: formData,
