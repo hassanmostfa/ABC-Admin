@@ -13,8 +13,8 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Dynamic wrapper for heavy components
-export const withDynamicImport = <P extends object>(
+// Dynamic wrapper for heavy components with proper typing
+export const withDynamicImport = <P extends Record<string, any> = {}>(
   importFunc: () => Promise<{ default: ComponentType<P> }>,
   fallback?: ReactNode
 ) => {
@@ -22,7 +22,7 @@ export const withDynamicImport = <P extends object>(
   
   return (props: P) => (
     <Suspense fallback={fallback ?? <LoadingSpinner />}>
-      <LazyComponent {...props} />
+      <LazyComponent {...(props as any)} />
     </Suspense>
   );
 };
