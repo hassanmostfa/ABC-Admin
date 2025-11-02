@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { use } from "react";
 import { Card, Badge, Spinner, Button } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetProductByIdQuery, useDeleteProductMutation } from "@/store/api/productsApi";
@@ -10,18 +11,19 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
 import Image from "next/image";
 
 interface ProductShowProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 const ProductShow = ({ params }: ProductShowProps) => {
   const router = useRouter();
   const { showNotification } = useNotification();
+  const resolvedParams = use(params);
+  const productId = parseInt(resolvedParams.id);
+  
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { data: productData, isLoading, error } = useGetProductByIdQuery(parseInt(params.id));
+  const { data: productData, isLoading, error } = useGetProductByIdQuery(productId);
 
   const handleDeleteClick = () => {
     setShowDeleteModal(true);
@@ -29,7 +31,7 @@ const ProductShow = ({ params }: ProductShowProps) => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await deleteProduct(parseInt(params.id)).unwrap();
+      await deleteProduct(productId).unwrap();
       showNotification("success", "تم!", "تم حذف المنتج بنجاح");
       router.push('/products');
     } catch (err: any) {
