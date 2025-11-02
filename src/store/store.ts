@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import { apiSlice } from './api/apiSlice';
 import './api'; // Import all API endpoints
 import authReducer from './slices/authSlice';
@@ -11,11 +12,12 @@ export const store = configureStore({
     roles: rolesReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false, // Optional: disable if you have non-serializable data
-    }).concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(apiSlice.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });
+
+// Optional: enable refetchOnFocus/refetchOnReconnect behaviors
+setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
