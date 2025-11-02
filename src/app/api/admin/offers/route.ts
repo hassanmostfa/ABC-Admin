@@ -8,18 +8,20 @@ const buildUrl = (endpoint: string) => {
     return `${API_BASE_URL}/${cleanEndpoint}`;
 };
 
-// GET - Fetch all offers with pagination and search
-export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const queryParams = new URLSearchParams();
-        
-        // Add all query parameters
-        searchParams.forEach((value, key) => {
-            queryParams.append(key, value);
-        });
+// Type for context with params
+type RouteContext = {
+    params: Promise<{ id: string }>;
+};
 
-        const response = await fetch(buildUrl(`admin/offers?${queryParams.toString()}`), {
+// GET - Fetch specific offer by ID
+export async function GET(
+    request: NextRequest,
+    context: RouteContext
+) {
+    try {
+        const { id } = await context.params;
+        
+        const response = await fetch(buildUrl(`admin/offers/${id}`), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,56 +36,24 @@ export async function GET(request: NextRequest) {
         const data = await response.json();
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching offers:', error);
+        console.error('Error fetching offer:', error);
         return NextResponse.json(
-            { success: false, message: 'Failed to fetch offers' },
-            { status: 500 }
-        );
-    }
-}
-
-// POST - Create new offer
-export async function POST(request: NextRequest) {
-    try {
-        const formData = await request.formData();
-        
-        const response = await fetch(buildUrl('admin/offers'), {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            return NextResponse.json(errorData, { status: response.status });
-        }
-
-        const data = await response.json();
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error('Error creating offer:', error);
-        return NextResponse.json(
-            { success: false, message: 'Failed to create offer' },
+            { success: false, message: 'Failed to fetch offer' },
             { status: 500 }
         );
     }
 }
 
 // PUT - Update offer
-export async function PUT(request: NextRequest) {
+export async function PUT(
+    request: NextRequest,
+    context: RouteContext
+) {
     try {
-        const { searchParams } = new URL(request.url);
-        const offerId = searchParams.get('id');
-        
-        if (!offerId) {
-            return NextResponse.json(
-                { success: false, message: 'Offer ID is required' },
-                { status: 400 }
-            );
-        }
-
+        const { id } = await context.params;
         const formData = await request.formData();
         
-        const response = await fetch(buildUrl(`admin/offers/${offerId}`), {
+        const response = await fetch(buildUrl(`admin/offers/${id}`), {
             method: 'POST',
             body: formData,
         });
@@ -105,19 +75,14 @@ export async function PUT(request: NextRequest) {
 }
 
 // DELETE - Delete offer
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+    request: NextRequest,
+    context: RouteContext
+) {
     try {
-        const { searchParams } = new URL(request.url);
-        const offerId = searchParams.get('id');
+        const { id } = await context.params;
         
-        if (!offerId) {
-            return NextResponse.json(
-                { success: false, message: 'Offer ID is required' },
-                { status: 400 }
-            );
-        }
-
-        const response = await fetch(buildUrl(`admin/offers/${offerId}`), {
+        const response = await fetch(buildUrl(`admin/offers/${id}`), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
