@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { use } from "react";
 import { Card, Spinner } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetCharityByIdQuery } from "@/store/api/charitiesApi";
@@ -7,14 +8,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface ShowCharityPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
   const router = useRouter();
-  const charityId = parseInt(params.id);
+  const resolvedParams = use(params);
+  const charityId = parseInt(resolvedParams.id);
 
   const { data: charityData, isLoading, error } = useGetCharityByIdQuery(charityId);
 
