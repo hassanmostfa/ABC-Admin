@@ -11,10 +11,11 @@ export const store = configureStore({
     roles: rolesReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware({
+      serializableCheck: false, // Optional: disable if you have non-serializable data
+    }).concat(apiSlice.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
