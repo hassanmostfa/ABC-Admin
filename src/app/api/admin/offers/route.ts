@@ -8,18 +8,13 @@ const buildUrl = (endpoint: string) => {
     return `${API_BASE_URL}/${cleanEndpoint}`;
 };
 
-// Type for context with params
-type RouteContext = {
-    params: Promise<{ id: string }>;
-};
-
 // GET - Fetch specific offer by ID
 export async function GET(
     request: NextRequest,
-    context: RouteContext
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await context.params;
+        const { id } = await params;
         
         const response = await fetch(buildUrl(`admin/offers/${id}`), {
             method: 'GET',
@@ -47,10 +42,10 @@ export async function GET(
 // PUT - Update offer
 export async function PUT(
     request: NextRequest,
-    context: RouteContext
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await context.params;
+        const { id } = await params;
         const formData = await request.formData();
         
         const response = await fetch(buildUrl(`admin/offers/${id}`), {
@@ -77,10 +72,10 @@ export async function PUT(
 // DELETE - Delete offer
 export async function DELETE(
     request: NextRequest,
-    context: RouteContext
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await context.params;
+        const { id } = await params;
         
         const response = await fetch(buildUrl(`admin/offers/${id}`), {
             method: 'DELETE',
