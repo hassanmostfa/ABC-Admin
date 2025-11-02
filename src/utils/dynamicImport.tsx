@@ -1,5 +1,5 @@
 "use client";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ComponentType, ReactNode } from "react";
 import { Icon } from "@iconify/react";
 
 // Loading component
@@ -15,13 +15,13 @@ const LoadingSpinner = () => (
 
 // Dynamic wrapper for heavy components
 export const withDynamicImport = <P extends object>(
-  importFunc: () => Promise<{ default: React.ComponentType<P> }>,
-  fallback?: React.ComponentType
+  importFunc: () => Promise<{ default: ComponentType<P> }>,
+  fallback?: ReactNode
 ) => {
   const LazyComponent = lazy(importFunc);
   
   return (props: P) => (
-    <Suspense fallback={fallback ? <fallback /> : <LoadingSpinner />}>
+    <Suspense fallback={fallback ?? <LoadingSpinner />}>
       <LazyComponent {...props} />
     </Suspense>
   );
@@ -29,7 +29,7 @@ export const withDynamicImport = <P extends object>(
 
 // Preload function for critical components
 export const preloadComponent = (importFunc: () => Promise<any>) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     importFunc();
   }
 };
