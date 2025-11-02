@@ -17,7 +17,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Matdash - Nextjs",
+  title: "لوحة تحكم الإدارة",
 };
 
 export default function RootLayout({
