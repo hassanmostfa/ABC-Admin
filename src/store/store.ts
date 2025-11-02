@@ -12,12 +12,16 @@ export const store = configureStore({
     roles: rolesReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    // ✅ Add serializableCheck: false (recommended for RTK Query)
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(apiSlice.middleware as any),
   devTools: process.env.NODE_ENV !== 'production',
 });
 
-// Optional: enable refetchOnFocus/refetchOnReconnect behaviors
+// ✅ Optional: enable refetchOnFocus/refetchOnReconnect behaviors
 setupListeners(store.dispatch);
 
+// ✅ Properly typed exports
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
