@@ -1,11 +1,10 @@
-import EditCharityPageClient from "@/app/components/charities/EditCharityPageClient";
+import EditCharityPageClient from "@/components/charities/EditCharityPageClient";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
-export default function EditCharityPage({ params }: PageProps) {
-  return <EditCharityPageClient id={params.id} />;
+export default async function EditCharityPage({ params }: Props) {
+  const resolvedParams = await params;
+  return <EditCharityPageClient id={resolvedParams.id} />;
 }
