@@ -7,7 +7,7 @@ import AppLinks from "./AppLinks";
 import Notifications from "./Notifications";
 import Profile from "./Profile";
 import { CustomizerContext } from "@/app/context/CustomizerContext";
-import { Language } from "./Language";
+import { LanguageSelector } from "../../horizontal/navbar/LanguageSelector";
 import FullLogo from "../../shared/logo/FullLogo";
 import MobileHeaderItems from "./MobileHeaderItems";
 import { Drawer } from "flowbite-react";
@@ -134,7 +134,7 @@ const Header = ({ layoutType }: HeaderPropsType) => {
               <Notifications />
 
               {/* Language Dropdown*/}
-              {/* <Language /> */}
+              <LanguageSelector />
 
               {/* Profile Dropdown */}
               <Profile />

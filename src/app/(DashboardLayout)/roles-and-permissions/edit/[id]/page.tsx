@@ -7,6 +7,7 @@ import { useGetRoleByIdQuery, useUpdateRoleMutation } from "@/store/api/rolesApi
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 type Action = 'view' | 'add' | 'edit' | 'delete';
 
@@ -20,6 +21,7 @@ interface PermissionState {
 }
 
 const EditRole = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const roleId = Number(params.id);
@@ -103,7 +105,7 @@ const EditRole = () => {
     e.preventDefault();
 
     if (!roleName.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال اسم الدور");
+      showNotification("error", t("roles.error"), t("roles.enterRoleName"));
       return;
     }
 
@@ -146,7 +148,7 @@ const EditRole = () => {
     });
 
     if (!hasPermissions) {
-      showNotification("error", "خطأ!", "يرجى اختيار صلاحية واحدة على الأقل");
+      showNotification("error", t("roles.error"), t("roles.selectAtLeastOne"));
       return;
     }
 
@@ -160,7 +162,7 @@ const EditRole = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم تحديث الدور بنجاح");
+        showNotification("success", t("roles.success"), t("roles.updateSuccess"));
         setTimeout(() => {
           router.push("/roles-and-permissions");
         }, 1500);
@@ -168,8 +170,8 @@ const EditRole = () => {
     } catch (err: any) {
       showNotification(
         "error",
-        "خطأ!",
-        err?.data?.message || "حدث خطأ أثناء تحديث الدور"
+        t("roles.error"),
+        err?.data?.message || t("roles.updateError")
       );
     }
   };
@@ -194,11 +196,11 @@ const EditRole = () => {
               </button>
             </Link>
             <h1 className="text-3xl font-bold text-dark dark:text-white">
-              تعديل الدور
+              {t("roles.editRole")}
             </h1>
           </div>
           <p className="text-sm text-ld mr-12">
-            قم بتعديل الدور وتحديث الصلاحيات المناسبة له
+            {t("roles.editDescription")}
           </p>
         </div>
       </div>
@@ -208,11 +210,11 @@ const EditRole = () => {
           {/* Role Name Input */}
           <div className="mb-6">
             <Label htmlFor="roleName" className="mb-2 block font-semibold text-dark dark:text-white">
-              اسم الدور
+              {t("roles.roleName")}
             </Label>
             <TextInput
               id="roleName"
-              placeholder="أدخل اسم الدور"
+              placeholder={t("roles.enterRoleName")}
               value={roleName}
               onChange={(e) => setRoleName(e.target.value)}
               required
@@ -237,28 +239,28 @@ const EditRole = () => {
                             checked={isCategoryActionChecked(category, 'view')}
                             onChange={() => handleToggleCategoryAction(category, 'view')}
                           />
-                          <span className="text-sm text-dark dark:text-white">عرض</span>
+                          <span className="text-sm text-dark dark:text-white">{t("roles.view")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <Checkbox
                             checked={isCategoryActionChecked(category, 'add')}
                             onChange={() => handleToggleCategoryAction(category, 'add')}
                           />
-                          <span className="text-sm text-dark dark:text-white">إضافة</span>
+                          <span className="text-sm text-dark dark:text-white">{t("roles.add")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <Checkbox
                             checked={isCategoryActionChecked(category, 'edit')}
                             onChange={() => handleToggleCategoryAction(category, 'edit')}
                           />
-                          <span className="text-sm text-dark dark:text-white">تعديل</span>
+                          <span className="text-sm text-dark dark:text-white">{t("roles.edit")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <Checkbox
                             checked={isCategoryActionChecked(category, 'delete')}
                             onChange={() => handleToggleCategoryAction(category, 'delete')}
                           />
-                          <span className="text-sm text-dark dark:text-white">حذف</span>
+                          <span className="text-sm text-dark dark:text-white">{t("roles.delete")}</span>
                         </label>
                       </div>
                     </div>
@@ -281,28 +283,28 @@ const EditRole = () => {
                                 checked={permissions[permission.id]?.view || false}
                                 onChange={() => handleToggleAction(permission.id, 'view')}
                               />
-                              <span className="text-sm text-ld dark:text-white/70">عرض</span>
+                              <span className="text-sm text-ld dark:text-white/70">{t("roles.view")}</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <Checkbox
                                 checked={permissions[permission.id]?.add || false}
                                 onChange={() => handleToggleAction(permission.id, 'add')}
                               />
-                              <span className="text-sm text-ld dark:text-white/70">إضافة</span>
+                              <span className="text-sm text-ld dark:text-white/70">{t("roles.add")}</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <Checkbox
                                 checked={permissions[permission.id]?.edit || false}
                                 onChange={() => handleToggleAction(permission.id, 'edit')}
                               />
-                              <span className="text-sm text-ld dark:text-white/70">تعديل</span>
+                              <span className="text-sm text-ld dark:text-white/70">{t("roles.edit")}</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <Checkbox
                                 checked={permissions[permission.id]?.delete || false}
                                 onChange={() => handleToggleAction(permission.id, 'delete')}
                               />
-                              <span className="text-sm text-ld dark:text-white/70">حذف</span>
+                              <span className="text-sm text-ld dark:text-white/70">{t("roles.delete")}</span>
                             </label>
                           </div>
                         </div>
@@ -321,7 +323,7 @@ const EditRole = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("roles.cancel")}
               </button>
             </Link>
             <button
@@ -332,12 +334,12 @@ const EditRole = () => {
               {updatingRole ? (
                 <>
                   <Spinner size="sm" />
-                  جاري التحديث...
+                  {t("roles.updating")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:diskette-bold" height={20} />
-                  حفظ التعديلات
+                  {t("roles.saveChanges")}
                 </>
               )}
             </button>

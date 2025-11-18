@@ -162,5 +162,434 @@
   "Blog":"مدونة",
   "Blog Details":"تفاصيل المدونة",
   "Contact Us":"اتصل بنا",
-  "Portfolio":"مَلَفّ"
+  "Portfolio":"مَلَفّ",
+  
+  "sidebar.dashboard": "لوحة التحكم",
+  "sidebar.adminManagement": "ادارة المسئولين",
+  "sidebar.rolesAndPermissions": "الادوار والصلاحيات",
+  "sidebar.admins": "المسؤلين",
+  "sidebar.geographicLocations": "المواقع الجغرافية",
+  "sidebar.countries": "الدول",
+  "sidebar.governorates": "المحافظات",
+  "sidebar.areas": "المناطق",
+  "sidebar.categoriesManagement": "ادارة التصنيفات",
+  "sidebar.mainCategories": "التصنيفات الاساسية",
+  "sidebar.subCategories": "التصنيفات الفرعية",
+  "sidebar.users": "المستخدمين",
+  "sidebar.products": "المنتجات",
+  "sidebar.charities": "الجمعيات الخيرية",
+  "sidebar.offers": "العروض",
+  "sidebar.contentManagement": "ادارة المحتوي",
+  "sidebar.contactUs": "تواصل معنا",
+  "sidebar.jobApplications": "طلبات التوظيف",
+  "sidebar.socialMediaLinks": "وسائل التواصل",
+  
+  "dashboard.welcomeBack": "مرحباً بعودتك حسن",
+  "dashboard.budget": "الميزانية",
+  "dashboard.expenses": "المصروفات",
+  "dashboard.currency": "دينار",
+  
+  "dashboard.stats.numberOfUsers": "عدد المستخدمين",
+  "dashboard.stats.numberOfCharities": "عدد الجمعيات الخيرية",
+  "dashboard.stats.numberOfProducts": "عدد المنتجات",
+  "dashboard.stats.numberOfOffers": "عدد العروض",
+  "dashboard.stats.numberOfCategories": "عدد التصنيفات",
+  
+  "dashboard.performance.title": "أدائك",
+  "dashboard.performance.lastCheck": "آخر فحص في 25 فبراير",
+  "dashboard.performance.processing": "قيد المعالجة",
+  "dashboard.performance.onHold": "معلق",
+  "dashboard.performance.delivered": "تم التسليم",
+  "dashboard.performance.completed": "مكتمل",
+  "dashboard.performance.description": "تعلم رؤى حول كيفية إدارة جميع جوانب شركتك الناشئة.",
+  
+  "dashboard.orders.latestOrders": "أحدث الطلبات",
+  "dashboard.orders.viewAll": "عرض الكل",
+  "dashboard.orders.orderNumber": "رقم الطلب",
+  "dashboard.orders.customer": "العميل",
+  "dashboard.orders.product": "المنتج",
+  "dashboard.orders.amount": "المبلغ",
+  "dashboard.orders.status": "الحالة",
+  "dashboard.orders.date": "التاريخ",
+  "dashboard.orders.status.processing": "قيد المعالجة",
+  "dashboard.orders.status.delivered": "تم التسليم",
+  "dashboard.orders.status.onHold": "معلق",
+  "dashboard.orders.status.completed": "مكتمل",
+  
+  "roles.title": "الأدوار والصلاحيات",
+  "roles.subtitle": "إدارة أدوار المستخدمين وصلاحياتهم",
+  "roles.addNew": "إضافة دور جديد",
+  "roles.editRole": "تعديل الدور",
+  "roles.allRoles": "جميع الأدوار",
+  "roles.searchPlaceholder": "ابحث عن دور...",
+  "roles.roleName": "اسم الدور",
+  "roles.status": "الحالة",
+  "roles.createdAt": "تاريخ الإنشاء",
+  "roles.actions": "الإجراءات",
+  "roles.active": "نشط",
+  "roles.inactive": "غير نشط",
+  "roles.edit": "تعديل",
+  "roles.delete": "حذف",
+  "roles.view": "عرض",
+  "roles.add": "إضافة",
+  "roles.noRoles": "لا توجد أدوار حتى الآن",
+  "roles.showing": "عرض {{from}} إلى {{to}} من {{total}} دور",
+  "roles.previous": "السابق",
+  "roles.next": "التالي",
+  "roles.confirmDelete": "تأكيد الحذف",
+  "roles.deleteMessage": "هل أنت متأكد من حذف الدور \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "roles.cancel": "إلغاء",
+  "roles.success": "نجاح!",
+  "roles.error": "خطأ!",
+  "roles.deleteSuccess": "تم حذف الدور بنجاح",
+  "roles.deleteError": "حدث خطأ أثناء حذف الدور",
+  "roles.loadError": "فشل في تحميل الأدوار والصلاحيات",
+  "roles.enterRoleName": "يرجى إدخال اسم الدور",
+  "roles.selectAtLeastOne": "يرجى اختيار صلاحية واحدة على الأقل",
+  "roles.addSuccess": "تم إضافة الدور بنجاح",
+  "roles.addError": "حدث خطأ أثناء إضافة الدور",
+  "roles.updateSuccess": "تم تحديث الدور بنجاح",
+  "roles.updateError": "حدث خطأ أثناء تحديث الدور",
+  "roles.addDescription": "قم بإنشاء دور جديد وتحديد الصلاحيات المناسبة له",
+  "roles.editDescription": "قم بتعديل الدور وتحديث الصلاحيات المناسبة له",
+  "roles.saving": "جاري الحفظ...",
+  "roles.saveRole": "حفظ الدور",
+  "roles.updating": "جاري التحديث...",
+  "roles.saveChanges": "حفظ التعديلات",
+  
+  "admins.title": "المسؤولين",
+  "admins.subtitle": "إدارة حسابات المسؤولين والمديرين",
+  "admins.addNew": "إضافة مسؤول جديد",
+  "admins.editAdmin": "تعديل بيانات المسؤول",
+  "admins.allAdmins": "جميع المسؤولين",
+  "admins.searchPlaceholder": "ابحث عن مسؤول...",
+  "admins.name": "الاسم",
+  "admins.email": "البريد الإلكتروني",
+  "admins.phone": "رقم الهاتف",
+  "admins.role": "الدور",
+  "admins.status": "الحالة",
+  "admins.createdAt": "تاريخ الإنشاء",
+  "admins.actions": "الإجراءات",
+  "admins.active": "نشط",
+  "admins.inactive": "غير نشط",
+  "admins.edit": "تعديل",
+  "admins.delete": "حذف",
+  "admins.noAdmins": "لا يوجد مسؤولين حتى الآن",
+  "admins.showing": "عرض {{from}} إلى {{to}} من {{total}} مسؤول",
+  "admins.previous": "السابق",
+  "admins.next": "التالي",
+  "admins.confirmDelete": "تأكيد الحذف",
+  "admins.deleteMessage": "هل أنت متأكد من حذف المسؤول \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "admins.cancel": "إلغاء",
+  "admins.success": "نجاح!",
+  "admins.error": "خطأ!",
+  "admins.deleteSuccess": "تم حذف المسؤول بنجاح",
+  "admins.deleteError": "حدث خطأ أثناء حذف المسؤول",
+  "admins.loadError": "فشل في تحميل المسؤولين",
+  "admins.enterName": "يرجى إدخال اسم المسؤول",
+  "admins.enterEmail": "يرجى إدخال البريد الإلكتروني",
+  "admins.enterPhoneFull": "أدخل رقم الهاتف الكامل",
+  "admins.password": "كلمة المرور",
+  "admins.newPassword": "كلمة المرور الجديدة",
+  "admins.passwordPlaceholder": "أدخل كلمة المرور (8 أحرف على الأقل)",
+  "admins.passwordLeaveEmpty": "اتركها فارغة إذا كنت لا تريد تغيير كلمة المرور",
+  "admins.passwordMinLength": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+  "admins.chooseRole": "اختر الدور",
+  "admins.selectRole": "يرجى اختيار دور المسؤول",
+  "admins.addSuccess": "تم إضافة المسؤول بنجاح",
+  "admins.addError": "حدث خطأ أثناء إضافة المسؤول",
+  "admins.updateSuccess": "تم تحديث بيانات المسؤول بنجاح",
+  "admins.updateError": "حدث خطأ أثناء تحديث بيانات المسؤول",
+  "admins.addDescription": "قم بإنشاء حساب مسؤول جديد وتحديد صلاحياته",
+  "admins.editDescription": "قم بتحديث بيانات المسؤول وتغيير دوره",
+  "admins.saving": "جاري الحفظ...",
+  "admins.saveAdmin": "حفظ المسؤول",
+  "admins.saveChanges": "حفظ التغييرات",
+  
+  "countries.title": "الدول",
+  "countries.subtitle": "إدارة الدول المتاحة في النظام",
+  "countries.addNew": "إضافة دولة",
+  "countries.editCountry": "تعديل الدولة",
+  "countries.addDescription": "أضف دولة جديدة إلى النظام",
+  "countries.editDescription": "تعديل بيانات الدولة: {{name}}",
+  "countries.backToList": "العودة للقائمة",
+  "countries.searchPlaceholder": "البحث في الدول...",
+  "countries.totalCountries": "إجمالي الدول: {{total}}",
+  "countries.nameAr": "الاسم (عربي)",
+  "countries.nameEn": "الاسم (إنجليزي)",
+  "countries.status": "الحالة",
+  "countries.createdAt": "تاريخ الإنشاء",
+  "countries.actions": "الإجراءات",
+  "countries.active": "نشط",
+  "countries.inactive": "غير نشط",
+  "countries.edit": "تعديل",
+  "countries.delete": "حذف",
+  "countries.loading": "جاري التحميل...",
+  "countries.noCountries": "لا توجد دول متاحة",
+  "countries.showing": "عرض {{from}} إلى {{to}} من {{total}} دولة",
+  "countries.previous": "السابق",
+  "countries.next": "التالي",
+  "countries.confirmDelete": "تأكيد الحذف",
+  "countries.deleteMessage": "هل أنت متأكد من حذف الدولة \"{{name}}\"؟",
+  "countries.cancel": "إلغاء",
+  "countries.success": "نجاح!",
+  "countries.error": "خطأ!",
+  "countries.deleteSuccess": "تم حذف الدولة بنجاح",
+  "countries.deleteError": "حدث خطأ أثناء حذف الدولة",
+  "countries.loadError": "خطأ في تحميل البيانات",
+  "countries.loadErrorDescription": "حدث خطأ أثناء تحميل قائمة الدول",
+  "countries.loadCountryError": "حدث خطأ أثناء تحميل بيانات الدولة",
+  "countries.loadingCountry": "جاري تحميل بيانات الدولة...",
+  "countries.countryNotFound": "الدولة غير موجودة",
+  "countries.countryNotFoundDescription": "الدولة المطلوبة غير موجودة في النظام",
+  "countries.enterNameAr": "يرجى إدخال اسم الدولة بالعربية",
+  "countries.enterNameEn": "يرجى إدخال اسم الدولة بالإنجليزية",
+  "countries.nameArPlaceholder": "اسم الدولة بالعربية",
+  "countries.enterNameArHelper": "أدخل اسم الدولة بالعربية",
+  "countries.enterNameEnHelper": "أدخل اسم الدولة بالإنجليزية",
+  "countries.nameMinLength": "اسم الدولة يجب أن يكون على الأقل حرفين",
+  "countries.nameMaxLength": "اسم الدولة يجب أن لا يتجاوز 50 حرف",
+  "countries.countryActive": "الدولة نشطة",
+  "countries.countryActiveHelper": "حدد ما إذا كانت الدولة نشطة أم لا",
+  "countries.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "countries.unexpectedError": "حدث خطأ غير متوقع",
+  "countries.addSuccess": "تم إضافة الدولة بنجاح",
+  "countries.updateSuccess": "تم تحديث الدولة بنجاح",
+  "countries.saving": "جاري الحفظ...",
+  "countries.saveCountry": "حفظ الدولة",
+  "countries.updating": "جاري التحديث...",
+  "countries.updateCountry": "تحديث الدولة",
+  
+  "governorates.title": "المحافظات",
+  "governorates.subtitle": "إدارة المحافظات المتاحة في النظام",
+  "governorates.addNew": "إضافة محافظة",
+  "governorates.editGovernorate": "تعديل المحافظة",
+  "governorates.addDescription": "أضف محافظة جديدة إلى النظام",
+  "governorates.editDescription": "تعديل بيانات المحافظة: {{name}}",
+  "governorates.backToList": "العودة للقائمة",
+  "governorates.searchPlaceholder": "البحث في المحافظات...",
+  "governorates.totalGovernorates": "إجمالي المحافظات: {{total}}",
+  "governorates.nameAr": "الاسم (عربي)",
+  "governorates.nameEn": "الاسم (إنجليزي)",
+  "governorates.country": "الدولة",
+  "governorates.status": "الحالة",
+  "governorates.createdAt": "تاريخ الإنشاء",
+  "governorates.actions": "الإجراءات",
+  "governorates.active": "نشط",
+  "governorates.inactive": "غير نشط",
+  "governorates.notSpecified": "غير محدد",
+  "governorates.edit": "تعديل",
+  "governorates.delete": "حذف",
+  "governorates.loading": "جاري التحميل...",
+  "governorates.noGovernorates": "لا توجد محافظات متاحة",
+  "governorates.showing": "عرض {{from}} إلى {{to}} من {{total}} محافظة",
+  "governorates.previous": "السابق",
+  "governorates.next": "التالي",
+  "governorates.confirmDelete": "تأكيد الحذف",
+  "governorates.deleteMessage": "هل أنت متأكد من حذف المحافظة \"{{name}}\"؟",
+  "governorates.cancel": "إلغاء",
+  "governorates.success": "نجاح!",
+  "governorates.error": "خطأ!",
+  "governorates.deleteSuccess": "تم حذف المحافظة بنجاح",
+  "governorates.deleteError": "حدث خطأ أثناء حذف المحافظة",
+  "governorates.loadError": "خطأ في تحميل البيانات",
+  "governorates.loadErrorDescription": "حدث خطأ أثناء تحميل قائمة المحافظات",
+  "governorates.loadGovernorateError": "حدث خطأ أثناء تحميل بيانات المحافظة",
+  "governorates.loadingGovernorate": "جاري تحميل بيانات المحافظة...",
+  "governorates.governorateNotFound": "المحافظة غير موجودة",
+  "governorates.governorateNotFoundDescription": "المحافظة المطلوبة غير موجودة في النظام",
+  "governorates.enterNameAr": "يرجى إدخال اسم المحافظة بالعربية",
+  "governorates.enterNameEn": "يرجى إدخال اسم المحافظة بالإنجليزية",
+  "governorates.nameArPlaceholder": "اسم المحافظة بالعربية",
+  "governorates.enterNameArHelper": "أدخل اسم المحافظة بالعربية",
+  "governorates.enterNameEnHelper": "أدخل اسم المحافظة بالإنجليزية",
+  "governorates.nameMinLength": "اسم المحافظة يجب أن يكون على الأقل حرفين",
+  "governorates.nameMaxLength": "اسم المحافظة يجب أن لا يتجاوز 50 حرف",
+  "governorates.selectCountry": "يرجى اختيار الدولة",
+  "governorates.chooseCountry": "اختر الدولة",
+  "governorates.selectCountryHelper": "اختر الدولة التابعة لها المحافظة",
+  "governorates.governorateActive": "المحافظة نشطة",
+  "governorates.governorateActiveHelper": "حدد ما إذا كانت المحافظة نشطة أم لا",
+  "governorates.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "governorates.unexpectedError": "حدث خطأ غير متوقع",
+  "governorates.addSuccess": "تم إضافة المحافظة بنجاح",
+  "governorates.updateSuccess": "تم تحديث المحافظة بنجاح",
+  "governorates.saving": "جاري الحفظ...",
+  "governorates.saveGovernorate": "حفظ المحافظة",
+  "governorates.updating": "جاري التحديث...",
+  "governorates.updateGovernorate": "تحديث المحافظة",
+  
+  "areas.title": "المناطق",
+  "areas.subtitle": "إدارة المناطق المتاحة في النظام",
+  "areas.addNew": "إضافة منطقة",
+  "areas.editArea": "تعديل المنطقة",
+  "areas.addDescription": "أضف منطقة جديدة إلى النظام",
+  "areas.editDescription": "تعديل بيانات المنطقة: {{name}}",
+  "areas.backToList": "العودة للقائمة",
+  "areas.searchPlaceholder": "البحث في المناطق...",
+  "areas.totalAreas": "إجمالي المناطق: {{total}}",
+  "areas.nameAr": "الاسم (عربي)",
+  "areas.nameEn": "الاسم (إنجليزي)",
+  "areas.governorate": "المحافظة",
+  "areas.country": "الدولة",
+  "areas.status": "الحالة",
+  "areas.createdAt": "تاريخ الإنشاء",
+  "areas.actions": "الإجراءات",
+  "areas.active": "نشط",
+  "areas.inactive": "غير نشط",
+  "areas.notSpecified": "غير محدد",
+  "areas.edit": "تعديل",
+  "areas.delete": "حذف",
+  "areas.loading": "جاري التحميل...",
+  "areas.noAreas": "لا توجد مناطق متاحة",
+  "areas.showing": "عرض {{from}} إلى {{to}} من {{total}} منطقة",
+  "areas.previous": "السابق",
+  "areas.next": "التالي",
+  "areas.confirmDelete": "تأكيد الحذف",
+  "areas.deleteMessage": "هل أنت متأكد من حذف المنطقة \"{{name}}\"؟",
+  "areas.cancel": "إلغاء",
+  "areas.success": "نجاح!",
+  "areas.error": "خطأ!",
+  "areas.deleteSuccess": "تم حذف المنطقة بنجاح",
+  "areas.deleteError": "حدث خطأ أثناء حذف المنطقة",
+  "areas.loadError": "خطأ في تحميل البيانات",
+  "areas.loadErrorDescription": "حدث خطأ أثناء تحميل قائمة المناطق",
+  "areas.loadAreaError": "حدث خطأ أثناء تحميل بيانات المنطقة",
+  "areas.loadingArea": "جاري تحميل بيانات المنطقة...",
+  "areas.areaNotFound": "المنطقة غير موجودة",
+  "areas.areaNotFoundDescription": "المنطقة المطلوبة غير موجودة في النظام",
+  "areas.enterNameAr": "يرجى إدخال اسم المنطقة بالعربية",
+  "areas.enterNameEn": "يرجى إدخال اسم المنطقة بالإنجليزية",
+  "areas.nameArPlaceholder": "اسم المنطقة بالعربية",
+  "areas.enterNameArHelper": "أدخل اسم المنطقة بالعربية",
+  "areas.enterNameEnHelper": "أدخل اسم المنطقة بالإنجليزية",
+  "areas.nameMinLength": "اسم المنطقة يجب أن يكون على الأقل حرفين",
+  "areas.nameMaxLength": "اسم المنطقة يجب أن لا يتجاوز 50 حرف",
+  "areas.selectGovernorate": "يرجى اختيار المحافظة",
+  "areas.chooseGovernorate": "اختر المحافظة",
+  "areas.selectGovernorateHelper": "اختر المحافظة التابعة لها المنطقة",
+  "areas.areaActive": "المنطقة نشطة",
+  "areas.areaActiveHelper": "حدد ما إذا كانت المنطقة نشطة أم لا",
+  "areas.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "areas.unexpectedError": "حدث خطأ غير متوقع",
+  "areas.addSuccess": "تم إضافة المنطقة بنجاح",
+  "areas.updateSuccess": "تم تحديث المنطقة بنجاح",
+  "areas.saving": "جاري الحفظ...",
+  "areas.saveArea": "حفظ المنطقة",
+  "areas.updating": "جاري التحديث...",
+  "areas.updateArea": "تحديث المنطقة",
+  
+  "categories.title": "التصنيفات",
+  "categories.subtitle": "إدارة تصنيفات المنتجات",
+  "categories.addNew": "إضافة تصنيف جديد",
+  "categories.editCategory": "تعديل التصنيف",
+  "categories.addDescription": "قم بإنشاء تصنيف جديد للمنتجات",
+  "categories.editDescription": "تعديل بيانات التصنيف: {{name}}",
+  "categories.allCategories": "جميع التصنيفات",
+  "categories.searchPlaceholder": "ابحث عن تصنيف...",
+  "categories.image": "الصورة",
+  "categories.nameAr": "اسم التصنيف (عربي)",
+  "categories.nameEn": "اسم التصنيف (إنجليزي)",
+  "categories.status": "الحالة",
+  "categories.createdAt": "تاريخ الإنشاء",
+  "categories.updatedAt": "آخر تحديث",
+  "categories.actions": "الإجراءات",
+  "categories.active": "نشط",
+  "categories.inactive": "غير نشط",
+  "categories.edit": "تعديل",
+  "categories.delete": "حذف",
+  "categories.noCategories": "لا يوجد تصنيفات حتى الآن",
+  "categories.showing": "عرض {{from}} إلى {{to}} من {{total}} تصنيف",
+  "categories.previous": "السابق",
+  "categories.next": "التالي",
+  "categories.confirmDelete": "تأكيد الحذف",
+  "categories.deleteMessage": "هل أنت متأكد من حذف التصنيف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "categories.cancel": "إلغاء",
+  "categories.success": "نجاح!",
+  "categories.error": "خطأ!",
+  "categories.deleteSuccess": "تم حذف التصنيف بنجاح",
+  "categories.deleteError": "حدث خطأ أثناء حذف التصنيف",
+  "categories.loadError": "فشل في تحميل التصنيفات",
+  "categories.loadCategoryError": "فشل في تحميل بيانات التصنيف",
+  "categories.categoryNotFound": "التصنيف غير موجود",
+  "categories.enterNameAr": "يرجى إدخال اسم التصنيف بالعربية",
+  "categories.enterNameEn": "يرجى إدخال اسم التصنيف بالإنجليزية",
+  "categories.nameArPlaceholder": "أدخل اسم التصنيف بالعربية",
+  "categories.enterNameArHelper": "اسم التصنيف باللغة العربية",
+  "categories.enterNameEnHelper": "اسم التصنيف باللغة الإنجليزية",
+  "categories.categoryImage": "صورة التصنيف",
+  "categories.clickToUpload": "انقر لرفع صورة التصنيف",
+  "categories.imageFormats": "JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)",
+  "categories.imageOptional": "اختياري - يمكنك إضافة صورة لتمييز التصنيف",
+  "categories.invalidImageFormat": "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF",
+  "categories.imageSizeExceeded": "حجم الصورة يجب أن لا يتجاوز 5MB",
+  "categories.categoryActive": "🟢 التصنيف نشط",
+  "categories.categoryInactive": "🔴 التصنيف غير نشط",
+  "categories.addSuccess": "تم إنشاء التصنيف بنجاح",
+  "categories.addError": "حدث خطأ أثناء إنشاء التصنيف",
+  "categories.updateSuccess": "تم تحديث التصنيف بنجاح",
+  "categories.updateError": "حدث خطأ أثناء تحديث التصنيف",
+  "categories.adding": "جاري إضافة التصنيف...",
+  "categories.addCategory": "إضافة التصنيف",
+  "categories.updating": "جاري تحديث التصنيف...",
+  "categories.updateCategory": "تحديث التصنيف",
+  
+  "subcategories.title": "التصنيفات الفرعية",
+  "subcategories.subtitle": "إدارة التصنيفات الفرعية للمنتجات",
+  "subcategories.addNew": "إضافة تصنيف فرعي جديد",
+  "subcategories.editSubcategory": "تعديل التصنيف الفرعي",
+  "subcategories.addDescription": "قم بإنشاء تصنيف فرعي جديد للمنتجات",
+  "subcategories.editDescription": "تعديل بيانات التصنيف الفرعي: {{name}}",
+  "subcategories.allSubcategories": "جميع التصنيفات الفرعية",
+  "subcategories.allCategories": "جميع التصنيفات",
+  "subcategories.searchPlaceholder": "ابحث عن تصنيف فرعي...",
+  "subcategories.image": "الصورة",
+  "subcategories.nameAr": "اسم التصنيف الفرعي (عربي)",
+  "subcategories.nameEn": "اسم التصنيف الفرعي (إنجليزي)",
+  "subcategories.mainCategory": "التصنيف الرئيسي",
+  "subcategories.status": "الحالة",
+  "subcategories.createdAt": "تاريخ الإنشاء",
+  "subcategories.actions": "الإجراءات",
+  "subcategories.active": "نشط",
+  "subcategories.inactive": "غير نشط",
+  "subcategories.edit": "تعديل",
+  "subcategories.delete": "حذف",
+  "subcategories.noSubcategories": "لا يوجد تصنيفات فرعية حتى الآن",
+  "subcategories.showing": "عرض {{from}} إلى {{to}} من {{total}} تصنيف فرعي",
+  "subcategories.previous": "السابق",
+  "subcategories.next": "التالي",
+  "subcategories.confirmDelete": "تأكيد الحذف",
+  "subcategories.deleteMessage": "هل أنت متأكد من حذف التصنيف الفرعي \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "subcategories.cancel": "إلغاء",
+  "subcategories.success": "نجاح!",
+  "subcategories.error": "خطأ!",
+  "subcategories.deleteSuccess": "تم حذف التصنيف الفرعي بنجاح",
+  "subcategories.deleteError": "حدث خطأ أثناء حذف التصنيف الفرعي",
+  "subcategories.loadError": "فشل في تحميل التصنيفات الفرعية",
+  "subcategories.loadSubcategoryError": "فشل في تحميل بيانات التصنيف الفرعي",
+  "subcategories.subcategoryNotFound": "التصنيف الفرعي غير موجود",
+  "subcategories.selectMainCategory": "يرجى اختيار التصنيف الرئيسي",
+  "subcategories.chooseMainCategory": "اختر التصنيف الرئيسي",
+  "subcategories.selectMainCategoryHelper": "اختر التصنيف الرئيسي الذي ينتمي إليه هذا التصنيف الفرعي",
+  "subcategories.enterNameAr": "يرجى إدخال اسم التصنيف الفرعي بالعربية",
+  "subcategories.enterNameEn": "يرجى إدخال اسم التصنيف الفرعي بالإنجليزية",
+  "subcategories.nameArPlaceholder": "أدخل اسم التصنيف الفرعي بالعربية",
+  "subcategories.enterNameArHelper": "اسم التصنيف الفرعي باللغة العربية",
+  "subcategories.enterNameEnHelper": "اسم التصنيف الفرعي باللغة الإنجليزية",
+  "subcategories.subcategoryImage": "صورة التصنيف الفرعي",
+  "subcategories.clickToUpload": "انقر لرفع صورة التصنيف الفرعي",
+  "subcategories.imageFormats": "JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)",
+  "subcategories.imageOptional": "اختياري - يمكنك إضافة صورة لتمييز التصنيف الفرعي",
+  "subcategories.invalidImageFormat": "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF",
+  "subcategories.imageSizeExceeded": "حجم الصورة يجب أن لا يتجاوز 5MB",
+  "subcategories.subcategoryActive": "🟢 التصنيف الفرعي نشط",
+  "subcategories.subcategoryInactive": "🔴 التصنيف الفرعي غير نشط",
+  "subcategories.addSuccess": "تم إنشاء التصنيف الفرعي بنجاح",
+  "subcategories.addError": "حدث خطأ أثناء إنشاء التصنيف الفرعي",
+  "subcategories.updateSuccess": "تم تحديث التصنيف الفرعي بنجاح",
+  "subcategories.updateError": "حدث خطأ أثناء تحديث التصنيف الفرعي",
+  "subcategories.adding": "جاري إضافة التصنيف الفرعي...",
+  "subcategories.addSubcategory": "إضافة التصنيف الفرعي",
+  "subcategories.updating": "جاري تحديث التصنيف الفرعي...",
+  "subcategories.updateSubcategory": "تحديث التصنيف الفرعي"
 }

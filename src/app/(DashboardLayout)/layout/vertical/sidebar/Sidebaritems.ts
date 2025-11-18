@@ -29,113 +29,113 @@ const SidebarContent: MenuItem[] = [
       {
         children: [
           {
-            name: "لوحة التحكم",
+            name: "sidebar.dashboard",
             icon: "solar:atom-line-duotone",
             id: uniqueId(),
             url: "/",
           },
           {
-            name: "ادارة المسئولين",
+            name: "sidebar.adminManagement",
             id: uniqueId(),
             icon: "solar:user-line-duotone",
             children: [
               {
-                name: "الادوار والصلاحيات",
+                name: "sidebar.rolesAndPermissions",
                 id: uniqueId(),
                 url: "/roles-and-permissions",
               },
               {
                 id: uniqueId(),
-                name: "المسؤلين",
+                name: "sidebar.admins",
                 url: "/admins",
               },
             ],
           },
           {
-            name: "المواقع الجغرافية",
+            name: "sidebar.geographicLocations",
             id: uniqueId(),
             icon: "solar:map-point-line-duotone",
             children: [
               {
-                name: "الدول",
+                name: "sidebar.countries",
                 id: uniqueId(),
                 url: "/countries",
               },
               {
                 id: uniqueId(),
-                name: "المحافظات",
+                name: "sidebar.governorates",
                 url: "/governorates",
               },
               {
                 id: uniqueId(),
-                name: "المناطق",
+                name: "sidebar.areas",
                 url: "/areas",
               },
             ],
           },
           {
-            name: "ادارة التصنيفات",
+            name: "sidebar.categoriesManagement",
             id: uniqueId(),
             icon: "solar:tag-line-duotone",
             children: [
               {
-                name: "التصنيفات الاساسية",
+                name: "sidebar.mainCategories",
                 id: uniqueId(),
                 url: "/categories",
               },
               {
                 id: uniqueId(),
-                name: "التصنيفات الفرعية",
+                name: "sidebar.subCategories",
                 url: "/subcategories",
               },
             ],
           },
           {
-            name: "المستخدمين",
+            name: "sidebar.users",
             icon: "solar:users-group-two-rounded-outline",
             id: uniqueId(),
             url: "/customers",
           },
 
           {
-            name: "المنتجات",
+            name: "sidebar.products",
             icon: "solar:cart-line-duotone",
             id: uniqueId(),
             url: "/products",
           },
 
           {
-            name: "الجمعيات الخيرية",
+            name: "sidebar.charities",
             icon: "solar:buildings-2-line-duotone",
             id: uniqueId(),
             url: "/charities",
           },
 
           {
-            name: "العروض",
+            name: "sidebar.offers",
             icon: "solar:gift-line-duotone",
             id: uniqueId(),
             url: "/offers",
           },
 
           {
-            name: "ادارة المحتوي",
+            name: "sidebar.contentManagement",
             id: uniqueId(),
             icon: "solar:document-text-line-duotone",
             children: [
               {
-                name: "تواصل معنا",
+                name: "sidebar.contactUs",
                 id: uniqueId(),
                 url: "/contact-us",
               },
               {
                 id: uniqueId(),
-                name: "طلبات التوظيف",
+                name: "sidebar.jobApplications",
                 url: "/careers",
               },
               {
                 id: uniqueId(),
-                name: "وسائل التواصل",
+                name: "sidebar.socialMediaLinks",
                 url: "/social-media-links",
               },
             ],

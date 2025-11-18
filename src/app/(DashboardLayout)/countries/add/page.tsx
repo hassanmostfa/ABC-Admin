@@ -7,8 +7,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCreateCountryMutation } from "@/store/api/countriesApi";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddCountryPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createCountry, { isLoading: creating }] = useCreateCountryMutation();
@@ -22,18 +24,18 @@ const AddCountryPage = () => {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الدولة بالعربية";
+      return t("countries.enterNameAr");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم الدولة يجب أن يكون على الأقل حرفين";
+      return t("countries.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم الدولة يجب أن لا يتجاوز 50 حرف";
+      return t("countries.nameMaxLength");
     }
     
     return "";
@@ -41,18 +43,18 @@ const AddCountryPage = () => {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الدولة بالإنجليزية";
+      return t("countries.enterNameEn");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم الدولة يجب أن يكون على الأقل حرفين";
+      return t("countries.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم الدولة يجب أن لا يتجاوز 50 حرف";
+      return t("countries.nameMaxLength");
     }
     
     return "";
@@ -80,7 +82,7 @@ const AddCountryPage = () => {
       const firstField = Object.keys(apiErrors)[0];
       return apiErrors[firstField][0];
     }
-    return err?.data?.message || "حدث خطأ غير متوقع";
+    return err?.data?.message || t("countries.unexpectedError");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,7 +98,7 @@ const AddCountryPage = () => {
         ...(nameArError && { name_ar: nameArError }),
         ...(nameEnError && { name_en: nameEnError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("countries.error"), t("countries.correctErrors"));
       return;
     }
 
@@ -108,14 +110,14 @@ const AddCountryPage = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة الدولة بنجاح");
+        showNotification("success", t("countries.success"), t("countries.addSuccess"));
         setTimeout(() => {
           router.push("/countries");
         }, 1500);
       }
     } catch (err: any) {
       const errorMessage = extractErrorMessage(err);
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("countries.error"), errorMessage);
     }
   };
 
@@ -125,16 +127,16 @@ const AddCountryPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-dark dark:text-white">
-            إضافة دولة جديدة
+            {t("countries.addNew")}
           </h1>
           <p className="text-sm text-ld mt-2">
-            أضف دولة جديدة إلى النظام
+            {t("countries.addDescription")}
           </p>
         </div>
         <Link href="/countries">
           <button className="px-4 py-2 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors flex items-center gap-2">
             <Icon icon="solar:arrow-right-bold" height={20} />
-            العودة للقائمة
+            {t("countries.backToList")}
           </button>
         </Link>
       </div>
@@ -144,12 +146,12 @@ const AddCountryPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name_ar" className="mb-2 block">
-                اسم الدولة (عربي) <span className="text-error">*</span>
+                {t("countries.nameAr")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم الدولة بالعربية" 
+                placeholder={t("countries.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -158,13 +160,13 @@ const AddCountryPage = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الدولة بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("countries.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="name_en" className="mb-2 block">
-                اسم الدولة (إنجليزي) <span className="text-error">*</span>
+                {t("countries.nameEn")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_en" 
@@ -178,7 +180,7 @@ const AddCountryPage = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الدولة بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("countries.enterNameEnHelper")}</p>
               )}
             </div>
 
@@ -191,10 +193,10 @@ const AddCountryPage = () => {
                   onChange={handleInputChange}
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium text-dark dark:text-white">
-                  الدولة نشطة
+                  {t("countries.countryActive")}
                 </Label>
               </div>
-              <p className="mt-1 text-xs text-gray-500">حدد ما إذا كانت الدولة نشطة أم لا</p>
+              <p className="mt-1 text-xs text-gray-500">{t("countries.countryActiveHelper")}</p>
             </div>
           </div>
         </Card>
@@ -207,7 +209,7 @@ const AddCountryPage = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("countries.cancel")}
               </button>
             </Link>
             <button
@@ -218,12 +220,12 @@ const AddCountryPage = () => {
               {creating ? (
                 <>
                   <Icon icon="solar:loading-bold" className="w-4 h-4 animate-spin" />
-                  جاري الحفظ...
+                  {t("countries.saving")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} />
-                  حفظ الدولة
+                  {t("countries.saveCountry")}
                 </>
               )}
             </button>

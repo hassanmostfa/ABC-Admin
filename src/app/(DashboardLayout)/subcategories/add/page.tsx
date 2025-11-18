@@ -8,8 +8,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const AddSubcategory = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createSubcategory, { isLoading: creating }] = useCreateSubcategoryMutation();
@@ -55,13 +57,13 @@ const AddSubcategory = () => {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
       if (!validTypes.includes(file.type)) {
-        showNotification("error", "خطأ!", "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF");
+        showNotification("error", t("subcategories.error"), t("subcategories.invalidImageFormat"));
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        showNotification("error", "خطأ!", "حجم الصورة يجب أن لا يتجاوز 5MB");
+        showNotification("error", t("subcategories.error"), t("subcategories.imageSizeExceeded"));
         return;
       }
 
@@ -92,23 +94,23 @@ const AddSubcategory = () => {
 
     // Validate category selection
     if (!formData.category_id || formData.category_id === 0) {
-      const msg = "يرجى اختيار التصنيف الرئيسي";
+      const msg = t("subcategories.selectMainCategory");
       setFieldErrors({ category_id: msg });
-      showNotification("error", "خطأ!", msg);
+      showNotification("error", t("subcategories.error"), msg);
       return;
     }
 
     // Validate names
     if (!formData.name_en.trim()) {
-      const msg = "يرجى إدخال اسم التصنيف الفرعي بالإنجليزية";
+      const msg = t("subcategories.enterNameEn");
       setFieldErrors({ name_en: msg });
-      showNotification("error", "خطأ!", msg);
+      showNotification("error", t("subcategories.error"), msg);
       return;
     }
     if (!formData.name_ar.trim()) {
-      const msg = "يرجى إدخال اسم التصنيف الفرعي بالعربية";
+      const msg = t("subcategories.enterNameAr");
       setFieldErrors({ name_ar: msg });
-      showNotification("error", "خطأ!", msg);
+      showNotification("error", t("subcategories.error"), msg);
       return;
     }
 
@@ -129,11 +131,11 @@ const AddSubcategory = () => {
 
     try {
       const result = await createSubcategory(data).unwrap();
-      showNotification("success", "تم!", "تم إنشاء التصنيف الفرعي بنجاح");
+      showNotification("success", t("subcategories.success"), t("subcategories.addSuccess"));
       router.push('/subcategories');
     } catch (err: any) {
       console.error("Create subcategory error:", err);
-      let errorMessage = "حدث خطأ أثناء إنشاء التصنيف الفرعي";
+      let errorMessage = t("subcategories.addError");
       if (err.status === 422 && err.data?.errors) {
         const errors = err.data.errors;
         const fieldErrors: Record<string, string> = {};
@@ -145,7 +147,7 @@ const AddSubcategory = () => {
         setFieldErrors(fieldErrors);
         errorMessage = Object.values(fieldErrors).join("، ") || errorMessage;
       }
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("subcategories.error"), errorMessage);
     }
   };
 
@@ -163,9 +165,9 @@ const AddSubcategory = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة تصنيف فرعي جديد</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("subcategories.addNew")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">قم بإنشاء تصنيف فرعي جديد للمنتجات</p>
+          <p className="text-sm text-ld mr-12">{t("subcategories.addDescription")}</p>
         </div>
       </div>
 
@@ -174,7 +176,7 @@ const AddSubcategory = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Category Selection */}
             <div>
-              <Label htmlFor="category_id" className="mb-2 block">التصنيف الرئيسي <span className="text-error">*</span></Label>
+              <Label htmlFor="category_id" className="mb-2 block">{t("subcategories.mainCategory")} <span className="text-error">*</span></Label>
               <Select 
                 id="category_id" 
                 name="category_id" 
@@ -184,7 +186,7 @@ const AddSubcategory = () => {
                 disabled={isLoading}
                 className="select-md"
               >
-                <option value={0}>اختر التصنيف الرئيسي</option>
+                <option value={0}>{t("subcategories.chooseMainCategory")}</option>
                 {categoriesData?.data?.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name_ar} - {category.name_en}
@@ -194,13 +196,13 @@ const AddSubcategory = () => {
               {fieldErrors.category_id ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.category_id}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر التصنيف الرئيسي الذي ينتمي إليه هذا التصنيف الفرعي</p>
+                <p className="mt-1 text-xs text-gray-500">{t("subcategories.selectMainCategoryHelper")}</p>
               )}
             </div>
 
             {/* English Name */}
             <div>
-              <Label htmlFor="name_en" className="mb-2 block">اسم التصنيف الفرعي (الإنجليزية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_en" className="mb-2 block">{t("subcategories.nameEn")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_en" 
                 name="name_en" 
@@ -214,17 +216,17 @@ const AddSubcategory = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم التصنيف الفرعي باللغة الإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("subcategories.enterNameEnHelper")}</p>
               )}
             </div>
 
             {/* Arabic Name */}
             <div>
-              <Label htmlFor="name_ar" className="mb-2 block">اسم التصنيف الفرعي (العربية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_ar" className="mb-2 block">{t("subcategories.nameAr")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="أدخل اسم التصنيف الفرعي بالعربية" 
+                placeholder={t("subcategories.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -235,7 +237,7 @@ const AddSubcategory = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم التصنيف الفرعي باللغة العربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("subcategories.enterNameArHelper")}</p>
               )}
             </div>
 
@@ -243,10 +245,10 @@ const AddSubcategory = () => {
             <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
               <div>
                 <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                  حالة التصنيف الفرعي
+                  {t("subcategories.status")}
                 </Label>
                 <p className={`text-sm ${formData.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                  {formData.is_active ? "🟢 التصنيف الفرعي نشط" : "🔴 التصنيف الفرعي غير نشط"}
+                  {formData.is_active ? t("subcategories.subcategoryActive") : t("subcategories.subcategoryInactive")}
                 </p>
               </div>
               <button
@@ -267,7 +269,7 @@ const AddSubcategory = () => {
 
             {/* Image Upload */}
             <div className="md:col-span-2">
-              <Label htmlFor="image" className="mb-2 block">صورة التصنيف الفرعي</Label>
+              <Label htmlFor="image" className="mb-2 block">{t("subcategories.subcategoryImage")}</Label>
               
               {/* Image Preview and Upload Status */}
               <div className="flex items-start gap-4 mb-4">
@@ -302,8 +304,8 @@ const AddSubcategory = () => {
                 >
                   <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                     <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                    <p className="text-sm text-ld mb-1">انقر لرفع صورة التصنيف الفرعي</p>
-                    <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                    <p className="text-sm text-ld mb-1">{t("subcategories.clickToUpload")}</p>
+                    <p className="text-xs text-ld">{t("subcategories.imageFormats")}</p>
                   </div>
                   <input
                     id="image"
@@ -326,7 +328,7 @@ const AddSubcategory = () => {
               {fieldErrors.image ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.image}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختياري - يمكنك إضافة صورة لتمييز التصنيف الفرعي</p>
+                <p className="mt-1 text-xs text-gray-500">{t("subcategories.imageOptional")}</p>
               )}
             </div>
           </div>
@@ -340,7 +342,7 @@ const AddSubcategory = () => {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
               >
-                إلغاء
+                {t("subcategories.cancel")}
               </button>
             </Link>
             <button 
@@ -351,12 +353,12 @@ const AddSubcategory = () => {
               {isSubmitting ? (
                 <>
                   <Spinner size="sm" /> 
-                  جاري إضافة التصنيف الفرعي...
+                  {t("subcategories.adding")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} /> 
-                  إضافة التصنيف الفرعي
+                  {t("subcategories.addSubcategory")}
                 </>
               )}
             </button>

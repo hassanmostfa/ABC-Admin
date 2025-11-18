@@ -8,8 +8,10 @@ import { useRouter } from "next/navigation";
 import { useCreateAreaMutation } from "@/store/api/areasApi";
 import { useGetAllGovernoratesQuery } from "@/store/api/areasApi";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddAreaPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createArea, { isLoading: creating }] = useCreateAreaMutation();
@@ -25,18 +27,18 @@ const AddAreaPage = () => {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المنطقة بالعربية";
+      return t("areas.enterNameAr");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المنطقة يجب أن يكون على الأقل حرفين";
+      return t("areas.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المنطقة يجب أن لا يتجاوز 50 حرف";
+      return t("areas.nameMaxLength");
     }
     
     return "";
@@ -44,18 +46,18 @@ const AddAreaPage = () => {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المنطقة بالإنجليزية";
+      return t("areas.enterNameEn");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المنطقة يجب أن يكون على الأقل حرفين";
+      return t("areas.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المنطقة يجب أن لا يتجاوز 50 حرف";
+      return t("areas.nameMaxLength");
     }
     
     return "";
@@ -63,7 +65,7 @@ const AddAreaPage = () => {
 
   const validateGovernorate = (governorateId: number): string => {
     if (!governorateId || governorateId === 0) {
-      return "يرجى اختيار المحافظة";
+      return t("areas.selectGovernorate");
     }
     return "";
   };
@@ -92,7 +94,7 @@ const AddAreaPage = () => {
       const firstField = Object.keys(apiErrors)[0];
       return apiErrors[firstField][0];
     }
-    return err?.data?.message || "حدث خطأ غير متوقع";
+    return err?.data?.message || t("areas.unexpectedError");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,7 +112,7 @@ const AddAreaPage = () => {
         ...(nameEnError && { name_en: nameEnError }),
         ...(governorateError && { governorate_id: governorateError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("areas.error"), t("areas.correctErrors"));
       return;
     }
 
@@ -123,14 +125,14 @@ const AddAreaPage = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة المنطقة بنجاح");
+        showNotification("success", t("areas.success"), t("areas.addSuccess"));
         setTimeout(() => {
           router.push("/areas");
         }, 1500);
       }
     } catch (err: any) {
       const errorMessage = extractErrorMessage(err);
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("areas.error"), errorMessage);
     }
   };
 
@@ -140,16 +142,16 @@ const AddAreaPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-dark dark:text-white">
-            إضافة منطقة جديدة
+            {t("areas.addNew")}
           </h1>
           <p className="text-sm text-ld mt-2">
-            أضف منطقة جديدة إلى النظام
+            {t("areas.addDescription")}
           </p>
         </div>
         <Link href="/areas">
           <button className="px-4 py-2 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors flex items-center gap-2">
             <Icon icon="solar:arrow-right-bold" height={20} />
-            العودة للقائمة
+            {t("areas.backToList")}
           </button>
         </Link>
       </div>
@@ -159,12 +161,12 @@ const AddAreaPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name_ar" className="mb-2 block">
-                اسم المنطقة (عربي) <span className="text-error">*</span>
+                {t("areas.nameAr")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم المنطقة بالعربية" 
+                placeholder={t("areas.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -173,13 +175,13 @@ const AddAreaPage = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المنطقة بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="name_en" className="mb-2 block">
-                اسم المنطقة (إنجليزي) <span className="text-error">*</span>
+                {t("areas.nameEn")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_en" 
@@ -193,13 +195,13 @@ const AddAreaPage = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المنطقة بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.enterNameEnHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="governorate_id" className="mb-2 block">
-                المحافظة <span className="text-error">*</span>
+                {t("areas.governorate")} <span className="text-error">*</span>
               </Label>
               <Select
                 id="governorate_id"
@@ -210,7 +212,7 @@ const AddAreaPage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:buildings-bold" height={18} />}
               >
-                <option value={0}>اختر المحافظة</option>
+                <option value={0}>{t("areas.chooseGovernorate")}</option>
                 {governoratesData?.data?.map((governorate: any) => (
                   <option key={governorate.id} value={governorate.id}>
                     {governorate.name_ar} - {governorate.country?.name_ar}
@@ -220,7 +222,7 @@ const AddAreaPage = () => {
               {fieldErrors.governorate_id ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.governorate_id}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المحافظة التابعة لها المنطقة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.selectGovernorateHelper")}</p>
               )}
             </div>
 
@@ -233,10 +235,10 @@ const AddAreaPage = () => {
                   onChange={handleInputChange}
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium text-dark dark:text-white">
-                  المنطقة نشطة
+                  {t("areas.areaActive")}
                 </Label>
               </div>
-              <p className="mt-1 text-xs text-gray-500">حدد ما إذا كانت المنطقة نشطة أم لا</p>
+              <p className="mt-1 text-xs text-gray-500">{t("areas.areaActiveHelper")}</p>
             </div>
           </div>
         </Card>
@@ -249,7 +251,7 @@ const AddAreaPage = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("areas.cancel")}
               </button>
             </Link>
             <button
@@ -260,12 +262,12 @@ const AddAreaPage = () => {
               {creating ? (
                 <>
                   <Icon icon="solar:loading-bold" className="w-4 h-4 animate-spin" />
-                  جاري الحفظ...
+                  {t("areas.saving")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} />
-                  حفظ المنطقة
+                  {t("areas.saveArea")}
                 </>
               )}
             </button>

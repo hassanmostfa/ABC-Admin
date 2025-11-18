@@ -8,36 +8,33 @@ import { Icon } from "@iconify/react";
 
 const Languages = [
   {
-    flagname: "English (UK)",
-    icon: "/images/flag/icon-flag-en.svg",
-    value: "en",
-  },
-  {
-    flagname: "中国人 (Chinese)",
-    icon: "/images/flag/icon-flag-cn.svg",
-    value: "ch",
-  },
-  {
-    flagname: "français (French)",
-    icon: "/images/flag/icon-flag-fr.svg",
-    value: "fr",
-  },
-  {
     flagname: "عربي (Arabic)",
     icon: "/images/flag/icon-flag-sa.svg",
     value: "ar",
+  },
+  {
+    flagname: "English (UK)",
+    icon: "/images/flag/icon-flag-en.svg",
+    value: "en",
   },
 ];
 
 export const LanguageSelector = () => {
   const { i18n } = useTranslation();
-  const { isLanguage, setIsLanguage } = useContext(CustomizerContext);
+  const { isLanguage, setIsLanguage, setActiveDir } = useContext(CustomizerContext);
   
   const currentLang = Languages.find((_lang) => _lang.value === isLanguage) || Languages[0];
 
   useEffect(() => {
     i18n.changeLanguage(isLanguage);
-  }, [isLanguage]);
+    // Change layout direction based on language
+    const direction = isLanguage === "en" ? "ltr" : "rtl";
+    setActiveDir(direction);
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('app-direction', direction);
+    }
+  }, [isLanguage, setActiveDir]);
 
   return (
     <div className="flex items-center">
@@ -69,7 +66,17 @@ export const LanguageSelector = () => {
           <DropdownItem
             className="flex gap-3 items-center py-3 w-full"
             key={index}
-            onClick={() => setIsLanguage(item.value)}
+            onClick={() => {
+              setIsLanguage(item.value);
+              // Change direction immediately when language is selected
+              const direction = item.value === "en" ? "ltr" : "rtl";
+              setActiveDir(direction);
+              // Save to localStorage immediately
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('app-language', item.value);
+                localStorage.setItem('app-direction', direction);
+              }
+            }}
           >
             <Image
               src={item.icon}

@@ -2,11 +2,14 @@
 import React from "react";
 import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 const StatsCards = () => {
+  const { t } = useTranslation();
+  
   const statsData = [
     {
-      title: "عدد المستخدمين",
+      title: t("dashboard.stats.numberOfUsers"),
       value: "2,847",
       change: "+12.5%",
       icon: "solar:users-group-two-rounded-outline",
@@ -15,7 +18,7 @@ const StatsCards = () => {
       changeColor: "text-success"
     },
     {
-      title: "عدد الجمعيات الخيرية",
+      title: t("dashboard.stats.numberOfCharities"),
       value: "156",
       change: "+8.2%",
       icon: "solar:buildings-2-line-duotone",
@@ -24,7 +27,7 @@ const StatsCards = () => {
       changeColor: "text-success"
     },
     {
-      title: "عدد المنتجات",
+      title: t("dashboard.stats.numberOfProducts"),
       value: "3,429",
       change: "+15.3%",
       icon: "solar:cart-line-duotone",
@@ -33,7 +36,7 @@ const StatsCards = () => {
       changeColor: "text-success"
     },
     {
-      title: "عدد العروض",
+      title: t("dashboard.stats.numberOfOffers"),
       value: "89",
       change: "-2.1%",
       icon: "solar:gift-line-duotone",
@@ -42,7 +45,7 @@ const StatsCards = () => {
       changeColor: "text-error"
     },
     {
-      title: "عدد التصنيفات",
+      title: t("dashboard.stats.numberOfCategories"),
       value: "24",
       change: "+5.7%",
       icon: "solar:tag-line-duotone",

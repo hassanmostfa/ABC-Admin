@@ -4,9 +4,12 @@ import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Background from '/public/images/backgrounds/welcome-bg.png';
+import { useTranslation } from "react-i18next";
 
 
 const WelcomeBox = () => {
+  const { t } = useTranslation();
+  
   return (
     <>
       <CardBox className="bg-primary dark:bg-primary pb-0 h-full">
@@ -20,17 +23,17 @@ const WelcomeBox = () => {
                   height={24}
                 />
               </div>
-              <h5 className="text-xl text-white">مرحباً بعودتك حسن</h5>
+              <h5 className="text-xl text-white">{t("dashboard.welcomeBack")}</h5>
             </div>
 
             <div className="flex  w-full xl:mt-12 sm:mt-12 lg:mt-6 mt-6">
               <div className="border-e border-white/20 pe-4">
-                <p className="text-white opacity-75 text-sm mb-1">الميزانية</p>
-                <h2 className="text-white text-2xl">98,450 دينار</h2>
+                <p className="text-white opacity-75 text-sm mb-1">{t("dashboard.budget")}</p>
+                <h2 className="text-white text-2xl">98,450 {t("dashboard.currency")}</h2>
               </div>
               <div className="ps-4"> 
-                <p className="text-white opacity-75 text-sm mb-1">المصروفات</p>
-                <h2 className="text-white text-2xl">2,440 دينار</h2>
+                <p className="text-white opacity-75 text-sm mb-1">{t("dashboard.expenses")}</p>
+                <h2 className="text-white text-2xl">2,440 {t("dashboard.currency")}</h2>
               </div>
             </div>
           </div>

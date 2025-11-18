@@ -8,8 +8,10 @@ import { useRouter } from "next/navigation";
 import { useCreateGovernorateMutation } from "@/store/api/governoratesApi";
 import { useGetAllCountriesQuery } from "@/store/api/countriesApi";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddGovernoratePage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createGovernorate, { isLoading: creating }] = useCreateGovernorateMutation();
@@ -25,18 +27,18 @@ const AddGovernoratePage = () => {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المحافظة بالعربية";
+      return t("governorates.enterNameAr");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المحافظة يجب أن يكون على الأقل حرفين";
+      return t("governorates.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المحافظة يجب أن لا يتجاوز 50 حرف";
+      return t("governorates.nameMaxLength");
     }
     
     return "";
@@ -44,18 +46,18 @@ const AddGovernoratePage = () => {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المحافظة بالإنجليزية";
+      return t("governorates.enterNameEn");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المحافظة يجب أن يكون على الأقل حرفين";
+      return t("governorates.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المحافظة يجب أن لا يتجاوز 50 حرف";
+      return t("governorates.nameMaxLength");
     }
     
     return "";
@@ -63,7 +65,7 @@ const AddGovernoratePage = () => {
 
   const validateCountry = (countryId: number): string => {
     if (!countryId || countryId === 0) {
-      return "يرجى اختيار الدولة";
+      return t("governorates.selectCountry");
     }
     return "";
   };
@@ -92,7 +94,7 @@ const AddGovernoratePage = () => {
       const firstField = Object.keys(apiErrors)[0];
       return apiErrors[firstField][0];
     }
-    return err?.data?.message || "حدث خطأ غير متوقع";
+    return err?.data?.message || t("governorates.unexpectedError");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,7 +112,7 @@ const AddGovernoratePage = () => {
         ...(nameEnError && { name_en: nameEnError }),
         ...(countryError && { country_id: countryError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("governorates.error"), t("governorates.correctErrors"));
       return;
     }
 
@@ -123,14 +125,14 @@ const AddGovernoratePage = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة المحافظة بنجاح");
+        showNotification("success", t("governorates.success"), t("governorates.addSuccess"));
         setTimeout(() => {
           router.push("/governorates");
         }, 1500);
       }
     } catch (err: any) {
       const errorMessage = extractErrorMessage(err);
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("governorates.error"), errorMessage);
     }
   };
 
@@ -140,16 +142,16 @@ const AddGovernoratePage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-dark dark:text-white">
-            إضافة محافظة جديدة
+            {t("governorates.addNew")}
           </h1>
           <p className="text-sm text-ld mt-2">
-            أضف محافظة جديدة إلى النظام
+            {t("governorates.addDescription")}
           </p>
         </div>
         <Link href="/governorates">
           <button className="px-4 py-2 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors flex items-center gap-2">
             <Icon icon="solar:arrow-right-bold" height={20} />
-            العودة للقائمة
+            {t("governorates.backToList")}
           </button>
         </Link>
       </div>
@@ -159,12 +161,12 @@ const AddGovernoratePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name_ar" className="mb-2 block">
-                اسم المحافظة (عربي) <span className="text-error">*</span>
+                {t("governorates.nameAr")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم المحافظة بالعربية" 
+                placeholder={t("governorates.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -173,13 +175,13 @@ const AddGovernoratePage = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المحافظة بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("governorates.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="name_en" className="mb-2 block">
-                اسم المحافظة (إنجليزي) <span className="text-error">*</span>
+                {t("governorates.nameEn")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_en" 
@@ -193,13 +195,13 @@ const AddGovernoratePage = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المحافظة بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("governorates.enterNameEnHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="country_id" className="mb-2 block">
-                الدولة <span className="text-error">*</span>
+                {t("governorates.country")} <span className="text-error">*</span>
               </Label>
               <Select
                 id="country_id"
@@ -210,7 +212,7 @@ const AddGovernoratePage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:flag-bold" height={18} />}
               >
-                <option value={0}>اختر الدولة</option>
+                <option value={0}>{t("governorates.chooseCountry")}</option>
                 {countriesData?.data?.map((country) => (
                   <option key={country.id} value={country.id}>
                     {country.name_ar}
@@ -220,7 +222,7 @@ const AddGovernoratePage = () => {
               {fieldErrors.country_id ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.country_id}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر الدولة التابعة لها المحافظة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("governorates.selectCountryHelper")}</p>
               )}
             </div>
 
@@ -233,10 +235,10 @@ const AddGovernoratePage = () => {
                   onChange={handleInputChange}
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium text-dark dark:text-white">
-                  المحافظة نشطة
+                  {t("governorates.governorateActive")}
                 </Label>
               </div>
-              <p className="mt-1 text-xs text-gray-500">حدد ما إذا كانت المحافظة نشطة أم لا</p>
+              <p className="mt-1 text-xs text-gray-500">{t("governorates.governorateActiveHelper")}</p>
             </div>
           </div>
         </Card>
@@ -249,7 +251,7 @@ const AddGovernoratePage = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("governorates.cancel")}
               </button>
             </Link>
             <button
@@ -260,12 +262,12 @@ const AddGovernoratePage = () => {
               {creating ? (
                 <>
                   <Icon icon="solar:loading-bold" className="w-4 h-4 animate-spin" />
-                  جاري الحفظ...
+                  {t("governorates.saving")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} />
-                  حفظ المحافظة
+                  {t("governorates.saveGovernorate")}
                 </>
               )}
             </button>

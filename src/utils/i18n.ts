@@ -21,11 +21,23 @@ const resources = {
   },
 };
 
+// Get initial language from localStorage or use Arabic as default
+const getInitialLanguage = (): string => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('app-language');
+    if (stored && (stored === 'en' || stored === 'ar' || stored === 'fr' || stored === 'ch')) {
+      return stored;
+    }
+  }
+  // Default to Arabic as per config
+  return "ar";
+};
+
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
-    lng: "en",
+    lng: getInitialLanguage(),
     interpolation: {
       escapeValue: false, // react already safes from xss
     },

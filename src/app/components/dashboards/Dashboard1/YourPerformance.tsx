@@ -3,6 +3,7 @@ import React from "react";
 import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
 import dynamic from "next/dynamic";
+import { useTranslation } from "react-i18next";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 const ChartData: any = {
   series: [20, 20, 20, 20],
@@ -52,12 +53,14 @@ const ChartData: any = {
 };
 
 const YourPerformance = () => {
+  const { t } = useTranslation();
+  
   return (
     <>
       <CardBox>
         <div>
-          <h5 className="card-title">أدائك</h5>
-          <p className="card-subtitle">آخر فحص في 25 فبراير</p>
+          <h5 className="card-title">{t("dashboard.performance.title")}</h5>
+          <p className="card-subtitle">{t("dashboard.performance.lastCheck")}</p>
         </div>
         <div className="grid grid-cols-12 mt-6">
           <div className="md:col-span-6 col-span-12">
@@ -73,7 +76,7 @@ const YourPerformance = () => {
                 </span>
                 <div>
                   <h5 className="text-13 font-semibold">64</h5>
-                  <p className="text-xs text-gray-600">قيد المعالجة</p>
+                  <p className="text-xs text-gray-600">{t("dashboard.performance.processing")}</p>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
@@ -86,7 +89,7 @@ const YourPerformance = () => {
                 </span>
                 <div>
                   <h5 className="text-13 font-semibold">4</h5>
-                  <p className="text-xs text-gray-600">معلق</p>
+                  <p className="text-xs text-gray-600">{t("dashboard.performance.onHold")}</p>
                 </div>
               </div>
               
@@ -101,7 +104,7 @@ const YourPerformance = () => {
                 </span>
                 <div>
                   <h5 className="text-13 font-semibold">12</h5>
-                  <p className="text-xs text-gray-600">تم التسليم</p>
+                  <p className="text-xs text-gray-600">{t("dashboard.performance.delivered")}</p>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
@@ -114,7 +117,7 @@ const YourPerformance = () => {
                 </span>
                 <div>
                   <h5 className="text-13 font-semibold">8</h5>
-                  <p className="text-xs text-gray-600">مكتمل</p>
+                  <p className="text-xs text-gray-600">{t("dashboard.performance.completed")}</p>
                 </div>
               </div>
             </div>
@@ -129,7 +132,7 @@ const YourPerformance = () => {
             />
             <h4 className="text-center text-3xl md:mt-3">88</h4>
             <p className="text-sm text-center mt-3">
-            Learn insigs how to manage all aspects of your startup.
+              {t("dashboard.performance.description")}
             </p>
           </div>
         </div>

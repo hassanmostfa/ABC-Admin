@@ -9,8 +9,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const AddCategory = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
@@ -85,13 +87,13 @@ const AddCategory = () => {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
       if (!validTypes.includes(file.type)) {
-        showNotification("error", "خطأ!", "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF");
+        showNotification("error", t("categories.error"), t("categories.invalidImageFormat"));
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        showNotification("error", "خطأ!", "حجم الصورة يجب أن لا يتجاوز 5MB");
+        showNotification("error", t("categories.error"), t("categories.imageSizeExceeded"));
         return;
       }
 
@@ -132,15 +134,15 @@ const AddCategory = () => {
 
     // Validate names
     if (!formData.name_en.trim()) {
-      const msg = "يرجى إدخال اسم التصنيف بالإنجليزية";
+      const msg = t("categories.enterNameEn");
       setFieldErrors({ name_en: msg });
-      showNotification("error", "خطأ!", msg);
+      showNotification("error", t("categories.error"), msg);
       return;
     }
     if (!formData.name_ar.trim()) {
-      const msg = "يرجى إدخال اسم التصنيف بالعربية";
+      const msg = t("categories.enterNameAr");
       setFieldErrors({ name_ar: msg });
-      showNotification("error", "خطأ!", msg);
+      showNotification("error", t("categories.error"), msg);
       return;
     }
 
@@ -160,11 +162,11 @@ const AddCategory = () => {
 
     try {
       const result = await createCategory(data).unwrap();
-      showNotification("success", "تم!", "تم إنشاء التصنيف بنجاح");
+      showNotification("success", t("categories.success"), t("categories.addSuccess"));
       router.push('/categories');
     } catch (err: any) {
       console.error("Create category error:", err);
-      let errorMessage = "حدث خطأ أثناء إنشاء التصنيف";
+      let errorMessage = t("categories.addError");
       if (err.status === 422 && err.data?.errors) {
         const errors = err.data.errors;
         const fieldErrors: Record<string, string> = {};
@@ -174,7 +176,7 @@ const AddCategory = () => {
         setFieldErrors(fieldErrors);
         errorMessage = Object.values(fieldErrors).join("، ") || errorMessage;
       }
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("categories.error"), errorMessage);
     }
   };
 
@@ -192,9 +194,9 @@ const AddCategory = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة تصنيف جديد</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("categories.addNew")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">قم بإنشاء تصنيف جديد للمنتجات</p>
+          <p className="text-sm text-ld mr-12">{t("categories.addDescription")}</p>
         </div>
       </div>
 
@@ -203,7 +205,7 @@ const AddCategory = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* English Name */}
             <div>
-              <Label htmlFor="name_en" className="mb-2 block">اسم التصنيف (الإنجليزية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_en" className="mb-2 block">{t("categories.nameEn")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_en" 
                 name="name_en" 
@@ -217,17 +219,17 @@ const AddCategory = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم التصنيف باللغة الإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("categories.enterNameEnHelper")}</p>
               )}
             </div>
 
             {/* Arabic Name */}
             <div>
-              <Label htmlFor="name_ar" className="mb-2 block">اسم التصنيف (العربية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_ar" className="mb-2 block">{t("categories.nameAr")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="أدخل اسم التصنيف بالعربية" 
+                placeholder={t("categories.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -238,7 +240,7 @@ const AddCategory = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم التصنيف باللغة العربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("categories.enterNameArHelper")}</p>
               )}
             </div>
 
@@ -246,10 +248,10 @@ const AddCategory = () => {
             <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
               <div>
                 <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                  حالة التصنيف
+                  {t("categories.status")}
                 </Label>
                 <p className={`text-sm ${formData.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                  {formData.is_active ? "🟢 التصنيف نشط" : "🔴 التصنيف غير نشط"}
+                  {formData.is_active ? t("categories.categoryActive") : t("categories.categoryInactive")}
                 </p>
               </div>
               <button
@@ -270,7 +272,7 @@ const AddCategory = () => {
 
             {/* Image Upload */}
             <div className="md:col-span-2">
-              <Label htmlFor="image" className="mb-2 block">صورة التصنيف</Label>
+              <Label htmlFor="image" className="mb-2 block">{t("categories.categoryImage")}</Label>
               
               {/* Image Preview and Upload Status */}
               <div className="flex items-start gap-4 mb-4">
@@ -329,8 +331,8 @@ const AddCategory = () => {
                 >
                   <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                     <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                    <p className="text-sm text-ld mb-1">انقر لرفع صورة التصنيف</p>
-                    <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                    <p className="text-sm text-ld mb-1">{t("categories.clickToUpload")}</p>
+                    <p className="text-xs text-ld">{t("categories.imageFormats")}</p>
                   </div>
                   <input
                     id="image"
@@ -353,7 +355,7 @@ const AddCategory = () => {
               {fieldErrors.image ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.image}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختياري - يمكنك إضافة صورة لتمييز التصنيف</p>
+                <p className="mt-1 text-xs text-gray-500">{t("categories.imageOptional")}</p>
               )}
             </div>
           </div>
@@ -367,7 +369,7 @@ const AddCategory = () => {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
               >
-                إلغاء
+                {t("categories.cancel")}
               </button>
             </Link>
             <button 
@@ -378,12 +380,12 @@ const AddCategory = () => {
               {isSubmitting ? (
                 <>
                   <Spinner size="sm" /> 
-                  جاري إضافة التصنيف...
+                  {t("categories.adding")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} /> 
-                  إضافة التصنيف
+                  {t("categories.addCategory")}
                 </>
               )}
             </button>

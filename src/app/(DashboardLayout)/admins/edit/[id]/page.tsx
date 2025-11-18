@@ -7,8 +7,10 @@ import { useGetAllRolesQuery } from "@/store/api/rolesApi";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const EditAdmin = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const adminId = Number(params.id);
@@ -55,23 +57,23 @@ const EditAdmin = () => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال اسم المسؤول");
+      showNotification("error", t("admins.error"), t("admins.enterName"));
       return;
     }
 
     if (!formData.email.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال البريد الإلكتروني");
+      showNotification("error", t("admins.error"), t("admins.enterEmail"));
       return;
     }
 
     if (!formData.role_id) {
-      showNotification("error", "خطأ!", "يرجى اختيار دور المسؤول");
+      showNotification("error", t("admins.error"), t("admins.selectRole"));
       return;
     }
 
     // Validate password if provided
     if (formData.password && formData.password.length < 8) {
-      showNotification("error", "خطأ!", "كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+      showNotification("error", t("admins.error"), t("admins.passwordMinLength"));
       return;
     }
 
@@ -95,7 +97,7 @@ const EditAdmin = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم تحديث بيانات المسؤول بنجاح");
+        showNotification("success", t("admins.success"), t("admins.updateSuccess"));
         setTimeout(() => {
           router.push("/admins");
         }, 1200);
@@ -103,8 +105,8 @@ const EditAdmin = () => {
     } catch (err: any) {
       showNotification(
         "error",
-        "خطأ!",
-        err?.data?.message || "حدث خطأ أثناء تحديث بيانات المسؤول"
+        t("admins.error"),
+        err?.data?.message || t("admins.updateError")
       );
     }
   };
@@ -129,10 +131,10 @@ const EditAdmin = () => {
               </button>
             </Link>
             <h1 className="text-3xl font-bold text-dark dark:text-white">
-              تعديل بيانات المسؤول
+              {t("admins.editAdmin")}
             </h1>
           </div>
-          <p className="text-sm text-ld mr-12">قم بتحديث بيانات المسؤول وتغيير دوره</p>
+          <p className="text-sm text-ld mr-12">{t("admins.editDescription")}</p>
         </div>
       </div>
 
@@ -141,12 +143,12 @@ const EditAdmin = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name" className="mb-2 block">
-                الاسم <span className="text-error">*</span>
+                {t("admins.name")} <span className="text-error">*</span>
               </Label>
               <TextInput
                 id="name"
                 name="name"
-                placeholder="أدخل اسم المسؤول"
+                placeholder={t("admins.enterName")}
                 value={formData.name}
                 onChange={handleInputChange}
                 required
@@ -156,7 +158,7 @@ const EditAdmin = () => {
 
             <div>
               <Label htmlFor="email" className="mb-2 block">
-                البريد الإلكتروني <span className="text-error">*</span>
+                {t("admins.email")} <span className="text-error">*</span>
               </Label>
               <TextInput
                 id="email"
@@ -171,7 +173,7 @@ const EditAdmin = () => {
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف</Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("admins.phone")}</Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
@@ -184,19 +186,19 @@ const EditAdmin = () => {
               {fieldErrors.phone ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.phone}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل رقم الهاتف الكامل</p>
+                <p className="mt-1 text-xs text-gray-500">{t("admins.enterPhoneFull")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="password" className="mb-2 block">
-                كلمة المرور الجديدة
+                {t("admins.newPassword")}
               </Label>
               <TextInput
                 id="password"
                 name="password"
                 type="password"
-                placeholder="اتركها فارغة إذا كنت لا تريد تغيير كلمة المرور"
+                placeholder={t("admins.passwordLeaveEmpty")}
                 value={formData.password}
                 onChange={handleInputChange}
                 icon={() => <Icon icon="solar:lock-password-bold" height={18} />}
@@ -205,7 +207,7 @@ const EditAdmin = () => {
 
             <div className="md:col-span-2">
               <Label htmlFor="role_id" className="mb-2 block">
-                الدور <span className="text-error">*</span>
+                {t("admins.role")} <span className="text-error">*</span>
               </Label>
               <Select
                 id="role_id"
@@ -215,7 +217,7 @@ const EditAdmin = () => {
                 required
                 className="select-md"
               >
-                <option value="">اختر الدور</option>
+                <option value="">{t("admins.chooseRole")}</option>
                 {rolesData?.data?.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.name}
@@ -234,7 +236,7 @@ const EditAdmin = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("admins.cancel")}
               </button>
             </Link>
             <button
@@ -245,12 +247,12 @@ const EditAdmin = () => {
               {updatingAdmin ? (
                 <>
                   <Spinner size="sm" />
-                  جاري الحفظ...
+                  {t("admins.saving")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:diskette-bold" height={20} />
-                  حفظ التغييرات
+                  {t("admins.saveChanges")}
                 </>
               )}
             </button>

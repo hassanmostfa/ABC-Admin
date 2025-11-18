@@ -6,7 +6,7 @@ const config = {
   isLayout: "boxed", // This can be full or boxed
   isSidebarHover: false,
   isCollapse:"full-sidebar", // Keep full sidebar visible, only hide the mini icon sidebar
-  isLanguage: "en",
+  isLanguage: "ar",
   isCardShadow: true,
   isMobileSidebar: false,
   isHorizontal: false,

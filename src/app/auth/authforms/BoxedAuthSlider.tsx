@@ -13,6 +13,8 @@ export default function BoxedAuthSlider() {
         <Image
           src={'/images/backgrounds/login-side.png'}
           alt="auth"
+          width={300}
+          height={300}
           className={`${
             pathname == "/auth/auth2/forgot-password" ||
             pathname == "/auth/auth2/two-steps"

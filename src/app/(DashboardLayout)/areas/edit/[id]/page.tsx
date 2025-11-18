@@ -8,8 +8,10 @@ import { useRouter, useParams } from "next/navigation";
 import { useGetAreaByIdQuery, useUpdateAreaMutation } from "@/store/api/areasApi";
 import { useGetAllGovernoratesQuery } from "@/store/api/areasApi";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const EditAreaPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const { showNotification } = useNotification();
@@ -44,18 +46,18 @@ const EditAreaPage = () => {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المنطقة بالعربية";
+      return t("areas.enterNameAr");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المنطقة يجب أن يكون على الأقل حرفين";
+      return t("areas.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المنطقة يجب أن لا يتجاوز 50 حرف";
+      return t("areas.nameMaxLength");
     }
     
     return "";
@@ -63,18 +65,18 @@ const EditAreaPage = () => {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم المنطقة بالإنجليزية";
+      return t("areas.enterNameEn");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "اسم المنطقة يجب أن يكون على الأقل حرفين";
+      return t("areas.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "اسم المنطقة يجب أن لا يتجاوز 50 حرف";
+      return t("areas.nameMaxLength");
     }
     
     return "";
@@ -82,7 +84,7 @@ const EditAreaPage = () => {
 
   const validateGovernorate = (governorateId: number): string => {
     if (!governorateId || governorateId === 0) {
-      return "يرجى اختيار المحافظة";
+      return t("areas.selectGovernorate");
     }
     return "";
   };
@@ -111,7 +113,7 @@ const EditAreaPage = () => {
       const firstField = Object.keys(apiErrors)[0];
       return apiErrors[firstField][0];
     }
-    return err?.data?.message || "حدث خطأ غير متوقع";
+    return err?.data?.message || t("areas.unexpectedError");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,7 +131,7 @@ const EditAreaPage = () => {
         ...(nameEnError && { name_en: nameEnError }),
         ...(governorateError && { governorate_id: governorateError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("areas.error"), t("areas.correctErrors"));
       return;
     }
 
@@ -145,14 +147,14 @@ const EditAreaPage = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم تحديث المنطقة بنجاح");
+        showNotification("success", t("areas.success"), t("areas.updateSuccess"));
         setTimeout(() => {
           router.push("/areas");
         }, 1500);
       }
     } catch (err: any) {
       const errorMessage = extractErrorMessage(err);
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("areas.error"), errorMessage);
     }
   };
 
@@ -161,7 +163,7 @@ const EditAreaPage = () => {
       <div className="p-6">
         <div className="flex items-center justify-center py-12">
           <Icon icon="solar:loading-bold" className="w-8 h-8 text-primary animate-spin ml-2" />
-          <span className="text-gray-500 dark:text-gray-400">جاري تحميل بيانات المنطقة...</span>
+          <span className="text-gray-500 dark:text-gray-400">{t("areas.loadingArea")}</span>
         </div>
       </div>
     );
@@ -172,10 +174,10 @@ const EditAreaPage = () => {
       <div className="p-6">
         <div className="text-center py-12">
           <Icon icon="solar:danger-circle-bold" className="w-16 h-16 text-error mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">خطأ في تحميل البيانات</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">حدث خطأ أثناء تحميل بيانات المنطقة</p>
+          <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">{t("areas.loadError")}</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">{t("areas.loadAreaError")}</p>
           <Link href="/areas">
-            <Button color="gray">العودة للقائمة</Button>
+            <Button color="gray">{t("areas.backToList")}</Button>
           </Link>
         </div>
       </div>
@@ -187,10 +189,10 @@ const EditAreaPage = () => {
       <div className="p-6">
         <div className="text-center py-12">
           <Icon icon="solar:file-search-bold" className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">المنطقة غير موجودة</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">المنطقة المطلوبة غير موجودة في النظام</p>
+          <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">{t("areas.areaNotFound")}</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">{t("areas.areaNotFoundDescription")}</p>
           <Link href="/areas">
-            <Button color="gray">العودة للقائمة</Button>
+            <Button color="gray">{t("areas.backToList")}</Button>
           </Link>
         </div>
       </div>
@@ -203,16 +205,16 @@ const EditAreaPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-dark dark:text-white">
-            تعديل المنطقة
+            {t("areas.editArea")}
           </h1>
           <p className="text-sm text-ld mt-2">
-            تعديل بيانات المنطقة: {areaData.data.name_ar}
+            {t("areas.editDescription", { name: areaData.data.name_ar })}
           </p>
         </div>
         <Link href="/areas">
           <button className="px-4 py-2 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors flex items-center gap-2">
             <Icon icon="solar:arrow-right-bold" height={20} />
-            العودة للقائمة
+            {t("areas.backToList")}
           </button>
         </Link>
       </div>
@@ -222,12 +224,12 @@ const EditAreaPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name_ar" className="mb-2 block">
-                اسم المنطقة (عربي) <span className="text-error">*</span>
+                {t("areas.nameAr")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم المنطقة بالعربية" 
+                placeholder={t("areas.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -236,13 +238,13 @@ const EditAreaPage = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المنطقة بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="name_en" className="mb-2 block">
-                اسم المنطقة (إنجليزي) <span className="text-error">*</span>
+                {t("areas.nameEn")} <span className="text-error">*</span>
               </Label>
               <TextInput 
                 id="name_en" 
@@ -256,13 +258,13 @@ const EditAreaPage = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم المنطقة بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.enterNameEnHelper")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="governorate_id" className="mb-2 block">
-                المحافظة <span className="text-error">*</span>
+                {t("areas.governorate")} <span className="text-error">*</span>
               </Label>
               <Select
                 id="governorate_id"
@@ -273,7 +275,7 @@ const EditAreaPage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:buildings-bold" height={18} />}
               >
-                <option value={0}>اختر المحافظة</option>
+                <option value={0}>{t("areas.chooseGovernorate")}</option>
                 {governoratesData?.data?.map((governorate: any) => (
                   <option key={governorate.id} value={governorate.id}>
                     {governorate.name_ar} - {governorate.country?.name_ar}
@@ -283,7 +285,7 @@ const EditAreaPage = () => {
               {fieldErrors.governorate_id ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.governorate_id}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المحافظة التابعة لها المنطقة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("areas.selectGovernorateHelper")}</p>
               )}
             </div>
 
@@ -296,10 +298,10 @@ const EditAreaPage = () => {
                   onChange={handleInputChange}
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium text-dark dark:text-white">
-                  المنطقة نشطة
+                  {t("areas.areaActive")}
                 </Label>
               </div>
-              <p className="mt-1 text-xs text-gray-500">حدد ما إذا كانت المنطقة نشطة أم لا</p>
+              <p className="mt-1 text-xs text-gray-500">{t("areas.areaActiveHelper")}</p>
             </div>
           </div>
         </Card>
@@ -312,7 +314,7 @@ const EditAreaPage = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("areas.cancel")}
               </button>
             </Link>
             <button
@@ -323,12 +325,12 @@ const EditAreaPage = () => {
               {updating ? (
                 <>
                   <Icon icon="solar:loading-bold" className="w-4 h-4 animate-spin" />
-                  جاري التحديث...
+                  {t("areas.updating")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:diskette-bold" height={20} />
-                  تحديث المنطقة
+                  {t("areas.updateArea")}
                 </>
               )}
             </button>

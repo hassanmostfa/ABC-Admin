@@ -7,8 +7,10 @@ import { useGetAllRolesQuery } from "@/store/api/rolesApi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddAdmin = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const { data: rolesData, isLoading: loadingRoles } = useGetAllRolesQuery();
@@ -37,22 +39,22 @@ const AddAdmin = () => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال اسم المسؤول");
+      showNotification("error", t("admins.error"), t("admins.enterName"));
       return;
     }
 
     if (!formData.email.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال البريد الإلكتروني");
+      showNotification("error", t("admins.error"), t("admins.enterEmail"));
       return;
     }
 
     if (!formData.password.trim() || formData.password.length < 8) {
-      showNotification("error", "خطأ!", "كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+      showNotification("error", t("admins.error"), t("admins.passwordMinLength"));
       return;
     }
 
     if (!formData.role_id) {
-      showNotification("error", "خطأ!", "يرجى اختيار دور المسؤول");
+      showNotification("error", t("admins.error"), t("admins.selectRole"));
       return;
     }
 
@@ -67,7 +69,7 @@ const AddAdmin = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة المسؤول بنجاح");
+        showNotification("success", t("admins.success"), t("admins.addSuccess"));
         setTimeout(() => {
           router.push("/admins");
         }, 1500);
@@ -75,8 +77,8 @@ const AddAdmin = () => {
     } catch (err: any) {
       showNotification(
         "error",
-        "خطأ!",
-        err?.data?.message || "حدث خطأ أثناء إضافة المسؤول"
+        t("admins.error"),
+        err?.data?.message || t("admins.addError")
       );
     }
   };
@@ -101,11 +103,11 @@ const AddAdmin = () => {
               </button>
             </Link>
             <h1 className="text-3xl font-bold text-dark dark:text-white">
-              إضافة مسؤول جديد
+              {t("admins.addNew")}
             </h1>
           </div>
           <p className="text-sm text-ld mr-12">
-            قم بإنشاء حساب مسؤول جديد وتحديد صلاحياته
+            {t("admins.addDescription")}
           </p>
         </div>
       </div>
@@ -115,12 +117,12 @@ const AddAdmin = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name" className="mb-2 block">
-                الاسم <span className="text-error">*</span>
+                {t("admins.name")} <span className="text-error">*</span>
               </Label>
               <TextInput
                 id="name"
                 name="name"
-                placeholder="أدخل اسم المسؤول"
+                placeholder={t("admins.enterName")}
                 value={formData.name}
                 onChange={handleInputChange}
                 required
@@ -130,7 +132,7 @@ const AddAdmin = () => {
 
             <div>
               <Label htmlFor="email" className="mb-2 block">
-                البريد الإلكتروني <span className="text-error">*</span>
+                {t("admins.email")} <span className="text-error">*</span>
               </Label>
               <TextInput
                 id="email"
@@ -145,7 +147,7 @@ const AddAdmin = () => {
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف</Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("admins.phone")}</Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
@@ -158,19 +160,19 @@ const AddAdmin = () => {
               {fieldErrors.phone ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.phone}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل رقم الهاتف الكامل</p>
+                <p className="mt-1 text-xs text-gray-500">{t("admins.enterPhoneFull")}</p>
               )}
             </div>
 
             <div>
               <Label htmlFor="password" className="mb-2 block">
-                كلمة المرور <span className="text-error">*</span>
+                {t("admins.password")} <span className="text-error">*</span>
               </Label>
               <TextInput
                 id="password"
                 name="password"
                 type="password"
-                placeholder="أدخل كلمة المرور (8 أحرف على الأقل)"
+                placeholder={t("admins.passwordPlaceholder")}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
@@ -180,7 +182,7 @@ const AddAdmin = () => {
 
             <div className="md:col-span-2">
               <Label htmlFor="role_id" className="mb-2 block">
-                الدور <span className="text-error">*</span>
+                {t("admins.role")} <span className="text-error">*</span>
               </Label>
               <Select
                 id="role_id"
@@ -191,7 +193,7 @@ const AddAdmin = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:shield-user-bold" height={18} />}
               >
-                <option value="">اختر الدور</option>
+                <option value="">{t("admins.chooseRole")}</option>
                 {rolesData?.data?.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.name}
@@ -210,7 +212,7 @@ const AddAdmin = () => {
                 type="button"
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
               >
-                إلغاء
+                {t("admins.cancel")}
               </button>
             </Link>
             <button
@@ -221,12 +223,12 @@ const AddAdmin = () => {
               {creatingAdmin ? (
                 <>
                   <Spinner size="sm" />
-                  جاري الحفظ...
+                  {t("admins.saving")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:add-circle-bold" height={20} />
-                  حفظ المسؤول
+                  {t("admins.saveAdmin")}
                 </>
               )}
             </button>

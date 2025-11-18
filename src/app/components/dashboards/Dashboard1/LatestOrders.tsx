@@ -2,15 +2,18 @@
 import React from "react";
 import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 const LatestOrders = () => {
+  const { t } = useTranslation();
+  
   const ordersData = [
     {
       id: "#12345",
       customer: "أحمد محمد",
       product: "منتج رقم 1",
-      amount: "150 دينار",
-      status: "قيد المعالجة",
+      amount: `150 ${t("dashboard.currency")}`,
+      status: t("dashboard.orders.status.processing"),
       statusColor: "bg-lightprimary text-primary",
       date: "2024-01-15"
     },
@@ -18,8 +21,8 @@ const LatestOrders = () => {
       id: "#12346",
       customer: "فاطمة أحمد",
       product: "منتج رقم 2",
-      amount: "200 دينار",
-      status: "تم التسليم",
+      amount: `200 ${t("dashboard.currency")}`,
+      status: t("dashboard.orders.status.delivered"),
       statusColor: "bg-lightsecondary text-secondary",
       date: "2024-01-14"
     },
@@ -27,8 +30,8 @@ const LatestOrders = () => {
       id: "#12347",
       customer: "محمد علي",
       product: "منتج رقم 3",
-      amount: "300 دينار",
-      status: "معلق",
+      amount: `300 ${t("dashboard.currency")}`,
+      status: t("dashboard.orders.status.onHold"),
       statusColor: "bg-lighterror text-error",
       date: "2024-01-13"
     },
@@ -36,8 +39,8 @@ const LatestOrders = () => {
       id: "#12348",
       customer: "سارة خالد",
       product: "منتج رقم 4",
-      amount: "180 دينار",
-      status: "مكتمل",
+      amount: `180 ${t("dashboard.currency")}`,
+      status: t("dashboard.orders.status.completed"),
       statusColor: "bg-lightwarning text-warning",
       date: "2024-01-12"
     },
@@ -45,8 +48,8 @@ const LatestOrders = () => {
       id: "#12349",
       customer: "عبدالله سالم",
       product: "منتج رقم 5",
-      amount: "250 دينار",
-      status: "قيد المعالجة",
+      amount: `250 ${t("dashboard.currency")}`,
+      status: t("dashboard.orders.status.processing"),
       statusColor: "bg-lightprimary text-primary",
       date: "2024-01-11"
     }
@@ -55,9 +58,9 @@ const LatestOrders = () => {
   return (
     <CardBox>
       <div className="flex justify-between items-center mb-6">
-        <h5 className="card-title">أحدث الطلبات</h5>
+        <h5 className="card-title">{t("dashboard.orders.latestOrders")}</h5>
         <button className="text-primary hover:text-primary-dark text-sm font-medium">
-          عرض الكل
+          {t("dashboard.orders.viewAll")}
         </button>
       </div>
       
@@ -65,12 +68,12 @@ const LatestOrders = () => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">رقم الطلب</th>
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">العميل</th>
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">المنتج</th>
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">المبلغ</th>
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">الحالة</th>
-              <th className="text-right py-3 px-4 font-semibold text-gray-700">التاريخ</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.orderNumber")}</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.customer")}</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.product")}</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.amount")}</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.status")}</th>
+              <th className="text-right py-3 px-4 font-semibold text-gray-700">{t("dashboard.orders.date")}</th>
             </tr>
           </thead>
           <tbody>
