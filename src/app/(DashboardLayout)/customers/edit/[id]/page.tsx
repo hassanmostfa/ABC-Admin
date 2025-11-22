@@ -6,8 +6,10 @@ import { useGetCustomerByIdQuery, useUpdateCustomerMutation } from "@/store/api/
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const EditCustomer = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const customerId = Number(params.id);
@@ -49,7 +51,7 @@ const EditCustomer = () => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      showNotification("error", "خطأ!", "يرجى إدخال اسم العميل");
+      showNotification("error", t("customers.error"), t("customers.enterName"));
       return;
     }
 
@@ -65,13 +67,13 @@ const EditCustomer = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم تحديث بيانات العميل بنجاح");
+        showNotification("success", t("customers.success"), t("customers.updateSuccess"));
         setTimeout(() => {
           router.push("/customers");
         }, 1200);
       }
     } catch (err: any) {
-      showNotification("error", "خطأ!", err?.data?.message || "حدث خطأ أثناء تحديث بيانات العميل");
+      showNotification("error", t("customers.error"), err?.data?.message || t("customers.updateError"));
     }
   };
 
@@ -94,9 +96,9 @@ const EditCustomer = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">تعديل بيانات العميل</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("customers.editCustomer")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">تحديث معلومات العميل</p>
+          <p className="text-sm text-ld mr-12">{t("customers.editDescription")}</p>
         </div>
         <div className="flex items-center gap-4">
           {/* Removed theme toggle */}
@@ -107,21 +109,21 @@ const EditCustomer = () => {
         <Card>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name" className="mb-2 block">الاسم <span className="text-error">*</span></Label>
-              <TextInput id="name" name="name" placeholder="اسم العميل" value={formData.name} onChange={handleInputChange} required icon={() => <Icon icon="solar:user-bold" height={18} />} />
+              <Label htmlFor="name" className="mb-2 block">{t("customers.name")} <span className="text-error">*</span></Label>
+              <TextInput id="name" name="name" placeholder={t("customers.namePlaceholder")} value={formData.name} onChange={handleInputChange} required icon={() => <Icon icon="solar:user-bold" height={18} />} />
             </div>
 
             <div>
-              <Label htmlFor="email" className="mb-2 block">البريد الإلكتروني</Label>
-              <TextInput id="email" name="email" type="email" placeholder="example@abc.com" value={formData.email} onChange={handleInputChange} icon={() => <Icon icon="solar:letter-bold" height={18} />} />
+              <Label htmlFor="email" className="mb-2 block">{t("customers.email")}</Label>
+              <TextInput id="email" name="email" type="email" placeholder={t("customers.emailPlaceholder")} value={formData.email} onChange={handleInputChange} icon={() => <Icon icon="solar:letter-bold" height={18} />} />
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف</Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("customers.phone")}</Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
-                placeholder="+965 xxxx xxxx" 
+                placeholder={t("customers.phonePlaceholder")} 
                 value={formData.phone} 
                 onChange={handleInputChange} 
                 style={{direction: "ltr"}}
@@ -133,13 +135,13 @@ const EditCustomer = () => {
             <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
               <div>
                 <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                  حالة العميل
+                  {t("customers.customerStatus")}
                 </Label>
                 <p className={`text-sm ${formData.is_active ? 'text-green-600' : 'text-red-600'} mt-1`}>
-                  {formData.is_active ? "🟢 العميل نشط" : "🔴 العميل غير نشط"}
+                  {formData.is_active ? t("customers.customerActive") : t("customers.customerInactive")}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {formData.is_active ? "يمكن للعميل استخدام النظام" : "العميل غير قادر على استخدام النظام"}
+                  {formData.is_active ? t("customers.statusActiveHelper") : t("customers.statusInactiveHelper")}
                 </p>
               </div>
               <button
@@ -162,10 +164,10 @@ const EditCustomer = () => {
         <Card className="mt-6">
           <div className="flex items-center justify-end gap-3">
             <Link href="/customers">
-              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">إلغاء</button>
+              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">{t("customers.cancel")}</button>
             </Link>
             <button type="submit" disabled={updating} className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50">
-              {updating ? (<><Spinner size="sm" /> جاري الحفظ...</>) : (<><Icon icon="solar:diskette-bold" height={20} /> حفظ التغييرات</>)}
+              {updating ? (<><Spinner size="sm" /> {t("customers.updating")}</>) : (<><Icon icon="solar:diskette-bold" height={20} /> {t("customers.saveChanges")}</>)}
             </button>
           </div>
         </Card>

@@ -114,19 +114,19 @@ const EditProduct = ({ params }: EditProductProps) => {
     const errors: Record<string, string> = {};
     
     if (!formData.name_en.trim()) {
-      errors.name_en = "يرجى إدخال اسم المنتج بالإنجليزية";
+      errors.name_en = t("products.enterNameEn");
     }
     if (!formData.name_ar.trim()) {
-      errors.name_ar = "يرجى إدخال اسم المنتج بالعربية";
+      errors.name_ar = t("products.enterNameAr");
     }
     if (!formData.category_id || formData.category_id === 0) {
-      errors.category_id = "يرجى اختيار التصنيف الرئيسي";
+      errors.category_id = t("products.selectMainCategory");
     }
     if (!formData.subcategory_id || formData.subcategory_id === 0) {
-      errors.subcategory_id = "يرجى اختيار التصنيف الفرعي";
+      errors.subcategory_id = t("products.selectSubCategory");
     }
     if (!formData.sku.trim()) {
-      errors.sku = "يرجى إدخال رمز المنتج";
+      errors.sku = t("products.enterSku");
     }
     
     setFieldErrors(errors);
@@ -143,23 +143,23 @@ const EditProduct = ({ params }: EditProductProps) => {
       const variantErrors: Record<string, string> = {};
       
       if (!variant.size.trim()) {
-        variantErrors.size = "يرجى إدخال الحجم";
+        variantErrors.size = t("products.enterSize");
         hasVariantErrors = true;
       }
       if (!variant.sku.trim()) {
-        variantErrors.sku = "يرجى إدخال رمز المتغير";
+        variantErrors.sku = t("products.enterVariantSku");
         hasVariantErrors = true;
       }
       if (!variant.short_item.trim()) {
-        variantErrors.short_item = "يرجى إدخال اسم المتغير";
+        variantErrors.short_item = t("products.enterShortItem");
         hasVariantErrors = true;
       }
       if (variant.quantity <= 0) {
-        variantErrors.quantity = "يرجى إدخال كمية صحيحة";
+        variantErrors.quantity = t("products.enterValidQuantity");
         hasVariantErrors = true;
       }
       if (variant.price <= 0) {
-        variantErrors.price = "يرجى إدخال سعر صحيح";
+        variantErrors.price = t("products.enterValidPrice");
         hasVariantErrors = true;
       }
       
@@ -177,7 +177,7 @@ const EditProduct = ({ params }: EditProductProps) => {
     if (currentStep === 1) {
       const isValid = validateStep1();
       if (!isValid) {
-        showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء قبل المتابعة");
+        showNotification("error", t("products.error"), t("products.correctErrors"));
         return; // Don't proceed to next step
       }
       setCurrentStep(2);
@@ -244,13 +244,13 @@ const EditProduct = ({ params }: EditProductProps) => {
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      showNotification("error", "خطأ!", "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF");
+      showNotification("error", t("products.error"), t("products.invalidImageFormat"));
       return;
     }
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      showNotification("error", "خطأ!", "حجم الصورة يجب أن لا يتجاوز 5MB");
+      showNotification("error", t("products.error"), t("products.imageSizeExceeded"));
       return;
     }
 
@@ -294,7 +294,7 @@ const EditProduct = ({ params }: EditProductProps) => {
         return newErrors;
       });
     } else {
-      showNotification("error", "خطأ!", "يجب أن يكون هناك على الأقل متغير واحد");
+      showNotification("error", t("products.error"), t("products.atLeastOneVariant"));
     }
   };
 
@@ -338,7 +338,7 @@ const EditProduct = ({ params }: EditProductProps) => {
     
     // Validate step 2 (variants)
     if (!validateStep2()) {
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في المتغيرات");
+      showNotification("error", t("products.error"), t("products.correctVariantErrors"));
       isSubmittingRef.current = false;
       return;
     }
@@ -396,11 +396,11 @@ const EditProduct = ({ params }: EditProductProps) => {
 
     try {
       const result = await updateProduct({ id: parseInt(id), formData: formDataToSend }).unwrap();
-      showNotification("success", "تم!", "تم تحديث المنتج بنجاح");
+      showNotification("success", t("products.success"), t("products.updateSuccess"));
       router.push('/products');
     } catch (err: any) {
       console.error("Update product error:", err);
-      let errorMessage = "حدث خطأ أثناء تحديث المنتج";
+      let errorMessage = t("products.updateError");
       if (err.status === 422 && err.data?.errors) {
         const errors = err.data.errors;
         const fieldErrors: Record<string, string> = {};
@@ -437,10 +437,10 @@ const EditProduct = ({ params }: EditProductProps) => {
   if (!productData?.data) {
     return (
       <div className="text-center py-8">
-        <p className="text-error">لم يتم العثور على المنتج</p>
+        <p className="text-error">{t("products.productNotFound")}</p>
         <Link href="/products">
           <button className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
-            العودة إلى المنتجات
+            {t("products.backToProducts")}
           </button>
         </Link>
       </div>
@@ -463,7 +463,7 @@ const EditProduct = ({ params }: EditProductProps) => {
             </div>
             <div className="mr-3 rtl:mr-0 rtl:ml-3">
               <p className={`text-sm font-medium ${currentStep >= 1 ? 'text-primary' : 'text-gray-500'}`}>
-                المعلومات الأساسية
+                {t("products.basicInfo")}
               </p>
             </div>
           </div>
@@ -482,7 +482,7 @@ const EditProduct = ({ params }: EditProductProps) => {
             </div>
             <div className="mr-3 rtl:mr-0 rtl:ml-3">
               <p className={`text-sm font-medium ${currentStep >= 2 ? 'text-primary' : 'text-gray-500'}`}>
-                المتغيرات
+                {t("products.variants")}
               </p>
             </div>
           </div>
@@ -502,9 +502,9 @@ const EditProduct = ({ params }: EditProductProps) => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">تعديل المنتج</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("products.editProduct")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">قم بتعديل معلومات المنتج ومتغيراته</p>
+          <p className="text-sm text-ld mr-12">{t("products.editDescription")}</p>
         </div>
       </div>
 
@@ -515,7 +515,7 @@ const EditProduct = ({ params }: EditProductProps) => {
       {currentStep === 1 && (
         <div>
           <Card>
-            <h3 className="text-xl font-semibold text-dark dark:text-white mb-6">معلومات المنتج الأساسية</h3>
+            <h3 className="text-xl font-semibold text-dark dark:text-white mb-6">{t("products.step1Title")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* English Name */}
               <div>
@@ -875,21 +875,21 @@ const EditProduct = ({ params }: EditProductProps) => {
                   <button 
                     type="button" 
                     disabled={isSubmitting}
-                    className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
-                  >
-                    إلغاء
-                  </button>
-                </Link>
-                
-                <button 
-                  type="button" 
-                  onClick={prevStep}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
                 >
-                  <Icon icon="solar:arrow-right-bold" height={20} />
-                  السابق
+                  {t("products.cancel")}
                 </button>
+              </Link>
+              
+              <button 
+                type="button" 
+                onClick={prevStep}
+                disabled={isSubmitting}
+                className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <Icon icon="solar:arrow-right-bold" height={20} />
+                {t("products.previous")}
+              </button>
               </div>
               
               <div className="flex items-center gap-3">
@@ -901,12 +901,12 @@ const EditProduct = ({ params }: EditProductProps) => {
                   {isSubmitting ? (
                     <>
                       <Spinner size="sm" /> 
-                      جاري تحديث المنتج...
+                      {t("products.updating")}
                     </>
                   ) : (
                     <>
                       <Icon icon="solar:check-circle-bold" height={20} /> 
-                      تحديث المنتج
+                      {t("products.updateProduct")}
                     </>
                   )}
                 </button>
@@ -927,7 +927,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                   disabled={isSubmitting}
                   className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
                 >
-                  إلغاء
+                  {t("products.cancel")}
                 </button>
               </Link>
             </div>
@@ -939,7 +939,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                التالي
+                {t("products.next")}
                 <Icon icon="solar:arrow-left-bold" height={20} />
               </button>
             </div>

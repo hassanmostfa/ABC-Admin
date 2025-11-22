@@ -7,8 +7,10 @@ import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
 import Image from "next/image";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import { useTranslation } from "react-i18next";
 
 const OffersPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -32,12 +34,12 @@ const OffersPage = () => {
     try {
       const result = await deleteOffer(offerToDelete).unwrap();
       if (result.success) {
-        showNotification("success", "نجح!", "تم حذف العرض بنجاح");
+        showNotification("success", t("offers.success"), t("offers.deleteSuccess"));
         setShowDeleteModal(false);
         setOfferToDelete(null);
       }
     } catch (err: any) {
-      showNotification("error", "خطأ!", err?.data?.message || "فشل في حذف العرض");
+      showNotification("error", t("offers.error"), err?.data?.message || t("offers.deleteError"));
     }
   };
 
@@ -60,33 +62,33 @@ const OffersPage = () => {
     const end = new Date(endDate);
 
     if (!isActive) {
-      return <Badge color="red">غير نشط</Badge>;
+      return <Badge color="red">{t("offers.statusInactive")}</Badge>;
     }
 
     if (now < start) {
-      return <Badge color="yellow">قريباً</Badge>;
+      return <Badge color="yellow">{t("offers.statusComingSoon")}</Badge>;
     }
 
     if (now > end) {
-      return <Badge color="red">منتهي</Badge>;
+      return <Badge color="red">{t("offers.statusExpired")}</Badge>;
     }
 
-    return <Badge color="green">نشط</Badge>;
+    return <Badge color="green">{t("offers.statusActive")}</Badge>;
   };
 
   const getTypeBadge = (type: string) => {
     return type === "charity" ? (
-      <Badge color="purple">خيري</Badge>
+      <Badge color="purple">{t("offers.typeCharity")}</Badge>
     ) : (
-      <Badge color="blue">عادي</Badge>
+      <Badge color="blue">{t("offers.typeNormal")}</Badge>
     );
   };
 
   const getRewardTypeBadge = (rewardType: string) => {
     return rewardType === "products" ? (
-      <Badge color="green">منتجات</Badge>
+      <Badge color="green">{t("offers.rewardTypeProducts")}</Badge>
     ) : (
-      <Badge color="primary">خصم</Badge>
+      <Badge color="primary">{t("offers.rewardTypeDiscount")}</Badge>
     );
   };
 
@@ -108,8 +110,8 @@ const OffersPage = () => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل العروض</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("offers.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("offers.loadError")}</p>
           </div>
         </div>
       </div>
@@ -121,13 +123,13 @@ const OffersPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-dark dark:text-white">إدارة العروض</h1>
-          <p className="text-sm text-ld">عرض وإدارة جميع العروض المتاحة</p>
+          <h1 className="text-3xl font-bold text-dark dark:text-white">{t("offers.title")}</h1>
+          <p className="text-sm text-ld">{t("offers.subtitle")}</p>
         </div>
         <Link href="/offers/add">
           <Button className="bg-primary hover:bg-primary/90">
             <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
-            إضافة عرض جديد
+            {t("offers.addNew")}
           </Button>
         </Link>
       </div>
@@ -140,7 +142,7 @@ const OffersPage = () => {
             <div className="relative">
               <Image
                 src={offer.image}
-                alt={`عرض ${offer.id}`}
+                alt={t("offers.offerNumber", { id: offer.id })}
                 width={400}
                 height={200}
                 className="w-full h-48 object-cover"
@@ -154,7 +156,7 @@ const OffersPage = () => {
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-dark dark:text-white">
-                  عرض #{offer.id}
+                  {t("offers.offerNumber", { id: offer.id })}
                 </h3>
                 {getRewardTypeBadge(offer.reward_type)}
               </div>
@@ -162,15 +164,15 @@ const OffersPage = () => {
               <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
                   <Icon icon="solar:calendar-bold" height={16} />
-                  <span>من: {formatDate(offer.offer_start_date)}</span>
+                  <span>{t("offers.from")}: {formatDate(offer.offer_start_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Icon icon="solar:calendar-bold" height={16} />
-                  <span>إلى: {formatDate(offer.offer_end_date)}</span>
+                  <span>{t("offers.to")}: {formatDate(offer.offer_end_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Icon icon="solar:star-bold" height={16} />
-                  <span>{offer.points} نقطة</span>
+                  <span>{offer.points} {t("offers.points")}</span>
                 </div>
                 {offer.charity && (
                   <div className="flex items-center gap-2">
@@ -211,15 +213,15 @@ const OffersPage = () => {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">
-                لا توجد عروض
+                {t("offers.noOffers")}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                لم يتم العثور على أي عروض مطابقة لمعايير البحث
+                {t("offers.noOffersDescription")}
               </p>
               <Link href="/offers/add">
                 <Button className="bg-primary hover:bg-primary/90">
                   <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
-                  إضافة عرض جديد
+                  {t("offers.addNew")}
                 </Button>
               </Link>
             </div>
@@ -232,7 +234,7 @@ const OffersPage = () => {
         <Card>
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              عرض {offersData.pagination.from} إلى {offersData.pagination.to} من {offersData.pagination.total} عرض
+              {t("offers.showing", { from: offersData.pagination.from, to: offersData.pagination.to, total: offersData.pagination.total })}
             </div>
             <div className="flex gap-2">
               <Button
@@ -244,7 +246,7 @@ const OffersPage = () => {
                 <Icon icon="solar:arrow-left-bold" height={16} />
               </Button>
               <span className="px-3 py-1 text-sm text-dark dark:text-white">
-                {currentPage} من {offersData.pagination.last_page}
+                {currentPage} {t("offers.of")} {offersData.pagination.last_page}
               </span>
               <Button
                 size="sm"
@@ -264,10 +266,10 @@ const OffersPage = () => {
         isOpen={showDeleteModal}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        title="حذف العرض"
-        message="هل أنت متأكد من حذف هذا العرض؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("offers.confirmDelete")}
+        message={t("offers.deleteMessage")}
+        confirmText={t("offers.delete")}
+        cancelText={t("offers.cancel")}
         isLoading={deleting}
         type="danger"
       />

@@ -5,8 +5,10 @@ import { Icon } from "@iconify/react";
 import { useGetCareerApplicationsQuery, useDeleteCareerApplicationMutation } from "@/store/api/careersApi";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import { useTranslation } from "react-i18next";
 
 const CareersPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -45,12 +47,12 @@ const CareersPage = () => {
       if (result.success) {
         setShowConfirmModal(false);
         setApplicationToDelete(null);
-        showNotification("success", "نجاح!", "تم حذف طلب التوظيف بنجاح");
+        showNotification("success", t("careers.success"), t("careers.deleteSuccess"));
       }
     } catch (err: any) {
       setShowConfirmModal(false);
       setApplicationToDelete(null);
-      showNotification("error", "خطأ!", err?.data?.message || "حدث خطأ أثناء حذف طلب التوظيف");
+      showNotification("error", t("careers.error"), err?.data?.message || t("careers.deleteError"));
     }
   };
 
@@ -97,8 +99,8 @@ const CareersPage = () => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل طلبات التوظيف</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("careers.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("careers.loadError")}</p>
           </div>
         </div>
       </div>
@@ -110,74 +112,74 @@ const CareersPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-dark dark:text-white">طلبات التوظيف</h1>
-          <p className="text-sm text-ld">عرض وإدارة جميع طلبات التوظيف</p>
+          <h1 className="text-3xl font-bold text-dark dark:text-white">{t("careers.title")}</h1>
+          <p className="text-sm text-ld">{t("careers.subtitle")}</p>
         </div>
       </div>
 
       {/* Career Applications Table */}
       <Card>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-dark dark:text-white">جميع طلبات التوظيف</h2>
+          <h2 className="text-xl font-semibold text-dark dark:text-white">{t("careers.allApplications")}</h2>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الاسم</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">البريد الإلكتروني</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الهاتف</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">المنصب المطلوب</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الملف المرفق</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">تاريخ التقديم</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الإجراءات</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">#</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.name")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.email")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.phone")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.position")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.attachedFile")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.applicationDate")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("careers.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {careersData?.data?.map((application, index) => (
                 <tr key={application.id} className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors">
-                  <td className="px-6 py-4 font-medium text-dark dark:text-white">
+                  <td className="px-6 py-4 font-medium text-dark dark:text-white text-center">
                     {careersData.pagination ? (careersData.pagination.from + index) : (index + 1)}
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-dark dark:text-white text-center">
                     {application.name}
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-dark dark:text-white text-center">
                     {application.email}
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-dark dark:text-white text-center">
                     {application.phone}
                   </td>
-                  <td className="px-6 py-4">
-                    <Badge color="blue">{application.applying_position}</Badge>
+                  <td className="px-6 py-4 text-center">
+                    <Badge color="blue" className="w-fit mx-auto">{application.applying_position}</Badge>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => downloadFile(application.file_url, application.file_name)}
-                      className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors flex items-center gap-2"
-                      title="تحميل الملف"
+                      className="w-fit mx-auto text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors flex items-center gap-2 justify-center"
+                      title={t("careers.downloadFile")}
                     >
-                      <Icon icon="solar:download-minimalistic-bold" height={18} />
-                      <span className="text-sm">{application.file_name}</span>
+                      <Icon icon="solar:download-minimalistic-bold" height={18} className="w-fit mx-auto" />
+                      <span className="text-sm w-fit mx-auto truncate max-w-[150px]">{application.file_name}</span>
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-dark dark:text-white text-center">
                     {formatDate(application.created_at)}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center gap-4 justify-center">
                       <button 
                         className="text-primary hover:text-primary/80 transition-colors" 
-                        title="عرض الرسالة"
+                        title={t("careers.viewMessage")}
                         onClick={() => handleShowMessage(application.name, application.message)}
                       >
                         <Icon icon="solar:eye-bold" height={18} />
                       </button>
                       <button 
                         className="text-error hover:text-error/80 transition-colors" 
-                        title="حذف"
+                        title={t("careers.delete")}
                         onClick={() => handleDeleteClick(application.id, application.name)}
                       >
                         <Icon icon="solar:trash-bin-trash-bold" height={18} />
@@ -188,13 +190,20 @@ const CareersPage = () => {
               ))}
             </tbody>
           </table>
+
+          {(!careersData?.data || careersData.data.length === 0) && (
+            <div className="text-center py-12">
+              <Icon icon="solar:case-bold" height={64} className="text-ld mx-auto mb-4" />
+              <p className="text-ld dark:text-white/70">{t("careers.noApplications")}</p>
+            </div>
+          )}
         </div>
 
         {/* Pagination */}
         {careersData?.pagination && careersData.pagination.last_page > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              عرض {careersData.pagination.from} إلى {careersData.pagination.to} من {careersData.pagination.total} طلب
+              {t("careers.showing", { from: careersData.pagination.from, to: careersData.pagination.to, total: careersData.pagination.total })}
             </div>
             
             <div className="flex gap-2">
@@ -205,11 +214,11 @@ const CareersPage = () => {
                 disabled={currentPage === 1}
               >
                 <Icon icon="solar:alt-arrow-right-bold" height={16} />
-                السابق
+                {t("careers.previous")}
               </Button>
               
               <span className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
-                صفحة {currentPage} من {careersData.pagination.last_page}
+                {t("careers.page")} {currentPage} {t("careers.of")} {careersData.pagination.last_page}
               </span>
               
               <Button
@@ -218,7 +227,7 @@ const CareersPage = () => {
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === careersData.pagination.last_page}
               >
-                التالي
+                {t("careers.next")}
                 <Icon icon="solar:alt-arrow-left-bold" height={16} />
               </Button>
             </div>
@@ -232,7 +241,7 @@ const CareersPage = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-dark dark:text-white">
-                رسالة من: {selectedMessage.name}
+                {t("careers.messageFrom", { name: selectedMessage.name })}
               </h3>
               <button
                 onClick={handleCloseMessage}
@@ -251,7 +260,7 @@ const CareersPage = () => {
                 onClick={handleCloseMessage}
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
               >
-                إغلاق
+                {t("careers.close")}
               </button>
             </div>
           </div>
@@ -263,10 +272,10 @@ const CareersPage = () => {
         isOpen={showConfirmModal}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="حذف طلب التوظيف"
-        message={`هل أنت متأكد من حذف طلب التوظيف "${applicationToDelete?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("careers.confirmDelete")}
+        message={t("careers.deleteMessage", { name: applicationToDelete?.name || "" })}
+        confirmText={t("careers.delete")}
+        cancelText={t("careers.cancel")}
         isLoading={deleting}
         type="danger"
       />

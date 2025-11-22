@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import { use } from "react";
+import { useTranslation } from "react-i18next";
 
 // Update the interface to match Next.js 15 requirements
 interface PageProps {
@@ -15,6 +16,7 @@ interface PageProps {
 
 export default function EditCharityPage({ params }: PageProps) {
   // Unwrap the params Promise using React.use()
+  const { t } = useTranslation();
   const resolvedParams = use(params);
   const charityId = parseInt(resolvedParams.id);
 
@@ -57,17 +59,17 @@ export default function EditCharityPage({ params }: PageProps) {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الجمعية بالعربية";
+      return t("charities.enterNameAr");
     }
     
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "الاسم يجب أن يكون على الأقل حرفين";
+      return t("charities.nameMinLength");
     }
     
     if (cleanName.length > 100) {
-      return "الاسم يجب أن لا يتجاوز 100 حرف";
+      return t("charities.nameMaxLength");
     }
     
     return "";
@@ -75,17 +77,17 @@ export default function EditCharityPage({ params }: PageProps) {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الجمعية بالإنجليزية";
+      return t("charities.enterNameEn");
     }
     
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "الاسم يجب أن يكون على الأقل حرفين";
+      return t("charities.nameMinLength");
     }
     
     if (cleanName.length > 100) {
-      return "الاسم يجب أن لا يتجاوز 100 حرف";
+      return t("charities.nameMaxLength");
     }
     
     return "";
@@ -93,16 +95,16 @@ export default function EditCharityPage({ params }: PageProps) {
 
   const validatePhone = (phone: string): string => {
     if (!phone.trim() || phone.trim() === "+965") {
-      return "يرجى إدخال رقم الهاتف";
+      return t("charities.enterPhone");
     }
     
     if (!phone.startsWith("+965 ") || phone.length <= 5) {
-      return "يرجى إدخال رقم هاتف صحيح";
+      return t("charities.phoneInvalidFormat");
     }
     
     const localNumber = phone.substring(5);
     if (!/^[0-9\s\-\(\)]+$/.test(localNumber)) {
-      return "رقم الهاتف المحلي غير صحيح";
+      return t("charities.phoneInvalid");
     }
     
     return "";
@@ -110,13 +112,13 @@ export default function EditCharityPage({ params }: PageProps) {
 
   const validateLocation = (countryId: number, governorateId: number, areaId: number): string => {
     if (!countryId || countryId === 0) {
-      return "يرجى اختيار الدولة";
+      return t("charities.selectCountry");
     }
     if (!governorateId || governorateId === 0) {
-      return "يرجى اختيار المحافظة";
+      return t("charities.selectGovernorate");
     }
     if (!areaId || areaId === 0) {
-      return "يرجى اختيار المنطقة";
+      return t("charities.selectArea");
     }
     return "";
   };
@@ -166,7 +168,7 @@ export default function EditCharityPage({ params }: PageProps) {
       const messages = apiErrors[firstField];
       if (Array.isArray(messages) && messages.length > 0) return messages[0];
     }
-    return err?.data?.message || "حدث خطأ أثناء تحديث الجمعية";
+    return err?.data?.message || t("charities.updateError");
   };
 
   const extractFieldErrors = (err: any): Record<string, string> => {
@@ -197,7 +199,7 @@ export default function EditCharityPage({ params }: PageProps) {
         ...(phoneError && { phone: phoneError }),
         ...(locationError && { location: locationError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("charities.error"), t("charities.correctErrors"));
       return;
     }
 
@@ -215,7 +217,7 @@ export default function EditCharityPage({ params }: PageProps) {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم تحديث الجمعية بنجاح");
+        showNotification("success", t("charities.success"), t("charities.updateSuccess"));
         setTimeout(() => {
           router.push("/charities");
         }, 1200);
@@ -245,8 +247,8 @@ export default function EditCharityPage({ params }: PageProps) {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل بيانات الجمعية</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("charities.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("charities.loadCharityError")}</p>
           </div>
         </div>
       </div>
@@ -263,8 +265,8 @@ export default function EditCharityPage({ params }: PageProps) {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">الجمعية غير موجودة</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("charities.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("charities.charityNotFound")}</p>
           </div>
         </div>
       </div>
@@ -281,9 +283,9 @@ export default function EditCharityPage({ params }: PageProps) {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">تعديل بيانات الجمعية</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("charities.editCharity")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">تحديث معلومات الجمعية: {charityData.data.name_ar}</p>
+          <p className="text-sm text-ld mr-12">{t("charities.editDescription", { name: charityData.data.name_ar })}</p>
         </div>
       </div>
 
@@ -291,11 +293,11 @@ export default function EditCharityPage({ params }: PageProps) {
         <Card>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name_ar" className="mb-2 block">اسم الجمعية (عربي) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_ar" className="mb-2 block">{t("charities.nameAr")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم الجمعية بالعربية" 
+                placeholder={t("charities.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -304,12 +306,12 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الجمعية الخيرية بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="name_en" className="mb-2 block">اسم الجمعية (إنجليزي) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_en" className="mb-2 block">{t("charities.nameEn")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_en" 
                 name="name_en" 
@@ -322,16 +324,16 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الجمعية الخيرية بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterNameEnHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف <span className="text-error">*</span></Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("charities.phone")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
-                placeholder="+965 xxxx xxxx" 
+                placeholder={t("charities.phonePlaceholder")} 
                 value={formData.phone} 
                 onChange={handleInputChange} 
                 required 
@@ -342,12 +344,12 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.phone ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.phone}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل رقم الهاتف الكامل</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterPhoneFull")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="country_id" className="mb-2 block">الدولة <span className="text-error">*</span></Label>
+              <Label htmlFor="country_id" className="mb-2 block">{t("charities.country")} <span className="text-error">*</span></Label>
               <Select
                 id="country_id"
                 name="country_id"
@@ -357,7 +359,7 @@ export default function EditCharityPage({ params }: PageProps) {
                 className="select-md"
                 icon={() => <Icon icon="solar:flag-bold" height={18} />}
               >
-                <option value={0}>اختر الدولة</option>
+                <option value={0}>{t("charities.chooseCountry")}</option>
                 {countriesData?.data?.map((country: any) => (
                   <option key={country.id} value={country.id}>
                     {country.name_ar} - {country.name_en}
@@ -367,12 +369,12 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر الدولة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectCountryHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="governorate_id" className="mb-2 block">المحافظة <span className="text-error">*</span></Label>
+              <Label htmlFor="governorate_id" className="mb-2 block">{t("charities.governorate")} <span className="text-error">*</span></Label>
               <Select
                 id="governorate_id"
                 name="governorate_id"
@@ -383,7 +385,7 @@ export default function EditCharityPage({ params }: PageProps) {
                 className="select-md"
                 icon={() => <Icon icon="solar:buildings-bold" height={18} />}
               >
-                <option value={0}>اختر المحافظة</option>
+                <option value={0}>{t("charities.chooseGovernorate")}</option>
                 {governoratesData?.data?.map((governorate: any) => (
                   <option key={governorate.id} value={governorate.id}>
                     {governorate.name_ar} - {governorate.name_en}
@@ -393,12 +395,12 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المحافظة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectGovernorateHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="area_id" className="mb-2 block">المنطقة <span className="text-error">*</span></Label>
+              <Label htmlFor="area_id" className="mb-2 block">{t("charities.area")} <span className="text-error">*</span></Label>
               <Select
                 id="area_id"
                 name="area_id"
@@ -409,7 +411,7 @@ export default function EditCharityPage({ params }: PageProps) {
                 className="select-md"
                 icon={() => <Icon icon="solar:home-bold" height={18} />}
               >
-                <option value={0}>اختر المنطقة</option>
+                <option value={0}>{t("charities.chooseArea")}</option>
                 {areasData?.data?.map((area: any) => (
                   <option key={area.id} value={area.id}>
                     {area.name_ar} - {area.name_en}
@@ -419,7 +421,7 @@ export default function EditCharityPage({ params }: PageProps) {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المنطقة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectAreaHelper")}</p>
               )}
             </div>
           </div>
@@ -428,10 +430,10 @@ export default function EditCharityPage({ params }: PageProps) {
         <Card className="mt-6">
           <div className="flex items-center justify-end gap-3">
             <Link href="/charities">
-              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">إلغاء</button>
+              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">{t("charities.cancel")}</button>
             </Link>
             <button type="submit" disabled={updating} className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50">
-              {updating ? (<><Spinner size="sm" /> جاري التحديث...</>) : (<><Icon icon="solar:check-circle-bold" height={20} /> تحديث الجمعية</>)}
+              {updating ? (<><Spinner size="sm" /> {t("charities.updating")}</>) : (<><Icon icon="solar:check-circle-bold" height={20} /> {t("charities.updateCharity")}</>)}
             </button>
           </div>
         </Card>

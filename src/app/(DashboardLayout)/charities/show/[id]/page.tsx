@@ -6,12 +6,14 @@ import { Icon } from "@iconify/react";
 import { useGetCharityByIdQuery } from "@/store/api/charitiesApi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 interface ShowCharityPageProps {
   params: Promise<{ id: string }>;
 }
 
 const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const resolvedParams = use(params);
   const charityId = parseInt(resolvedParams.id);
@@ -36,8 +38,8 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل بيانات الجمعية</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("charities.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("charities.loadCharityError")}</p>
           </div>
         </div>
       </div>
@@ -54,8 +56,8 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">الجمعية غير موجودة</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("charities.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("charities.charityNotFound")}</p>
           </div>
         </div>
       </div>
@@ -75,15 +77,15 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">تفاصيل الجمعية</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("charities.showCharity")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">عرض تفاصيل الجمعية الخيرية</p>
+          <p className="text-sm text-ld mr-12">{t("charities.showDescription")}</p>
         </div>
         <div className="flex items-center gap-4">
           <Link href={`/charities/edit/${charity.id}`}>
             <button className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
               <Icon icon="solar:pen-bold" height={20} />
-              تعديل
+              {t("charities.edit")}
             </button>
           </Link>
         </div>
@@ -110,7 +112,7 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Icon icon="solar:phone-bold" className="w-5 h-5 text-ld" />
-                    <span className="text-sm font-medium text-dark dark:text-white">رقم الهاتف</span>
+                    <span className="text-sm font-medium text-dark dark:text-white">{t("charities.phone")}</span>
                   </div>
                   <p className="text-dark dir-ltr dark:text-white">{charity.phone}</p>
                 </div>
@@ -119,27 +121,27 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Icon icon="solar:map-point-bold" className="w-5 h-5 text-ld" />
-                    <span className="text-sm font-medium text-dark dark:text-white">الدولة</span>
+                    <span className="text-sm font-medium text-dark dark:text-white">{t("charities.country")}</span>
                   </div>
-                  <p className="text-dark dark:text-white">{charity.country?.name_ar || 'غير محدد'}</p>
+                  <p className="text-dark dark:text-white">{charity.country?.name_ar || t("charities.notSpecified")}</p>
                 </div>
 
                 {/* Governorate */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Icon icon="solar:buildings-2-bold" className="w-5 h-5 text-ld" />
-                    <span className="text-sm font-medium text-dark dark:text-white">المحافظة</span>
+                    <span className="text-sm font-medium text-dark dark:text-white">{t("charities.governorate")}</span>
                   </div>
-                  <p className="text-dark dark:text-white">{charity.governorate?.name_ar || 'غير محدد'}</p>
+                  <p className="text-dark dark:text-white">{charity.governorate?.name_ar || t("charities.notSpecified")}</p>
                 </div>
 
                 {/* Area */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Icon icon="solar:home-bold" className="w-5 h-5 text-ld" />
-                    <span className="text-sm font-medium text-dark dark:text-white">المنطقة</span>
+                    <span className="text-sm font-medium text-dark dark:text-white">{t("charities.area")}</span>
                   </div>
-                  <p className="text-dark dark:text-white">{charity.area?.name_ar || 'غير محدد'}</p>
+                  <p className="text-dark dark:text-white">{charity.area?.name_ar || t("charities.notSpecified")}</p>
                 </div>
               </div>
             </div>
@@ -150,13 +152,13 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
         <div>
           <Card>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-dark dark:text-white">معلومات إضافية</h3>
+              <h3 className="text-lg font-semibold text-dark dark:text-white">{t("charities.additionalInfo")}</h3>
               
               {/* Created Date */}
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <Icon icon="solar:calendar-bold" className="w-5 h-5 text-ld" />
-                  <span className="text-sm font-medium text-dark dark:text-white">تاريخ الإنشاء</span>
+                  <span className="text-sm font-medium text-dark dark:text-white">{t("charities.createdAt")}</span>
                 </div>
                 <p className="text-dark dark:text-white">
                   {new Date(charity.created_at).toLocaleDateString("ar-EG", {
@@ -171,7 +173,7 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <Icon icon="solar:refresh-bold" className="w-5 h-5 text-ld" />
-                  <span className="text-sm font-medium text-dark dark:text-white">آخر تحديث</span>
+                  <span className="text-sm font-medium text-dark dark:text-white">{t("charities.updatedAt")}</span>
                 </div>
                 <p className="text-dark dark:text-white">
                   {new Date(charity.updated_at).toLocaleDateString("ar-EG", {
@@ -186,7 +188,7 @@ const ShowCharityPage = ({ params }: ShowCharityPageProps) => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <Icon icon="solar:hashtag-bold" className="w-5 h-5 text-ld" />
-                  <span className="text-sm font-medium text-dark dark:text-white">رقم الجمعية</span>
+                  <span className="text-sm font-medium text-dark dark:text-white">{t("charities.charityId")}</span>
                 </div>
                 <p className="text-dark dark:text-white">#{charity.id}</p>
               </div>

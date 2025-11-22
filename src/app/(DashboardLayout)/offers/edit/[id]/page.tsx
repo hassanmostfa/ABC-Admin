@@ -8,6 +8,7 @@ import SearchableSelect from "@/components/shared/SearchableSelect";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 interface EditOfferPageProps {
   params: Promise<{
@@ -16,6 +17,7 @@ interface EditOfferPageProps {
 }
 
 const EditOfferPage = ({ params }: EditOfferPageProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const resolvedParams = React.use(params);
@@ -185,30 +187,30 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
     const errors: Record<string, string> = {};
 
     if (!formData.offer_start_date) {
-      errors.offer_start_date = "يرجى اختيار تاريخ البداية";
+      errors.offer_start_date = t("offers.enterStartDate");
     }
 
     if (!formData.offer_end_date) {
-      errors.offer_end_date = "يرجى اختيار تاريخ النهاية";
+      errors.offer_end_date = t("offers.enterEndDate");
     }
 
     if (formData.offer_start_date && formData.offer_end_date) {
       const startDate = new Date(formData.offer_start_date);
       const endDate = new Date(formData.offer_end_date);
       if (startDate >= endDate) {
-        errors.offer_end_date = "تاريخ النهاية يجب أن يكون بعد تاريخ البداية";
+        errors.offer_end_date = t("offers.endDateAfterStart");
       }
     }
 
     if (!formData.points || parseInt(formData.points) < 0) {
-      errors.points = "النقاط يجب أن تكون أكبر من أو تساوي صفر";
+      errors.points = t("offers.enterPoints");
     }
 
 
     // Validate conditions
     const validConditions = conditions.filter(c => c.product_id > 0 && c.product_variant_id > 0 && c.quantity > 0);
     if (conditions.length === 0 || validConditions.length === 0) {
-      errors.conditions = "يرجى إضافة شرط واحد على الأقل";
+      errors.conditions = t("offers.enterConditions");
     }
 
     // Validate rewards based on reward type
@@ -222,9 +224,9 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
     
     if (rewards.length === 0 || validRewards.length === 0) {
       if (formData.reward_type === "products") {
-        errors.rewards = "يرجى إضافة مكافأة واحدة على الأقل";
+        errors.rewards = t("offers.enterRewards");
       } else {
-        errors.rewards = "يرجى إدخال مبلغ ونوع الخصم للمكافأة";
+        errors.rewards = t("offers.enterDiscountReward");
       }
     }
 
@@ -236,7 +238,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
     e.preventDefault();
     
     if (!validateForm()) {
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("offers.error"), t("offers.correctErrors"));
       return;
     }
 
@@ -271,15 +273,15 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
 
       // Ensure arrays are not empty
       if (cleanedConditions.length === 0) {
-        showNotification("error", "خطأ!", "يرجى إضافة شرط واحد على الأقل");
+        showNotification("error", t("offers.error"), t("offers.enterConditions"));
         return;
       }
 
       if (validRewards.length === 0) {
         if (formData.reward_type === "products") {
-          showNotification("error", "خطأ!", "يرجى اختيار منتج ومتغير للمكافأة");
+          showNotification("error", t("offers.error"), t("offers.chooseProductVariant"));
         } else {
-          showNotification("error", "خطأ!", "يرجى إدخال مبلغ ونوع الخصم للمكافأة");
+          showNotification("error", t("offers.error"), t("offers.enterDiscountReward"));
         }
         return;
       }
@@ -320,7 +322,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجح!", "تم تحديث العرض بنجاح");
+        showNotification("success", t("offers.success"), t("offers.updateSuccess"));
         setTimeout(() => {
           router.push("/offers");
         }, 1200);
@@ -343,9 +345,9 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
         setNestedErrors(newNestedErrors);
         
         // Show general error message
-        showNotification("error", "خطأ في التحقق!", err?.data?.message || "يرجى تصحيح الأخطاء في النموذج");
+        showNotification("error", t("offers.validationError"), err?.data?.message || t("offers.correctErrors"));
       } else {
-        showNotification("error", "خطأ!", err?.data?.message || "فشل في تحديث العرض");
+        showNotification("error", t("offers.error"), err?.data?.message || t("offers.updateError"));
       }
     }
   };
@@ -368,8 +370,8 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل بيانات العرض</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("offers.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("offers.loadOfferError")}</p>
           </div>
         </div>
       </div>
@@ -386,8 +388,8 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">العرض غير موجود</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("offers.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("offers.offerNotFound")}</p>
           </div>
         </div>
       </div>
@@ -405,20 +407,20 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">تعديل العرض</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("offers.editOffer")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">تحديث معلومات العرض: #{offerData.data.id}</p>
+          <p className="text-sm text-ld mr-12">{t("offers.editDescription", { id: offerData.data.id })}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
         {/* Basic Information */}
         <Card>
-          <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">المعلومات الأساسية</h2>
+          <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">{t("offers.basicInfo")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image Upload - Full Row */}
             <div className="md:col-span-2">
-              <Label htmlFor="image" className="mb-2 block">صورة العرض</Label>
+              <Label htmlFor="image" className="mb-2 block">{t("offers.image")}</Label>
               
               {/* File Input and Image Preview Side by Side */}
               <div className="flex items-center gap-6">
@@ -428,8 +430,8 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 >
                   <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                     <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                    <p className="text-sm text-ld mb-1">انقر لرفع صورة جديدة للعرض</p>
-                    <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                    <p className="text-sm text-ld mb-1">{t("offers.clickToUploadNew")}</p>
+                    <p className="text-xs text-ld">{t("offers.imageFormats")}</p>
                   </div>
                   <input
                     id="image"
@@ -480,14 +482,14 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 </div>
               </div>
               
-              <p className="mt-1 text-xs text-gray-500">اختر صورة جديدة للعرض (اختياري)</p>
+              <p className="mt-1 text-xs text-gray-500">{t("offers.selectImageOptional")}</p>
             </div>
 
             {/* Points, Dates, and Reward Type in One Row */}
             <div className="md:col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div>
-                  <Label htmlFor="points" className="mb-2 block">النقاط التي سيحصل عليها العميل <span className="text-error">*</span></Label>
+                  <Label htmlFor="points" className="mb-2 block">{t("offers.pointsLabel")}</Label>
                   <TextInput
                     id="points"
                     name="points"
@@ -501,12 +503,12 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                   {fieldErrors.points ? (
                     <p className="mt-1 text-xs text-error">{fieldErrors.points}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">عدد النقاط التي سيحصل عليها العميل</p>
+                    <p className="mt-1 text-xs text-gray-500">{t("offers.pointsHelper")}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="offer_start_date" className="mb-2 block">تاريخ البداية <span className="text-error">*</span></Label>
+                  <Label htmlFor="offer_start_date" className="mb-2 block">{t("offers.startDate")}</Label>
                   <TextInput
                     id="offer_start_date"
                     name="offer_start_date"
@@ -519,12 +521,12 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                   {fieldErrors.offer_start_date ? (
                     <p className="mt-1 text-xs text-error">{fieldErrors.offer_start_date}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">تاريخ بداية العرض</p>
+                    <p className="mt-1 text-xs text-gray-500">{t("offers.startDateHelper")}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="offer_end_date" className="mb-2 block">تاريخ النهاية <span className="text-error">*</span></Label>
+                  <Label htmlFor="offer_end_date" className="mb-2 block">{t("offers.endDate")}</Label>
                   <TextInput
                     id="offer_end_date"
                     name="offer_end_date"
@@ -537,12 +539,12 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                   {fieldErrors.offer_end_date ? (
                     <p className="mt-1 text-xs text-error">{fieldErrors.offer_end_date}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">تاريخ انتهاء العرض</p>
+                    <p className="mt-1 text-xs text-gray-500">{t("offers.endDateHelper")}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="reward_type" className="mb-2 block">نوع المكافأة <span className="text-error">*</span></Label>
+                  <Label htmlFor="reward_type" className="mb-2 block">{t("offers.rewardType")}</Label>
                   <Select
                     id="reward_type"
                     name="reward_type"
@@ -551,15 +553,15 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                     required
                     className="select-md"
                   >
-                    <option value="products">منتجات</option>
-                    <option value="discount">خصم</option>
+                    <option value="products">{t("offers.rewardTypeProducts")}</option>
+                    <option value="discount">{t("offers.rewardTypeDiscount")}</option>
                   </Select>
                 </div>
               </div>
             </div>
 
             <div>
-              <Label className="mb-2 block">نوع العرض <span className="text-error">*</span></Label>
+              <Label className="mb-2 block">{t("offers.offerType")}</Label>
               <div className="flex gap-6">
                 <div className="flex items-center">
                   <input
@@ -572,7 +574,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                     className="w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary"
                   />
                   <Label htmlFor="type_normal" className="ml-2 text-sm font-medium text-dark dark:text-white">
-                    عرض عادي
+                    {t("offers.offerTypeNormal")}
                   </Label>
                 </div>
                 <div className="flex items-center">
@@ -586,7 +588,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                     className="w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary"
                   />
                   <Label htmlFor="type_charity" className="ml-2 text-sm font-medium text-dark dark:text-white">
-                    عرض خيري
+                    {t("offers.offerTypeCharity")}
                   </Label>
                 </div>
               </div>
@@ -594,7 +596,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
 
             {formData.type === "charity" && (
               <div>
-                <Label htmlFor="charity_id" className="mb-2 block">الجمعية الخيرية</Label>
+                <Label htmlFor="charity_id" className="mb-2 block">{t("offers.charity")}</Label>
                 <Select
                   id="charity_id"
                   name="charity_id"
@@ -602,7 +604,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                   onChange={handleInputChange}
                   className="select-md"
                 >
-                  <option value={0}>اختر الجمعية الخيرية</option>
+                  <option value={0}>{t("offers.chooseCharity")}</option>
                   {charitiesData?.data?.map((charity: any) => (
                     <option key={charity.id} value={charity.id}>
                       {charity.name_ar}
@@ -612,7 +614,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 {fieldErrors.charity_id ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.charity_id}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">اختر الجمعية الخيرية المرتبطة بالعرض (اختياري)</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("offers.selectCharityHelper")}</p>
                 )}
               </div>
             )}
@@ -626,7 +628,7 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 onChange={handleInputChange}
                 className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
               />
-              <Label htmlFor="is_active">العرض نشط</Label>
+              <Label htmlFor="is_active">{t("offers.isActive")}</Label>
             </div>
           </div>
         </Card>
@@ -634,10 +636,10 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
         {/* Conditions */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-dark dark:text-white">شروط العرض</h2>
+            <h2 className="text-xl font-semibold text-dark dark:text-white">{t("offers.conditions")}</h2>
             <Button type="button" size="sm" onClick={addCondition}>
               <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-              إضافة منتج
+              {t("offers.addProduct")}
             </Button>
           </div>
           
@@ -649,28 +651,28 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
             {conditions.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Icon icon="solar:info-circle-bold" height={32} className="mx-auto mb-2" />
-                <p>لا توجد شروط مضافة</p>
-                <p className="text-sm">اضغط على "إضافة منتج" لإضافة منتج جديد</p>
+                <p>{t("offers.noConditions")}</p>
+                <p className="text-sm">{t("offers.noConditionsDescription")}</p>
               </div>
             ) : (
               conditions.map((condition, index) => (
               <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                 <div>
-                  <Label className="mb-1 block">المنتج</Label>
+                  <Label className="mb-1 block">{t("offers.product")}</Label>
                   <SearchableSelect
                     value={condition.product_id}
                     onChange={(value) => updateCondition(index, "product_id", value)}
-                    placeholder="اختر المنتج"
+                    placeholder={t("offers.chooseProduct")}
                     showImage={true}
                     type="product"
                   />
                 </div>
                 <div>
-                  <Label className="mb-1 block">متغير المنتج</Label>
+                  <Label className="mb-1 block">{t("offers.productVariant")}</Label>
                   <SearchableSelect
                     value={condition.product_variant_id}
                     onChange={(value) => updateCondition(index, "product_variant_id", value)}
-                    placeholder="اختر المتغير"
+                    placeholder={t("offers.chooseVariant")}
                     showImage={true}
                     showSize={true}
                     type="variant"
@@ -678,13 +680,13 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                   />
                 </div>
                 <div>
-                  <Label className="mb-1 block">الكمية</Label>
+                  <Label className="mb-1 block">{t("offers.quantity")}</Label>
                   <TextInput
                     type="number"
                     min="1"
                     value={condition.quantity}
                     onChange={(e) => updateCondition(index, "quantity", parseInt(e.target.value) || 1)}
-                    placeholder="الكمية"
+                    placeholder={t("offers.quantityPlaceholder")}
                     color={getNestedError("conditions", index, "quantity") ? "error" : undefined}
                   />
                   {getNestedError("conditions", index, "quantity") && (
@@ -711,10 +713,10 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
         {/* Rewards */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-dark dark:text-white">المكافآت</h2>
+            <h2 className="text-xl font-semibold text-dark dark:text-white">{t("offers.rewards")}</h2>
             <Button type="button" size="sm" onClick={addReward}>
               <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-              إضافة مكافأة
+              {t("offers.addReward")}
             </Button>
           </div>
           
@@ -726,8 +728,8 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
             {rewards.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Icon icon="solar:info-circle-bold" height={32} className="mx-auto mb-2" />
-                <p>لا توجد مكافآت مضافة</p>
-                <p className="text-sm">اضغط على "إضافة مكافأة" لإضافة مكافأة جديدة</p>
+                <p>{t("offers.noRewards")}</p>
+                <p className="text-sm">{t("offers.noRewardsDescription")}</p>
               </div>
             ) : (
               rewards.map((reward, index) => (
@@ -740,21 +742,21 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 {formData.reward_type === "products" && (
                   <>
                     <div>
-                      <Label className="mb-1 block">المنتج</Label>
+                      <Label className="mb-1 block">{t("offers.product")}</Label>
                       <SearchableSelect
                         value={reward.product_id}
                         onChange={(value) => updateReward(index, "product_id", value)}
-                        placeholder="اختر المنتج"
+                        placeholder={t("offers.chooseProduct")}
                         showImage={true}
                         type="product"
                       />
                     </div>
                     <div>
-                      <Label className="mb-1 block">متغير المنتج</Label>
+                      <Label className="mb-1 block">{t("offers.productVariant")}</Label>
                       <SearchableSelect
                         value={reward.product_variant_id}
                         onChange={(value) => updateReward(index, "product_variant_id", value)}
-                        placeholder="اختر المتغير"
+                        placeholder={t("offers.chooseVariant")}
                         showImage={true}
                         showSize={true}
                         type="variant"
@@ -762,13 +764,13 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                       />
                     </div>
                     <div>
-                      <Label className="mb-1 block">الكمية</Label>
+                      <Label className="mb-1 block">{t("offers.quantity")}</Label>
                       <TextInput
                         type="number"
                         min="1"
                         value={reward.quantity}
                         onChange={(e) => updateReward(index, "quantity", parseInt(e.target.value) || 1)}
-                        placeholder="الكمية"
+                        placeholder={t("offers.quantityPlaceholder")}
                         color={getNestedError("rewards", index, "quantity") ? "error" : undefined}
                       />
                       {getNestedError("rewards", index, "quantity") && (
@@ -782,25 +784,25 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                 {formData.reward_type === "discount" && (
                   <>
                     <div>
-                      <Label className="mb-1 block">القيمة</Label>
+                      <Label className="mb-1 block">{t("offers.value")}</Label>
                       <TextInput
                         type="number"
                         step="0.01"
                         min="0"
                         value={reward.discount_amount || ""}
                         onChange={(e) => updateReward(index, "discount_amount", parseFloat(e.target.value) || 0)}
-                        placeholder="القيمة"
+                        placeholder={t("offers.valuePlaceholder")}
                       />
                     </div>
                     <div>
-                      <Label className="mb-1 block">نوع الخصم</Label>
+                      <Label className="mb-1 block">{t("offers.discountType")}</Label>
                       <Select
                         value={reward.discount_type || "percentage"}
                         onChange={(e) => updateReward(index, "discount_type", e.target.value)}
                         className="select-md"
                       >
-                        <option value="percentage">نسبة مئوية</option>
-                        <option value="fixed">مبلغ ثابت</option>
+                        <option value="percentage">{t("offers.discountPercentage")}</option>
+                        <option value="fixed">{t("offers.discountFixed")}</option>
                       </Select>
                     </div>
                   </>
@@ -828,18 +830,18 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
         <Card>
           <div className="flex items-center justify-end gap-3">
             <Link href="/offers">
-              <Button type="button" color="gray">إلغاء</Button>
+              <Button type="button" color="gray">{t("offers.cancel")}</Button>
             </Link>
             <Button type="submit" disabled={updating} className="bg-primary hover:bg-primary/90">
               {updating ? (
                 <>
                   <Spinner size="sm" className="ml-2" />
-                  جاري التحديث...
+                  {t("offers.updating")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:check-circle-bold" height={20} className="ml-2" />
-                  تحديث العرض
+                  {t("offers.updateOffer")}
                 </>
               )}
             </Button>

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 interface ProductVariant {
   id: string;
@@ -23,6 +24,7 @@ interface ProductVariant {
 }
 
 const AddProduct = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createProduct, { isLoading: creating }] = useCreateProductMutation();
@@ -68,19 +70,19 @@ const AddProduct = () => {
     const errors: Record<string, string> = {};
     
     if (!formData.name_en.trim()) {
-      errors.name_en = "يرجى إدخال اسم المنتج بالإنجليزية";
+      errors.name_en = t("products.enterNameEn");
     }
     if (!formData.name_ar.trim()) {
-      errors.name_ar = "يرجى إدخال اسم المنتج بالعربية";
+      errors.name_ar = t("products.enterNameAr");
     }
     if (!formData.category_id || formData.category_id === 0) {
-      errors.category_id = "يرجى اختيار التصنيف الرئيسي";
+      errors.category_id = t("products.selectMainCategory");
     }
     if (!formData.subcategory_id || formData.subcategory_id === 0) {
-      errors.subcategory_id = "يرجى اختيار التصنيف الفرعي";
+      errors.subcategory_id = t("products.selectSubCategory");
     }
     if (!formData.sku.trim()) {
-      errors.sku = "يرجى إدخال رمز المنتج";
+      errors.sku = t("products.enterSku");
     }
     
     setFieldErrors(errors);
@@ -97,23 +99,23 @@ const AddProduct = () => {
       const variantErrors: Record<string, string> = {};
       
       if (!variant.size.trim()) {
-        variantErrors.size = "يرجى إدخال الحجم";
+        variantErrors.size = t("products.enterSize");
         hasVariantErrors = true;
       }
       if (!variant.sku.trim()) {
-        variantErrors.sku = "يرجى إدخال رمز المتغير";
+        variantErrors.sku = t("products.enterVariantSku");
         hasVariantErrors = true;
       }
       if (!variant.short_item.trim()) {
-        variantErrors.short_item = "يرجى إدخال اسم المتغير";
+        variantErrors.short_item = t("products.enterShortItem");
         hasVariantErrors = true;
       }
       if (variant.quantity <= 0) {
-        variantErrors.quantity = "يرجى إدخال كمية صحيحة";
+        variantErrors.quantity = t("products.enterValidQuantity");
         hasVariantErrors = true;
       }
       if (variant.price <= 0) {
-        variantErrors.price = "يرجى إدخال سعر صحيح";
+        variantErrors.price = t("products.enterValidPrice");
         hasVariantErrors = true;
       }
       
@@ -131,7 +133,7 @@ const AddProduct = () => {
     if (currentStep === 1) {
       const isValid = validateStep1();
       if (!isValid) {
-        showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء قبل المتابعة");
+        showNotification("error", t("products.error"), t("products.correctErrors"));
         return; // Don't proceed to next step
       }
       setCurrentStep(2);
@@ -198,13 +200,13 @@ const AddProduct = () => {
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      showNotification("error", "خطأ!", "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF");
+      showNotification("error", t("products.error"), t("products.invalidImageFormat"));
       return;
     }
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      showNotification("error", "خطأ!", "حجم الصورة يجب أن لا يتجاوز 5MB");
+      showNotification("error", t("products.error"), t("products.imageSizeExceeded"));
       return;
     }
 
@@ -248,7 +250,7 @@ const AddProduct = () => {
         return newErrors;
       });
     } else {
-      showNotification("error", "خطأ!", "يجب أن يكون هناك على الأقل متغير واحد");
+      showNotification("error", t("products.error"), t("products.atLeastOneVariant"));
     }
   };
 
@@ -294,7 +296,7 @@ const AddProduct = () => {
     
     // Validate step 2 (variants)
     if (!validateStep2()) {
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في المتغيرات");
+      showNotification("error", t("products.error"), t("products.correctVariantErrors"));
       return;
     }
 
@@ -337,11 +339,11 @@ const AddProduct = () => {
 
     try {
       const result = await createProduct(data).unwrap();
-      showNotification("success", "تم!", "تم إنشاء المنتج بنجاح");
+      showNotification("success", t("products.success"), t("products.addSuccess"));
       router.push('/products');
     } catch (err: any) {
       console.error("Create product error:", err);
-      let errorMessage = "حدث خطأ أثناء إنشاء المنتج";
+      let errorMessage = t("products.addError");
       if (err.status === 422 && err.data?.errors) {
         const errors = err.data.errors;
         const fieldErrors: Record<string, string> = {};
@@ -381,7 +383,7 @@ const AddProduct = () => {
             </div>
             <div className="mr-3 rtl:mr-0 rtl:ml-3">
               <p className={`text-sm font-medium ${currentStep >= 1 ? 'text-primary' : 'text-gray-500'}`}>
-                المعلومات الأساسية
+                {t("products.basicInfo")}
               </p>
             </div>
           </div>
@@ -400,7 +402,7 @@ const AddProduct = () => {
             </div>
             <div className="mr-3 rtl:mr-0 rtl:ml-3">
               <p className={`text-sm font-medium ${currentStep >= 2 ? 'text-primary' : 'text-gray-500'}`}>
-                المتغيرات
+                {t("products.variants")}
               </p>
             </div>
           </div>
@@ -420,9 +422,9 @@ const AddProduct = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة منتج جديد</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("products.addNew")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">قم بإنشاء منتج جديد مع متغيراته</p>
+          <p className="text-sm text-ld mr-12">{t("products.addDescription")}</p>
         </div>
       </div>
 
@@ -433,15 +435,15 @@ const AddProduct = () => {
       {currentStep === 1 && (
         <div>
           <Card>
-            <h3 className="text-xl font-semibold text-dark dark:text-white mb-6">معلومات المنتج الأساسية</h3>
+            <h3 className="text-xl font-semibold text-dark dark:text-white mb-6">{t("products.step1Title")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* English Name */}
             <div>
-              <Label htmlFor="name_en" className="mb-2 block">اسم المنتج (الإنجليزية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_en" className="mb-2 block">{t("products.nameEn")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_en" 
                 name="name_en" 
-                placeholder="Enter product name in English" 
+                placeholder={t("products.nameEnPlaceholder")} 
                 value={formData.name_en} 
                 onChange={handleInputChange} 
                 required 
@@ -450,17 +452,17 @@ const AddProduct = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم المنتج باللغة الإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("products.nameEnHelper")}</p>
               )}
             </div>
 
             {/* Arabic Name */}
             <div>
-              <Label htmlFor="name_ar" className="mb-2 block">اسم المنتج (العربية) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_ar" className="mb-2 block">{t("products.nameAr")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="أدخل اسم المنتج بالعربية" 
+                placeholder={t("products.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -470,13 +472,13 @@ const AddProduct = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اسم المنتج باللغة العربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("products.nameArHelper")}</p>
               )}
             </div>
 
             {/* Category */}
             <div>
-              <Label htmlFor="category_id" className="mb-2 block">التصنيف الرئيسي <span className="text-error">*</span></Label>
+              <Label htmlFor="category_id" className="mb-2 block">{t("products.mainCategory")} <span className="text-error">*</span></Label>
               <Select 
                 id="category_id" 
                 name="category_id" 
@@ -485,7 +487,7 @@ const AddProduct = () => {
                 required
                 className="select-md"
               >
-                <option value={0}>اختر التصنيف الرئيسي</option>
+                <option value={0}>{t("products.chooseMainCategory")}</option>
                 {categoriesData?.data?.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name_ar} - {category.name_en}
@@ -501,7 +503,7 @@ const AddProduct = () => {
 
             {/* Subcategory */}
             <div>
-              <Label htmlFor="subcategory_id" className="mb-2 block">التصنيف الفرعي <span className="text-error">*</span></Label>
+              <Label htmlFor="subcategory_id" className="mb-2 block">{t("products.subCategory")} <span className="text-error">*</span></Label>
               <Select 
                 id="subcategory_id" 
                 name="subcategory_id" 
@@ -511,7 +513,7 @@ const AddProduct = () => {
                 className="select-md"
                 disabled={!formData.category_id || formData.category_id === 0}
               >
-                <option value={0}>اختر التصنيف الفرعي</option>
+                <option value={0}>{t("products.chooseSubCategory")}</option>
                 {subcategoriesData?.data?.map((subcategory) => (
                   <option key={subcategory.id} value={subcategory.id}>
                     {subcategory.name_ar} - {subcategory.name_en}
@@ -527,11 +529,11 @@ const AddProduct = () => {
 
             {/* SKU */}
             <div>
-              <Label htmlFor="sku" className="mb-2 block">رمز المنتج (item)<span className="text-error">*</span></Label>
+              <Label htmlFor="sku" className="mb-2 block">{t("products.sku")}<span className="text-error">*</span></Label>
               <TextInput 
                 id="sku" 
                 name="sku" 
-                placeholder="أدخل رمز المنتج" 
+                placeholder={t("products.skuPlaceholder")} 
                 value={formData.sku} 
                 onChange={handleInputChange} 
                 required 
@@ -540,7 +542,7 @@ const AddProduct = () => {
               {fieldErrors.sku ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.sku}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">رمز فريد للمنتج</p>
+                <p className="mt-1 text-xs text-gray-500">{t("products.skuHelper")}</p>
               )}
             </div>
 
@@ -548,10 +550,10 @@ const AddProduct = () => {
             <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
               <div>
                 <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                  حالة المنتج
+                  {t("products.productStatus")}
                 </Label>
                 <p className={`text-sm ${formData.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                  {formData.is_active ? "🟢 المنتج نشط" : "🔴 المنتج غير نشط"}
+                  {formData.is_active ? t("products.productActive") : t("products.productInactive")}
                 </p>
               </div>
               <button
@@ -573,11 +575,11 @@ const AddProduct = () => {
           {/* Descriptions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
-              <Label htmlFor="description_en" className="mb-2 block">وصف المنتج (الإنجليزية)</Label>
+              <Label htmlFor="description_en" className="mb-2 block">{t("products.descriptionEn")}</Label>
               <Textarea 
                 id="description_en" 
                 name="description_en" 
-                placeholder="Enter product description in English" 
+                placeholder={t("products.descriptionEnPlaceholder")} 
                 value={formData.description_en} 
                 onChange={handleInputChange}
                 rows={4}
@@ -585,11 +587,11 @@ const AddProduct = () => {
               />
             </div>
             <div>
-              <Label htmlFor="description_ar" className="mb-2 block">وصف المنتج (العربية)</Label>
+              <Label htmlFor="description_ar" className="mb-2 block">{t("products.descriptionAr")}</Label>
               <Textarea 
                 id="description_ar" 
                 name="description_ar" 
-                placeholder="أدخل وصف المنتج بالعربية" 
+                placeholder={t("products.descriptionArPlaceholder")} 
                 value={formData.description_ar} 
                 onChange={handleInputChange}
                 rows={4}
@@ -607,21 +609,21 @@ const AddProduct = () => {
         <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDown}>
         <Card>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-dark dark:text-white">متغيرات المنتج</h3>
+            <h3 className="text-xl font-semibold text-dark dark:text-white">{t("products.step2Title")}</h3>
             <button
               type="button"
               onClick={addVariant}
               className="px-4 py-2 bg-primary text-white rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors"
             >
               <Icon icon="solar:add-circle-bold" height={20} />
-              إضافة متغير
+              {t("products.addVariant")}
             </button>
           </div>
 
           {variants.map((variant, index) => (
             <div key={variant.id} className="border border-gray-200 rounded-lg p-6 mb-6 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-medium text-dark dark:text-white">متغير {index + 1}</h4>
+                <h4 className="text-lg font-medium text-dark dark:text-white">{t("products.variantNumber", { number: index + 1 })}</h4>
                 {variants.length > 1 && (
                   <button
                     type="button"
@@ -636,7 +638,7 @@ const AddProduct = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Variant Image */}
                 <div className="md:col-span-2">
-                  <Label className="mb-2 block">صورة المتغير</Label>
+                  <Label className="mb-2 block">{t("products.variantImage")}</Label>
                   
                   <div className="flex items-start gap-4 mb-4">
                     {variant.imagePreview && (
@@ -665,8 +667,8 @@ const AddProduct = () => {
                     <label className="flex-1 cursor-pointer">
                       <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                         <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                        <p className="text-sm text-ld mb-1">انقر لرفع صورة المتغير</p>
-                        <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                        <p className="text-sm text-ld mb-1">{t("products.clickToUploadVariant")}</p>
+                        <p className="text-xs text-ld">{t("products.imageFormats")}</p>
                       </div>
                       <input
                         type="file"
@@ -689,9 +691,9 @@ const AddProduct = () => {
 
                 {/* Size */}
                 <div>
-                  <Label className="mb-2 block">الحجم <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.size")} <span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل الحجم" 
+                    placeholder={t("products.sizePlaceholder")} 
                     value={variant.size} 
                     onChange={(e) => handleVariantChange(variant.id, 'size', e.target.value)}
                     icon={() => <Icon icon="solar:ruler-bold" height={18} />}
@@ -704,9 +706,9 @@ const AddProduct = () => {
 
                 {/* SKU */}
                 <div>
-                  <Label className="mb-2 block">رمز المتغير (item)<span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.variantSku")}<span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل رمز المتغير" 
+                    placeholder={t("products.variantSkuPlaceholder")} 
                     value={variant.sku} 
                     onChange={(e) => handleVariantChange(variant.id, 'sku', e.target.value)}
                     icon={() => <Icon icon="solar:qr-code-bold" height={18} />}
@@ -719,9 +721,9 @@ const AddProduct = () => {
 
                 {/* Short Item */}
                 <div>
-                  <Label className="mb-2 block">اسم المختصر (short item)<span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.shortItem")}<span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل اسم المتغير" 
+                    placeholder={t("products.shortItemPlaceholder")} 
                     value={variant.short_item} 
                     onChange={(e) => handleVariantChange(variant.id, 'short_item', e.target.value)}
                     icon={() => <Icon icon="solar:tag-bold" height={18} />}
@@ -734,10 +736,10 @@ const AddProduct = () => {
 
                 {/* Quantity */}
                 <div>
-                  <Label className="mb-2 block">الكمية <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.quantity")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
-                    placeholder="0" 
+                    placeholder={t("products.quantityPlaceholder")} 
                     value={variant.quantity} 
                     onChange={(e) => handleVariantChange(variant.id, 'quantity', parseInt(e.target.value) || 0)}
                     icon={() => <Icon icon="solar:box-bold" height={18} />}
@@ -750,11 +752,11 @@ const AddProduct = () => {
 
                 {/* Price */}
                 <div>
-                  <Label className="mb-2 block">السعر <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.price")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
                     step="0.01"
-                    placeholder="0.00" 
+                    placeholder={t("products.pricePlaceholder")} 
                     value={variant.price} 
                     onChange={(e) => handleVariantChange(variant.id, 'price', parseFloat(e.target.value) || 0)}
                     icon={() => <Icon icon="solar:dollar-bold" height={18} />}
@@ -769,10 +771,10 @@ const AddProduct = () => {
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
                   <div>
                     <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                      حالة المتغير
+                      {t("products.variantStatus")}
                     </Label>
                     <p className={`text-sm ${variant.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                      {variant.is_active ? "🟢 المتغير نشط" : "🔴 المتغير غير نشط"}
+                      {variant.is_active ? t("products.variantActive") : t("products.variantInactive")}
                     </p>
                   </div>
                   <button
@@ -804,7 +806,7 @@ const AddProduct = () => {
                   disabled={isSubmitting}
                   className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
                 >
-                  إلغاء
+                  {t("products.cancel")}
                 </button>
               </Link>
               
@@ -815,7 +817,7 @@ const AddProduct = () => {
                 className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <Icon icon="solar:arrow-right-bold" height={20} />
-                السابق
+                {t("products.previous")}
               </button>
             </div>
             
@@ -828,12 +830,12 @@ const AddProduct = () => {
                 {isSubmitting ? (
                   <>
                     <Spinner size="sm" /> 
-                    جاري إضافة المنتج...
+                    {t("products.adding")}
                   </>
                 ) : (
                   <>
                     <Icon icon="solar:add-circle-bold" height={20} /> 
-                    إضافة المنتج
+                    {t("products.addProduct")}
                   </>
                 )}
               </button>
@@ -854,7 +856,7 @@ const AddProduct = () => {
                   disabled={isSubmitting}
                   className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors disabled:opacity-50"
                 >
-                  إلغاء
+                  {t("products.cancel")}
                 </button>
               </Link>
             </div>
@@ -866,7 +868,7 @@ const AddProduct = () => {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                التالي
+                {t("products.next")}
                 <Icon icon="solar:arrow-left-bold" height={20} />
               </button>
             </div>

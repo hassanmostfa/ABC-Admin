@@ -6,8 +6,10 @@ import { useGetCustomersQuery, useDeleteCustomerMutation } from "@/store/api/cus
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const CustomersPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,12 +35,12 @@ const CustomersPage = () => {
       if (result.success) {
         setShowConfirmModal(false);
         setCustomerToDelete(null);
-        showNotification("success", "نجاح!", "تم حذف العميل بنجاح");
+        showNotification("success", t("customers.success"), t("customers.deleteSuccess"));
       }
     } catch (err: any) {
       setShowConfirmModal(false);
       setCustomerToDelete(null);
-      showNotification("error", "خطأ!", err?.data?.message || "حدث خطأ أثناء حذف العميل");
+      showNotification("error", t("customers.error"), err?.data?.message || t("customers.deleteError"));
     }
   };
 
@@ -65,8 +67,8 @@ const CustomersPage = () => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل العملاء</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("customers.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("customers.loadError")}</p>
           </div>
         </div>
       </div>
@@ -84,15 +86,15 @@ const CustomersPage = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">العملاء</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("customers.title")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">إدارة قائمة العملاء</p>
+          <p className="text-sm text-ld mr-12">{t("customers.subtitle")}</p>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/customers/add">
             <Button color="primary" className="flex items-center gap-2">
               <Icon icon="solar:add-circle-bold" height={20} />
-              إضافة عميل جديد
+              {t("customers.addNew")}
             </Button>
           </Link>
         </div>
@@ -101,11 +103,11 @@ const CustomersPage = () => {
       {/* Customers Table */}
       <Card>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-dark dark:text-white">جميع العملاء</h2>
+          <h2 className="text-xl font-semibold text-dark dark:text-white">{t("customers.allCustomers")}</h2>
           <div className="relative w-80">
             <TextInput
               icon={() => <Icon icon="solar:magnifer-linear" height={20} />}
-              placeholder="ابحث عن عميل..."
+              placeholder={t("customers.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -118,13 +120,13 @@ const CustomersPage = () => {
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الاسم</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">رقم الهاتف</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">البريد الإلكتروني</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الحالة</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">النقاط</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">تاريخ الإنشاء</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الإجراءات</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.name")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.phone")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.email")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.status")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.points")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.createdAt")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("customers.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -136,9 +138,9 @@ const CustomersPage = () => {
                   <td className="px-6 py-4 text-dark dark:text-white">{customer.email}</td>
                   <td className="px-6 py-4 text-dark dark:text-white">
                     {customer.is_active ? (
-                      <Badge color="success" className="w-fit">نشط</Badge>
+                      <Badge color="success" className="w-fit">{t("customers.active")}</Badge>
                     ) : (
-                      <Badge color="failure" className="w-fit">غير نشط</Badge>
+                      <Badge color="failure" className="w-fit">{t("customers.inactive")}</Badge>
                     )}
                   </td>
                   <td className="px-6 py-4 text-dark dark:text-white">{customer.points}</td>
@@ -148,13 +150,13 @@ const CustomersPage = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Link href={`/customers/edit/${customer.id}`}>
-                        <button className="text-primary hover:text-primary/80 transition-colors" title="تعديل">
+                        <button className="text-primary hover:text-primary/80 transition-colors" title={t("customers.edit")}>
                           <Icon icon="solar:pen-bold" height={18} />
                         </button>
                       </Link>
                       <button 
                         className="text-error hover:text-error/80 transition-colors" 
-                        title="حذف"
+                        title={t("customers.delete")}
                         onClick={() => handleDeleteClick(customer.id, customer.name)}
                       >
                         <Icon icon="solar:trash-bin-trash-bold" height={18} />
@@ -169,7 +171,7 @@ const CustomersPage = () => {
           {customersData?.data?.length === 0 && (
             <div className="text-center py-12">
               <Icon icon="solar:users-group-two-rounded-bold-duotone" height={64} className="text-ld mx-auto mb-4" />
-              <p className="text-ld dark:text-white/70">لا يوجد عملاء حتى الآن</p>
+              <p className="text-ld dark:text-white/70">{t("customers.noCustomers")}</p>
             </div>
           )}
         </div>
@@ -178,15 +180,15 @@ const CustomersPage = () => {
         {customersData?.pagination && customersData.pagination.last_page > 1 && (
           <div className="flex items-center justify-between mt-6 pt-6 border-t border-ld">
             <div className="text-sm text-ld dark:text-white/70">
-              عرض {customersData.pagination.from} إلى {customersData.pagination.to} من {customersData.pagination.total} عميل
+              {t("customers.showing", { from: customersData.pagination.from, to: customersData.pagination.to, total: customersData.pagination.total })}
             </div>
             <Pagination
               currentPage={customersData.pagination.current_page}
               totalPages={customersData.pagination.last_page}
               onPageChange={onPageChange}
               showIcons
-              previousLabel="السابق"
-              nextLabel="التالي"
+              previousLabel={t("customers.previous")}
+              nextLabel={t("customers.next")}
             />
           </div>
         )}
@@ -197,10 +199,10 @@ const CustomersPage = () => {
         isOpen={showConfirmModal}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="تأكيد الحذف"
-        message={`هل أنت متأكد من حذف العميل "${customerToDelete?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("customers.confirmDelete")}
+        message={t("customers.deleteMessage", { name: customerToDelete?.name })}
+        confirmText={t("customers.delete")}
+        cancelText={t("customers.cancel")}
         isLoading={deleting}
         type="danger"
       />

@@ -591,5 +591,509 @@
   "subcategories.adding": "جاري إضافة التصنيف الفرعي...",
   "subcategories.addSubcategory": "إضافة التصنيف الفرعي",
   "subcategories.updating": "جاري تحديث التصنيف الفرعي...",
-  "subcategories.updateSubcategory": "تحديث التصنيف الفرعي"
+  "subcategories.updateSubcategory": "تحديث التصنيف الفرعي",
+  
+  "customers.title": "العملاء",
+  "customers.subtitle": "إدارة قائمة العملاء",
+  "customers.addNew": "إضافة عميل جديد",
+  "customers.editCustomer": "تعديل بيانات العميل",
+  "customers.addDescription": "إنشاء حساب عميل جديد",
+  "customers.editDescription": "تحديث معلومات العميل",
+  "customers.allCustomers": "جميع العملاء",
+  "customers.searchPlaceholder": "ابحث عن عميل...",
+  "customers.name": "الاسم",
+  "customers.phone": "رقم الهاتف",
+  "customers.email": "البريد الإلكتروني",
+  "customers.status": "الحالة",
+  "customers.points": "النقاط",
+  "customers.createdAt": "تاريخ الإنشاء",
+  "customers.actions": "الإجراءات",
+  "customers.active": "نشط",
+  "customers.inactive": "غير نشط",
+  "customers.edit": "تعديل",
+  "customers.delete": "حذف",
+  "customers.loading": "جاري التحميل...",
+  "customers.noCustomers": "لا يوجد عملاء حتى الآن",
+  "customers.showing": "عرض {{from}} إلى {{to}} من {{total}} عميل",
+  "customers.previous": "السابق",
+  "customers.next": "التالي",
+  "customers.confirmDelete": "تأكيد الحذف",
+  "customers.deleteMessage": "هل أنت متأكد من حذف العميل \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "customers.cancel": "إلغاء",
+  "customers.success": "نجاح!",
+  "customers.error": "خطأ!",
+  "customers.deleteSuccess": "تم حذف العميل بنجاح",
+  "customers.deleteError": "حدث خطأ أثناء حذف العميل",
+  "customers.loadError": "فشل في تحميل العملاء",
+  "customers.loadErrorDescription": "حدث خطأ أثناء تحميل قائمة العملاء",
+  "customers.loadCustomerError": "حدث خطأ أثناء تحميل بيانات العميل",
+  "customers.loadingCustomer": "جاري تحميل بيانات العميل...",
+  "customers.customerNotFound": "العميل غير موجود",
+  "customers.customerNotFoundDescription": "العميل المطلوب غير موجود في النظام",
+  "customers.enterName": "يرجى إدخال اسم العميل",
+  "customers.namePlaceholder": "اسم العميل",
+  "customers.nameHelper": "يجب أن يحتوي على أحرف عربية أو إنجليزية فقط",
+  "customers.nameMinLength": "الاسم يجب أن يكون على الأقل حرفين",
+  "customers.nameMaxLength": "الاسم يجب أن لا يتجاوز 50 حرف",
+  "customers.nameInvalidChars": "الاسم يجب أن يحتوي على أحرف عربية أو إنجليزية فقط",
+  "customers.email": "البريد الإلكتروني",
+  "customers.emailPlaceholder": "example@abc.com",
+  "customers.phone": "رقم الهاتف",
+  "customers.phonePlaceholder": "+965 xxxx xxxx",
+  "customers.phoneHelper": "أدخل رقم الهاتف الكامل",
+  "customers.customerStatus": "حالة العميل",
+  "customers.customerActive": "🟢 العميل نشط",
+  "customers.customerInactive": "🔴 العميل غير نشط",
+  "customers.statusActiveHelper": "يمكن للعميل استخدام النظام",
+  "customers.statusInactiveHelper": "العميل غير قادر على استخدام النظام",
+  "customers.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "customers.unexpectedError": "حدث خطأ غير متوقع",
+  "customers.addSuccess": "تم إضافة العميل بنجاح",
+  "customers.addError": "حدث خطأ أثناء إضافة العميل",
+  "customers.updateSuccess": "تم تحديث بيانات العميل بنجاح",
+  "customers.updateError": "حدث خطأ أثناء تحديث بيانات العميل",
+  "customers.saving": "جاري الحفظ...",
+  "customers.saveCustomer": "حفظ العميل",
+  "customers.updating": "جاري الحفظ...",
+  "customers.saveChanges": "حفظ التغييرات",
+  
+  "products.title": "المنتجات",
+  "products.subtitle": "إدارة جميع المنتجات",
+  "products.addNew": "إضافة منتج",
+  "products.editProduct": "تعديل المنتج",
+  "products.showProduct": "تفاصيل المنتج",
+  "products.addDescription": "قم بإنشاء منتج جديد مع متغيراته",
+  "products.editDescription": "قم بتعديل معلومات المنتج ومتغيراته",
+  "products.showDescription": "عرض تفاصيل المنتج ومتغيراته",
+  "products.searchPlaceholder": "ابحث عن المنتجات...",
+  "products.search": "البحث",
+  "products.mainCategory": "التصنيف الرئيسي",
+  "products.subCategory": "التصنيف الفرعي",
+  "products.allCategories": "جميع التصنيفات",
+  "products.allSubcategories": "جميع التصنيفات الفرعية",
+  "products.chooseMainCategory": "اختر التصنيف الرئيسي",
+  "products.chooseSubCategory": "اختر التصنيف الفرعي",
+  "products.reset": "إعادة تعيين",
+  "products.image": "الصورة",
+  "products.productName": "اسم المنتج",
+  "products.category": "التصنيف",
+  "products.sku": "رمز المنتج (item)",
+  "products.variants": "المتغيرات",
+  "products.status": "الحالة",
+  "products.actions": "الإجراءات",
+  "products.active": "نشط",
+  "products.inactive": "غير نشط",
+  "products.view": "عرض",
+  "products.edit": "تعديل",
+  "products.delete": "حذف",
+  "products.loading": "جاري التحميل...",
+  "products.noProducts": "لا يوجد منتجات",
+  "products.showing": "عرض {{from}} إلى {{to}} من {{total}} منتج",
+  "products.previous": "السابق",
+  "products.next": "التالي",
+  "products.confirmDelete": "تأكيد الحذف",
+  "products.deleteMessage": "هل أنت متأكد من حذف المنتج \"{{name}}\"? لا يمكن التراجع عن هذا الإجراء.",
+  "products.cancel": "إلغاء",
+  "products.success": "نجاح!",
+  "products.error": "خطأ!",
+  "products.deleteSuccess": "تم حذف المنتج بنجاح",
+  "products.deleteError": "حدث خطأ أثناء حذف المنتج",
+  "products.loadError": "حدث خطأ أثناء تحميل المنتجات",
+  "products.productNotFound": "لم يتم العثور على المنتج",
+  "products.productNotFoundDescription": "المنتج المطلوب غير موجود أو تم حذفه",
+  "products.backToProducts": "العودة إلى المنتجات",
+  "products.basicInfo": "المعلومات الأساسية",
+  "products.step1Title": "معلومات المنتج الأساسية",
+  "products.step2Title": "متغيرات المنتج",
+  "products.nameEn": "اسم المنتج (الإنجليزية)",
+  "products.nameEnPlaceholder": "Enter product name in English",
+  "products.nameEnHelper": "اسم المنتج باللغة الإنجليزية",
+  "products.nameAr": "اسم المنتج (العربية)",
+  "products.nameArPlaceholder": "أدخل اسم المنتج بالعربية",
+  "products.nameArHelper": "اسم المنتج باللغة العربية",
+  "products.enterNameEn": "يرجى إدخال اسم المنتج بالإنجليزية",
+  "products.enterNameAr": "يرجى إدخال اسم المنتج بالعربية",
+  "products.enterSku": "يرجى إدخال رمز المنتج",
+  "products.selectMainCategory": "يرجى اختيار التصنيف الرئيسي",
+  "products.selectSubCategory": "يرجى اختيار التصنيف الفرعي",
+  "products.descriptionEn": "وصف المنتج (الإنجليزية)",
+  "products.descriptionEnPlaceholder": "Enter product description in English",
+  "products.descriptionAr": "وصف المنتج (العربية)",
+  "products.descriptionArPlaceholder": "أدخل وصف المنتج بالعربية",
+  "products.skuPlaceholder": "أدخل رمز المنتج",
+  "products.skuHelper": "رمز فريد للمنتج",
+  "products.productStatus": "حالة المنتج",
+  "products.productActive": "🟢 المنتج نشط",
+  "products.productInactive": "🔴 المنتج غير نشط",
+  "products.variantImage": "صورة المتغير",
+  "products.clickToUploadVariant": "انقر لرفع صورة المتغير",
+  "products.imageFormats": "JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)",
+  "products.invalidImageFormat": "يرجى اختيار صورة بصيغة JPEG, JPG, PNG, WebP أو GIF",
+  "products.imageSizeExceeded": "حجم الصورة يجب أن لا يتجاوز 5MB",
+  "products.variant": "متغير",
+  "products.variantNumber": "متغير {{number}}",
+  "products.addVariant": "إضافة متغير",
+  "products.removeVariant": "حذف متغير",
+  "products.atLeastOneVariant": "يجب أن يكون هناك على الأقل متغير واحد",
+  "products.size": "الحجم",
+  "products.sizePlaceholder": "أدخل الحجم",
+  "products.enterSize": "يرجى إدخال الحجم",
+  "products.variantSku": "رمز المتغير (item)",
+  "products.variantSkuPlaceholder": "أدخل رمز المتغير",
+  "products.enterVariantSku": "يرجى إدخال رمز المتغير",
+  "products.shortItem": "اسم المختصر (short item)",
+  "products.shortItemPlaceholder": "أدخل اسم المتغير",
+  "products.enterShortItem": "يرجى إدخال اسم المتغير",
+  "products.quantity": "الكمية",
+  "products.quantityPlaceholder": "0",
+  "products.enterValidQuantity": "يرجى إدخال كمية صحيحة",
+  "products.price": "السعر",
+  "products.pricePlaceholder": "0.00",
+  "products.enterValidPrice": "يرجى إدخال سعر صحيح",
+  "products.variantStatus": "حالة المتغير",
+  "products.variantActive": "🟢 المتغير نشط",
+  "products.variantInactive": "🔴 المتغير غير نشط",
+  "products.next": "التالي",
+  "products.previous": "السابق",
+  "products.correctErrors": "يرجى تصحيح الأخطاء قبل المتابعة",
+  "products.correctVariantErrors": "يرجى تصحيح الأخطاء في المتغيرات",
+  "products.adding": "جاري إضافة المنتج...",
+  "products.addProduct": "إضافة المنتج",
+  "products.updating": "جاري تحديث المنتج...",
+  "products.updateProduct": "تحديث المنتج",
+  "products.addSuccess": "تم إنشاء المنتج بنجاح",
+  "products.addError": "حدث خطأ أثناء إنشاء المنتج",
+  "products.updateSuccess": "تم تحديث المنتج بنجاح",
+  "products.updateError": "حدث خطأ أثناء تحديث المنتج",
+  "products.details": "تفاصيل المنتج",
+  "products.productImage": "صورة المنتج",
+  "products.statistics": "إحصائيات المنتج",
+  "products.variantCount": "عدد المتغيرات",
+  "products.totalQuantity": "إجمالي الكمية",
+  "products.minPrice": "أقل سعر",
+  "products.maxPrice": "أعلى سعر",
+  "products.notSpecified": "غير محدد",
+  "products.dateInfo": "معلومات التاريخ",
+  "products.createdAt": "تاريخ الإنشاء",
+  "products.updatedAt": "آخر تحديث",
+  "products.description": "الوصف",
+  "products.descriptionArLabel": "الوصف (العربية)",
+  "products.descriptionEnLabel": "الوصف (الإنجليزية)",
+  "products.noDescriptionAr": "لا يوجد وصف باللغة العربية",
+  "products.noDescriptionEn": "لا يوجد وصف باللغة الإنجليزية",
+  "products.productVariants": "متغيرات المنتج",
+  "products.variantCode": "رمز المتغير",
+  "products.shortName": "الاسم المختصر",
+  "products.noVariants": "لا توجد متغيرات لهذا المنتج",
+  
+  "charities.title": "الجمعيات الخيرية",
+  "charities.subtitle": "إدارة قائمة الجمعيات الخيرية",
+  "charities.addNew": "إضافة جمعية جديدة",
+  "charities.editCharity": "تعديل بيانات الجمعية",
+  "charities.showCharity": "تفاصيل الجمعية",
+  "charities.addDescription": "إنشاء جمعية خيرية جديدة",
+  "charities.editDescription": "تحديث معلومات الجمعية: {{name}}",
+  "charities.showDescription": "عرض تفاصيل الجمعية الخيرية",
+  "charities.allCharities": "جميع الجمعيات",
+  "charities.searchPlaceholder": "ابحث عن جمعية...",
+  "charities.name": "الاسم",
+  "charities.nameAr": "اسم الجمعية (عربي)",
+  "charities.nameEn": "اسم الجمعية (إنجليزي)",
+  "charities.phone": "رقم الهاتف",
+  "charities.location": "الموقع",
+  "charities.country": "الدولة",
+  "charities.governorate": "المحافظة",
+  "charities.area": "المنطقة",
+  "charities.status": "الحالة",
+  "charities.createdAt": "تاريخ الإنشاء",
+  "charities.updatedAt": "آخر تحديث",
+  "charities.actions": "الإجراءات",
+  "charities.active": "نشط",
+  "charities.inactive": "غير نشط",
+  "charities.edit": "تعديل",
+  "charities.delete": "حذف",
+  "charities.view": "عرض",
+  "charities.loading": "جاري التحميل...",
+  "charities.noCharities": "لا توجد جمعيات حتى الآن",
+  "charities.showing": "عرض {{from}} إلى {{to}} من {{total}} جمعية",
+  "charities.previous": "السابق",
+  "charities.next": "التالي",
+  "charities.confirmDelete": "تأكيد الحذف",
+  "charities.deleteMessage": "هل أنت متأكد من حذف الجمعية \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "charities.cancel": "إلغاء",
+  "charities.success": "نجاح!",
+  "charities.error": "خطأ!",
+  "charities.deleteSuccess": "تم حذف الجمعية بنجاح",
+  "charities.deleteError": "حدث خطأ أثناء حذف الجمعية",
+  "charities.loadError": "فشل في تحميل الجمعيات",
+  "charities.loadErrorDescription": "حدث خطأ أثناء تحميل قائمة الجمعيات",
+  "charities.loadCharityError": "فشل في تحميل بيانات الجمعية",
+  "charities.loadingCharity": "جاري تحميل بيانات الجمعية...",
+  "charities.charityNotFound": "الجمعية غير موجودة",
+  "charities.charityNotFoundDescription": "الجمعية المطلوبة غير موجودة في النظام",
+  "charities.enterNameAr": "يرجى إدخال اسم الجمعية بالعربية",
+  "charities.enterNameEn": "يرجى إدخال اسم الجمعية بالإنجليزية",
+  "charities.nameArPlaceholder": "اسم الجمعية بالعربية",
+  "charities.enterNameArHelper": "أدخل اسم الجمعية الخيرية بالعربية",
+  "charities.enterNameEnHelper": "أدخل اسم الجمعية الخيرية بالإنجليزية",
+  "charities.nameMinLength": "الاسم يجب أن يكون على الأقل حرفين",
+  "charities.nameMaxLength": "الاسم يجب أن لا يتجاوز 100 حرف",
+  "charities.enterPhone": "يرجى إدخال رقم الهاتف",
+  "charities.phonePlaceholder": "+965 xxxx xxxx",
+  "charities.enterPhoneFull": "أدخل رقم الهاتف الكامل",
+  "charities.phoneInvalid": "رقم الهاتف المحلي غير صحيح",
+  "charities.phoneInvalidFormat": "يرجى إدخال رقم هاتف صحيح",
+  "charities.selectCountry": "يرجى اختيار الدولة",
+  "charities.chooseCountry": "اختر الدولة",
+  "charities.selectCountryHelper": "اختر الدولة",
+  "charities.selectGovernorate": "يرجى اختيار المحافظة",
+  "charities.chooseGovernorate": "اختر المحافظة",
+  "charities.selectGovernorateHelper": "اختر المحافظة",
+  "charities.selectArea": "يرجى اختيار المنطقة",
+  "charities.chooseArea": "اختر المنطقة",
+  "charities.selectAreaHelper": "اختر المنطقة",
+  "charities.locationError": "يرجى اختيار الموقع",
+  "charities.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "charities.unexpectedError": "حدث خطأ غير متوقع",
+  "charities.addSuccess": "تم إضافة الجمعية بنجاح",
+  "charities.addError": "حدث خطأ أثناء إضافة الجمعية",
+  "charities.updateSuccess": "تم تحديث الجمعية بنجاح",
+  "charities.updateError": "حدث خطأ أثناء تحديث الجمعية",
+  "charities.saving": "جاري الحفظ...",
+  "charities.saveCharity": "حفظ الجمعية",
+  "charities.updating": "جاري التحديث...",
+  "charities.updateCharity": "تحديث الجمعية",
+  "charities.additionalInfo": "معلومات إضافية",
+  "charities.charityId": "رقم الجمعية",
+  "charities.notSpecified": "غير محدد",
+  
+  "offers.title": "إدارة العروض",
+  "offers.subtitle": "عرض وإدارة جميع العروض المتاحة",
+  "offers.addNew": "إضافة عرض جديد",
+  "offers.editOffer": "تعديل العرض",
+  "offers.addDescription": "إنشاء عرض جديد للنظام",
+  "offers.editDescription": "تحديث معلومات العرض: #{{id}}",
+  "offers.loadError": "فشل في تحميل العروض",
+  "offers.loadOfferError": "فشل في تحميل بيانات العرض",
+  "offers.offerNotFound": "العرض غير موجود",
+  "offers.success": "نجح!",
+  "offers.error": "خطأ!",
+  "offers.deleteSuccess": "تم حذف العرض بنجاح",
+  "offers.deleteError": "فشل في حذف العرض",
+  "offers.addSuccess": "تم إنشاء العرض بنجاح",
+  "offers.addError": "فشل في إنشاء العرض",
+  "offers.updateSuccess": "تم تحديث العرض بنجاح",
+  "offers.updateError": "فشل في تحديث العرض",
+  "offers.confirmDelete": "حذف العرض",
+  "offers.deleteMessage": "هل أنت متأكد من حذف هذا العرض؟ لا يمكن التراجع عن هذا الإجراء.",
+  "offers.delete": "حذف",
+  "offers.cancel": "إلغاء",
+  "offers.edit": "تعديل",
+  "offers.noOffers": "لا توجد عروض",
+  "offers.noOffersDescription": "لم يتم العثور على أي عروض مطابقة لمعايير البحث",
+  "offers.showing": "عرض {{from}} إلى {{to}} من {{total}} عرض",
+  "offers.of": "من",
+  "offers.offer": "عرض",
+  "offers.offerNumber": "عرض #{{id}}",
+  "offers.statusActive": "نشط",
+  "offers.statusInactive": "غير نشط",
+  "offers.statusComingSoon": "قريباً",
+  "offers.statusExpired": "منتهي",
+  "offers.typeNormal": "عادي",
+  "offers.typeCharity": "خيري",
+  "offers.rewardTypeProducts": "منتجات",
+  "offers.rewardTypeDiscount": "خصم",
+  "offers.from": "من",
+  "offers.to": "إلى",
+  "offers.points": "نقطة",
+  "offers.basicInfo": "المعلومات الأساسية",
+  "offers.image": "صورة العرض",
+  "offers.imageRequired": "صورة العرض *",
+  "offers.clickToUpload": "انقر لرفع صورة العرض",
+  "offers.clickToUploadNew": "انقر لرفع صورة جديدة للعرض",
+  "offers.imageFormats": "JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)",
+  "offers.selectImage": "اختر صورة للعرض",
+  "offers.selectImageOptional": "اختر صورة جديدة للعرض (اختياري)",
+  "offers.enterImage": "يرجى اختيار صورة للعرض",
+  "offers.pointsLabel": "النقاط التي سيحصل عليها العميل *",
+  "offers.pointsHelper": "عدد النقاط التي سيحصل عليها العميل",
+  "offers.enterPoints": "النقاط يجب أن تكون أكبر من أو تساوي صفر",
+  "offers.startDate": "تاريخ البداية *",
+  "offers.startDateHelper": "تاريخ بداية العرض",
+  "offers.enterStartDate": "يرجى اختيار تاريخ البداية",
+  "offers.endDate": "تاريخ النهاية *",
+  "offers.endDateHelper": "تاريخ انتهاء العرض",
+  "offers.enterEndDate": "يرجى اختيار تاريخ النهاية",
+  "offers.endDateAfterStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
+  "offers.rewardType": "نوع المكافأة *",
+  "offers.offerType": "نوع العرض *",
+  "offers.offerTypeNormal": "عرض عادي",
+  "offers.offerTypeCharity": "عرض خيري",
+  "offers.charity": "الجمعية الخيرية",
+  "offers.chooseCharity": "اختر الجمعية الخيرية",
+  "offers.selectCharityHelper": "اختر الجمعية الخيرية المرتبطة بالعرض (اختياري)",
+  "offers.isActive": "العرض نشط",
+  "offers.conditions": "شروط العرض",
+  "offers.addProduct": "إضافة منتج",
+  "offers.enterConditions": "يرجى إضافة شرط واحد على الأقل",
+  "offers.noConditions": "لا توجد شروط مضافة",
+  "offers.noConditionsDescription": "اضغط على \"إضافة منتج\" لإضافة منتج جديد",
+  "offers.product": "المنتج",
+  "offers.chooseProduct": "اختر المنتج",
+  "offers.productVariant": "متغير المنتج",
+  "offers.chooseVariant": "اختر المتغير",
+  "offers.quantity": "الكمية",
+  "offers.quantityPlaceholder": "الكمية",
+  "offers.rewards": "المكافآت",
+  "offers.addReward": "إضافة مكافأة",
+  "offers.enterRewards": "يرجى إضافة مكافأة واحدة على الأقل",
+  "offers.enterDiscountReward": "يرجى إدخال مبلغ ونوع الخصم للمكافأة",
+  "offers.chooseProductVariant": "يرجى اختيار منتج ومتغير للمكافأة",
+  "offers.noRewards": "لا توجد مكافآت مضافة",
+  "offers.noRewardsDescription": "اضغط على \"إضافة مكافأة\" لإضافة مكافأة جديدة",
+  "offers.value": "القيمة",
+  "offers.valuePlaceholder": "القيمة",
+  "offers.discountType": "نوع الخصم",
+  "offers.discountPercentage": "نسبة مئوية",
+  "offers.discountFixed": "مبلغ ثابت",
+  "offers.validationError": "خطأ في التحقق!",
+  "offers.correctErrors": "يرجى تصحيح الأخطاء في النموذج",
+  "offers.creating": "جاري الإنشاء...",
+  "offers.createOffer": "إنشاء العرض",
+  "offers.updating": "جاري التحديث...",
+  "offers.updateOffer": "تحديث العرض",
+  "offers.saving": "جاري الحفظ...",
+  "offers.loading": "جاري التحميل...",
+  
+  "contactUs.title": "رسائل التواصل",
+  "contactUs.subtitle": "عرض وإدارة جميع رسائل التواصل",
+  "contactUs.loadError": "فشل في تحميل رسائل التواصل",
+  "contactUs.success": "نجح!",
+  "contactUs.error": "خطأ!",
+  "contactUs.markAsReadSuccess": "تم تمييز الرسالة كمقروءة",
+  "contactUs.markAsReadError": "فشل في تمييز الرسالة كمقروءة",
+  "contactUs.deleteSuccess": "تم حذف الرسالة بنجاح",
+  "contactUs.deleteError": "فشل في حذف الرسالة",
+  "contactUs.name": "الاسم",
+  "contactUs.email": "البريد الإلكتروني",
+  "contactUs.message": "الرسالة",
+  "contactUs.status": "الحالة",
+  "contactUs.sendDate": "تاريخ الإرسال",
+  "contactUs.actions": "الإجراءات",
+  "contactUs.new": "جديد",
+  "contactUs.read": "مقروءة",
+  "contactUs.unread": "غير مقروءة",
+  "contactUs.markAsRead": "تمييز كمقروءة",
+  "contactUs.delete": "حذف",
+  "contactUs.showing": "عرض {{from}} إلى {{to}} من {{total}} رسالة",
+  "contactUs.page": "صفحة",
+  "contactUs.of": "من",
+  "contactUs.previous": "السابق",
+  "contactUs.next": "التالي",
+  "contactUs.confirmDelete": "حذف الرسالة",
+  "contactUs.deleteMessage": "هل أنت متأكد من حذف هذه الرسالة؟ لا يمكن التراجع عن هذا الإجراء.",
+  "contactUs.cancel": "إلغاء",
+  "contactUs.noMessages": "لا توجد رسائل تواصل حتى الآن",
+  "contactUs.loading": "جاري التحميل...",
+  
+  "careers.title": "طلبات التوظيف",
+  "careers.subtitle": "عرض وإدارة جميع طلبات التوظيف",
+  "careers.allApplications": "جميع طلبات التوظيف",
+  "careers.loadError": "فشل في تحميل طلبات التوظيف",
+  "careers.success": "نجاح!",
+  "careers.error": "خطأ!",
+  "careers.deleteSuccess": "تم حذف طلب التوظيف بنجاح",
+  "careers.deleteError": "حدث خطأ أثناء حذف طلب التوظيف",
+  "careers.name": "الاسم",
+  "careers.email": "البريد الإلكتروني",
+  "careers.phone": "الهاتف",
+  "careers.position": "المنصب المطلوب",
+  "careers.attachedFile": "الملف المرفق",
+  "careers.applicationDate": "تاريخ التقديم",
+  "careers.actions": "الإجراءات",
+  "careers.downloadFile": "تحميل الملف",
+  "careers.viewMessage": "عرض الرسالة",
+  "careers.delete": "حذف",
+  "careers.showing": "عرض {{from}} إلى {{to}} من {{total}} طلب",
+  "careers.page": "صفحة",
+  "careers.of": "من",
+  "careers.previous": "السابق",
+  "careers.next": "التالي",
+  "careers.confirmDelete": "حذف طلب التوظيف",
+  "careers.deleteMessage": "هل أنت متأكد من حذف طلب التوظيف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "careers.cancel": "إلغاء",
+  "careers.messageFrom": "رسالة من: {{name}}",
+  "careers.close": "إغلاق",
+  "careers.noApplications": "لا توجد طلبات توظيف حتى الآن",
+  "careers.loading": "جاري التحميل...",
+  
+  "socialMediaLinks.title": "روابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.subtitle": "عرض وإدارة جميع روابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.addNew": "إضافة رابط جديد",
+  "socialMediaLinks.allLinks": "جميع الروابط",
+  "socialMediaLinks.searchPlaceholder": "ابحث عن رابط...",
+  "socialMediaLinks.loadError": "فشل في تحميل روابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.success": "نجاح!",
+  "socialMediaLinks.error": "خطأ!",
+  "socialMediaLinks.deleteSuccess": "تم حذف الرابط بنجاح",
+  "socialMediaLinks.deleteError": "حدث خطأ أثناء حذف الرابط",
+  "socialMediaLinks.addSuccess": "تم إضافة رابط وسائل التواصل الاجتماعي بنجاح",
+  "socialMediaLinks.addError": "فشل في إضافة رابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.updateSuccess": "تم تحديث رابط وسائل التواصل الاجتماعي بنجاح",
+  "socialMediaLinks.updateError": "فشل في تحديث رابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.icon": "الأيقونة",
+  "socialMediaLinks.nameAr": "الاسم (عربي)",
+  "socialMediaLinks.nameEn": "الاسم (إنجليزي)",
+  "socialMediaLinks.url": "الرابط",
+  "socialMediaLinks.status": "الحالة",
+  "socialMediaLinks.createdAt": "تاريخ الإنشاء",
+  "socialMediaLinks.actions": "الإجراءات",
+  "socialMediaLinks.edit": "تعديل",
+  "socialMediaLinks.delete": "حذف",
+  "socialMediaLinks.active": "نشط",
+  "socialMediaLinks.inactive": "غير نشط",
+  "socialMediaLinks.notSpecified": "غير محدد",
+  "socialMediaLinks.showing": "عرض {{from}} إلى {{to}} من {{total}} رابط",
+  "socialMediaLinks.page": "صفحة",
+  "socialMediaLinks.of": "من",
+  "socialMediaLinks.previous": "السابق",
+  "socialMediaLinks.next": "التالي",
+  "socialMediaLinks.confirmDelete": "حذف الرابط",
+  "socialMediaLinks.deleteMessage": "هل أنت متأكد من حذف رابط \"{{title}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "socialMediaLinks.cancel": "إلغاء",
+  "socialMediaLinks.noLinks": "لا توجد روابط وسائل تواصل اجتماعي حتى الآن",
+  "socialMediaLinks.loading": "جاري التحميل...",
+  "socialMediaLinks.addDescription": "إضافة رابط جديد لوسائل التواصل الاجتماعي",
+  "socialMediaLinks.editDescription": "تعديل رابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.editLink": "تعديل رابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.basicInfo": "المعلومات الأساسية",
+  "socialMediaLinks.iconRequired": "أيقونة الرابط *",
+  "socialMediaLinks.clickToUploadIcon": "انقر لرفع أيقونة الرابط",
+  "socialMediaLinks.clickToUploadNewIcon": "انقر لرفع أيقونة جديدة",
+  "socialMediaLinks.imageFormats": "JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)",
+  "socialMediaLinks.selectIcon": "اختر أيقونة للرابط",
+  "socialMediaLinks.selectIconOptional": "اتركه فارغاً للاحتفاظ بالأيقونة الحالية",
+  "socialMediaLinks.iconRequiredError": "أيقونة الرابط مطلوبة",
+  "socialMediaLinks.titleEnLabel": "اسم الرابط (إنجليزي) *",
+  "socialMediaLinks.titleEnHelper": "اسم الرابط باللغة الإنجليزية",
+  "socialMediaLinks.titleEnRequired": "اسم الرابط بالإنجليزية مطلوب",
+  "socialMediaLinks.titleEnPlaceholder": "Facebook",
+  "socialMediaLinks.titleArLabel": "اسم الرابط (عربي) *",
+  "socialMediaLinks.titleArHelper": "اسم الرابط باللغة العربية",
+  "socialMediaLinks.titleArRequired": "اسم الرابط بالعربية مطلوب",
+  "socialMediaLinks.titleArPlaceholder": "فيسبوك",
+  "socialMediaLinks.urlLabel": "رابط وسائل التواصل الاجتماعي *",
+  "socialMediaLinks.urlHelper": "رابط صفحة وسائل التواصل الاجتماعي",
+  "socialMediaLinks.urlRequired": "رابط وسائل التواصل الاجتماعي مطلوب",
+  "socialMediaLinks.urlInvalid": "يرجى إدخال رابط صحيح",
+  "socialMediaLinks.urlPlaceholder": "https://www.facebook.com/yourpage",
+  "socialMediaLinks.statusLabel": "الحالة *",
+  "socialMediaLinks.statusActive": "نشط",
+  "socialMediaLinks.statusInactive": "غير نشط",
+  "socialMediaLinks.saving": "جاري الحفظ...",
+  "socialMediaLinks.saveLink": "حفظ الرابط",
+  "socialMediaLinks.updating": "جاري التحديث...",
+  "socialMediaLinks.updateLink": "تحديث الرابط",
+  "socialMediaLinks.linkNotFound": "لم يتم العثور على رابط وسائل التواصل الاجتماعي",
+  "socialMediaLinks.linkNotFoundError": "لم يتم العثور على رابط وسائل التواصل الاجتماعي"
 }

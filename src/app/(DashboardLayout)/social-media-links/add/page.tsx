@@ -5,8 +5,10 @@ import { Icon } from "@iconify/react";
 import { useCreateSocialMediaLinkMutation } from "@/store/api/socialMediaLinksApi";
 import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const AddSocialMediaLinkPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [createLink, { isLoading }] = useCreateSocialMediaLinkMutation();
 
@@ -60,21 +62,21 @@ const AddSocialMediaLinkPage = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.title_en.trim()) {
-      newErrors.title_en = "اسم الرابط بالإنجليزية مطلوب";
+      newErrors.title_en = t("socialMediaLinks.titleEnRequired");
     }
 
     if (!formData.title_ar.trim()) {
-      newErrors.title_ar = "اسم الرابط بالعربية مطلوب";
+      newErrors.title_ar = t("socialMediaLinks.titleArRequired");
     }
 
     if (!formData.url.trim()) {
-      newErrors.url = "رابط وسائل التواصل الاجتماعي مطلوب";
+      newErrors.url = t("socialMediaLinks.urlRequired");
     } else if (!isValidUrl(formData.url)) {
-      newErrors.url = "يرجى إدخال رابط صحيح";
+      newErrors.url = t("socialMediaLinks.urlInvalid");
     }
 
     if (!imageFile) {
-      newErrors.icon = "أيقونة الرابط مطلوبة";
+      newErrors.icon = t("socialMediaLinks.iconRequiredError");
     }
 
     setErrors(newErrors);
@@ -106,7 +108,7 @@ const AddSocialMediaLinkPage = () => {
         is_active: formData.is_active,
       }).unwrap();
 
-      showNotification("success", "نجح!", "تم إضافة رابط وسائل التواصل الاجتماعي بنجاح");
+      showNotification("success", t("socialMediaLinks.success"), t("socialMediaLinks.addSuccess"));
       
       // Reset form
       setFormData({
@@ -120,7 +122,7 @@ const AddSocialMediaLinkPage = () => {
       setErrors({});
       
     } catch (err: any) {
-      showNotification("error", "خطأ!", err?.data?.message || "فشل في إضافة رابط وسائل التواصل الاجتماعي");
+      showNotification("error", t("socialMediaLinks.error"), err?.data?.message || t("socialMediaLinks.addError"));
     }
   };
 
@@ -134,19 +136,19 @@ const AddSocialMediaLinkPage = () => {
           </button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة رابط وسائل التواصل الاجتماعي</h1>
-          <p className="text-sm text-ld mr-12">إضافة رابط جديد لوسائل التواصل الاجتماعي</p>
+          <h1 className="text-3xl font-bold text-dark dark:text-white">{t("socialMediaLinks.addNew")}</h1>
+          <p className="text-sm text-ld mr-12">{t("socialMediaLinks.addDescription")}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
         {/* Basic Information */}
         <Card>
-          <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">المعلومات الأساسية</h2>
+          <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">{t("socialMediaLinks.basicInfo")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Image Upload - Full Row */}
             <div className="md:col-span-2">
-              <Label htmlFor="icon" className="mb-2 block">أيقونة الرابط <span className="text-error">*</span></Label>
+              <Label htmlFor="icon" className="mb-2 block">{t("socialMediaLinks.iconRequired")}</Label>
               
               {/* File Input and Image Preview Side by Side */}
               <div className="flex items-center gap-6">
@@ -156,8 +158,8 @@ const AddSocialMediaLinkPage = () => {
                 >
                   <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                     <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                    <p className="text-sm text-ld mb-1">انقر لرفع أيقونة الرابط</p>
-                    <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                    <p className="text-sm text-ld mb-1">{t("socialMediaLinks.clickToUploadIcon")}</p>
+                    <p className="text-xs text-ld">{t("socialMediaLinks.imageFormats")}</p>
                   </div>
                   <input
                     id="icon"
@@ -201,7 +203,7 @@ const AddSocialMediaLinkPage = () => {
               {errors.icon ? (
                 <p className="mt-1 text-xs text-error">{errors.icon}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر أيقونة للرابط</p>
+                <p className="mt-1 text-xs text-gray-500">{t("socialMediaLinks.selectIcon")}</p>
               )}
             </div>
 
@@ -209,7 +211,7 @@ const AddSocialMediaLinkPage = () => {
             <div className="md:col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="title_en" className="mb-2 block">اسم الرابط (إنجليزي) <span className="text-error">*</span></Label>
+                  <Label htmlFor="title_en" className="mb-2 block">{t("socialMediaLinks.titleEnLabel")}</Label>
                   <TextInput
                     id="title_en"
                     name="title_en"
@@ -217,17 +219,17 @@ const AddSocialMediaLinkPage = () => {
                     onChange={handleInputChange}
                     required
                     icon={() => <Icon icon="solar:letter-unread-bold" height={18} />}
-                    placeholder="Facebook"
+                    placeholder={t("socialMediaLinks.titleEnPlaceholder")}
                   />
                   {errors.title_en ? (
                     <p className="mt-1 text-xs text-error">{errors.title_en}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">اسم الرابط باللغة الإنجليزية</p>
+                    <p className="mt-1 text-xs text-gray-500">{t("socialMediaLinks.titleEnHelper")}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="title_ar" className="mb-2 block">اسم الرابط (عربي) <span className="text-error">*</span></Label>
+                  <Label htmlFor="title_ar" className="mb-2 block">{t("socialMediaLinks.titleArLabel")}</Label>
                   <TextInput
                     id="title_ar"
                     name="title_ar"
@@ -235,12 +237,12 @@ const AddSocialMediaLinkPage = () => {
                     onChange={handleInputChange}
                     required
                     icon={() => <Icon icon="solar:letter-unread-bold" height={18} />}
-                    placeholder="فيسبوك"
+                    placeholder={t("socialMediaLinks.titleArPlaceholder")}
                   />
                   {errors.title_ar ? (
                     <p className="mt-1 text-xs text-error">{errors.title_ar}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">اسم الرابط باللغة العربية</p>
+                    <p className="mt-1 text-xs text-gray-500">{t("socialMediaLinks.titleArHelper")}</p>
                   )}
                 </div>
               </div>
@@ -248,7 +250,7 @@ const AddSocialMediaLinkPage = () => {
 
             {/* URL Field */}
             <div className="md:col-span-2">
-              <Label htmlFor="url" className="mb-2 block">رابط وسائل التواصل الاجتماعي <span className="text-error">*</span></Label>
+              <Label htmlFor="url" className="mb-2 block">{t("socialMediaLinks.urlLabel")}</Label>
               <TextInput
                 id="url"
                 name="url"
@@ -257,18 +259,18 @@ const AddSocialMediaLinkPage = () => {
                 onChange={handleInputChange}
                 required
                 icon={() => <Icon icon="solar:link-bold" height={18} />}
-                placeholder="https://www.facebook.com/yourpage"
+                placeholder={t("socialMediaLinks.urlPlaceholder")}
               />
               {errors.url ? (
                 <p className="mt-1 text-xs text-error">{errors.url}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">رابط صفحة وسائل التواصل الاجتماعي</p>
+                <p className="mt-1 text-xs text-gray-500">{t("socialMediaLinks.urlHelper")}</p>
               )}
             </div>
 
             {/* Status */}
             <div className="md:col-span-2">
-              <Label className="mb-2 block">الحالة <span className="text-error">*</span></Label>
+              <Label className="mb-2 block">{t("socialMediaLinks.statusLabel")}</Label>
               <div className="flex gap-6">
                 <div className="flex items-center">
                   <input
@@ -280,7 +282,7 @@ const AddSocialMediaLinkPage = () => {
                     onChange={() => setFormData(prev => ({ ...prev, is_active: true }))}
                     className="ui-checkbox"
                   />
-                  <Label htmlFor="active" className="mr-2">نشط</Label>
+                  <Label htmlFor="active" className="mr-2">{t("socialMediaLinks.statusActive")}</Label>
                 </div>
                 <div className="flex items-center">
                   <input
@@ -292,7 +294,7 @@ const AddSocialMediaLinkPage = () => {
                     onChange={() => setFormData(prev => ({ ...prev, is_active: false }))}
                     className="ui-checkbox"
                   />
-                  <Label htmlFor="inactive" className="mr-2">غير نشط</Label>
+                  <Label htmlFor="inactive" className="mr-2">{t("socialMediaLinks.statusInactive")}</Label>
                 </div>
               </div>
             </div>
@@ -303,19 +305,19 @@ const AddSocialMediaLinkPage = () => {
         <div className="flex justify-end gap-3">
           <Link href="/social-media-links">
             <Button color="gray" disabled={isLoading}>
-              إلغاء
+              {t("socialMediaLinks.cancel")}
             </Button>
           </Link>
           <Button type="submit" color="blue" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Spinner size="sm" className="ml-2" />
-                جاري الحفظ...
+                {t("socialMediaLinks.saving")}
               </>
             ) : (
               <>
                 <Icon icon="solar:check-circle-bold" height={16} className="ml-1" />
-                حفظ الرابط
+                {t("socialMediaLinks.saveLink")}
               </>
             )}
           </Button>

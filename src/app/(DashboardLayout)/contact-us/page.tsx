@@ -5,8 +5,10 @@ import { Icon } from "@iconify/react";
 import { useGetContactMessagesQuery, useMarkContactAsReadMutation, useDeleteContactMessageMutation } from "@/store/api/contactUsApi";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import { useTranslation } from "react-i18next";
 
 const ContactUsPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -35,9 +37,9 @@ const ContactUsPage = () => {
   const handleMarkAsRead = async (id: number) => {
     try {
       await markAsRead(id).unwrap();
-      showNotification("success", "نجح!", "تم تمييز الرسالة كمقروءة");
+      showNotification("success", t("contactUs.success"), t("contactUs.markAsReadSuccess"));
     } catch (err: any) {
-      showNotification("error", "خطأ!", err?.data?.message || "فشل في تمييز الرسالة كمقروءة");
+      showNotification("error", t("contactUs.error"), err?.data?.message || t("contactUs.markAsReadError"));
     }
   };
 
@@ -51,11 +53,11 @@ const ContactUsPage = () => {
     
     try {
       await deleteContact(contactToDelete).unwrap();
-      showNotification("success", "نجح!", "تم حذف الرسالة بنجاح");
+      showNotification("success", t("contactUs.success"), t("contactUs.deleteSuccess"));
       setShowDeleteModal(false);
       setContactToDelete(null);
     } catch (err: any) {
-      showNotification("error", "خطأ!", err?.data?.message || "فشل في حذف الرسالة");
+      showNotification("error", t("contactUs.error"), err?.data?.message || t("contactUs.deleteError"));
     }
   };
 
@@ -82,8 +84,8 @@ const ContactUsPage = () => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل رسائل التواصل</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("contactUs.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("contactUs.loadError")}</p>
           </div>
         </div>
       </div>
@@ -95,64 +97,65 @@ const ContactUsPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-dark dark:text-white">رسائل التواصل</h1>
-          <p className="text-sm text-ld">عرض وإدارة جميع رسائل التواصل</p>
+          <h1 className="text-3xl font-bold text-dark dark:text-white">{t("contactUs.title")}</h1>
+          <p className="text-sm text-ld">{t("contactUs.subtitle")}</p>
         </div>
       </div>
 
       {/* Contact Messages Table */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الاسم</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">البريد الإلكتروني</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الرسالة</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الحالة</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">تاريخ الإرسال</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الإجراءات</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">#</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.name")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.email")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.message")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.status")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.sendDate")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("contactUs.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {contactData?.data?.map((contact, index) => (
                 <tr key={contact.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white text-center">
                     {contactData.pagination ? (contactData.pagination.from + index) : (index + 1)}
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white text-center">
                     {contact.name}
                   </td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-400 text-center">
                     {contact.email}
                   </td>
-                  <td className="px-6 py-4 max-w-xs">
+                  <td className="px-6 py-4 max-w-xs text-center">
                     <div className="truncate text-gray-600 dark:text-gray-400" title={contact.message}>
                       {contact.message}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex gap-2 justify-center">
                       {!contact.is_read && (
-                        <Badge color="blue">جديد</Badge>
+                        <Badge color="blue">{t("contactUs.new")}</Badge>
                       )}
                       <Badge color={contact.is_read ? "green" : "gray"}>
-                        {contact.is_read ? "مقروءة" : "غير مقروءة"}
+                        {contact.is_read ? t("contactUs.read") : t("contactUs.unread")}
                       </Badge>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-400 text-center">
                     {formatDate(contact.created_at)}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex gap-2 justify-center">
                       {!contact.is_read && (
                         <Button 
                           size="sm" 
                           color="green"
                           onClick={() => handleMarkAsRead(contact.id)}
                           disabled={markingAsRead}
+                          title={t("contactUs.markAsRead")}
                         >
                           <Icon icon="solar:check-circle-bold" height={16} />
                         </Button>
@@ -163,6 +166,7 @@ const ContactUsPage = () => {
                         color="red"
                         onClick={() => handleDeleteClick(contact.id)}
                         disabled={deleting}
+                        title={t("contactUs.delete")}
                       >
                         <Icon icon="solar:trash-bin-trash-bold" height={16} />
                       </Button>
@@ -172,13 +176,20 @@ const ContactUsPage = () => {
               ))}
             </tbody>
           </table>
+
+          {(!contactData?.data || contactData.data.length === 0) && (
+            <div className="text-center py-12">
+              <Icon icon="solar:letter-bold" height={64} className="text-ld mx-auto mb-4" />
+              <p className="text-ld dark:text-white/70">{t("contactUs.noMessages")}</p>
+            </div>
+          )}
         </div>
 
         {/* Pagination */}
         {contactData?.pagination && contactData.pagination.last_page > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              عرض {contactData.pagination.from} إلى {contactData.pagination.to} من {contactData.pagination.total} رسالة
+              {t("contactUs.showing", { from: contactData.pagination.from, to: contactData.pagination.to, total: contactData.pagination.total })}
             </div>
             
             <div className="flex gap-2">
@@ -189,11 +200,11 @@ const ContactUsPage = () => {
                 disabled={currentPage === 1}
               >
                 <Icon icon="solar:alt-arrow-right-bold" height={16} />
-                السابق
+                {t("contactUs.previous")}
               </Button>
               
               <span className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
-                صفحة {currentPage} من {contactData.pagination.last_page}
+                {t("contactUs.page")} {currentPage} {t("contactUs.of")} {contactData.pagination.last_page}
               </span>
               
               <Button
@@ -202,7 +213,7 @@ const ContactUsPage = () => {
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === contactData.pagination.last_page}
               >
-                التالي
+                {t("contactUs.next")}
                 <Icon icon="solar:alt-arrow-left-bold" height={16} />
               </Button>
             </div>
@@ -215,10 +226,10 @@ const ContactUsPage = () => {
         isOpen={showDeleteModal}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        title="حذف الرسالة"
-        message="هل أنت متأكد من حذف هذه الرسالة؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("contactUs.confirmDelete")}
+        message={t("contactUs.deleteMessage")}
+        confirmText={t("contactUs.delete")}
+        cancelText={t("contactUs.cancel")}
         isLoading={deleting}
         type="danger"
       />

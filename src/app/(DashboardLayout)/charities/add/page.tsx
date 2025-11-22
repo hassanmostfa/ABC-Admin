@@ -6,8 +6,10 @@ import { useCreateCharityMutation, useGetAllCountriesQuery, useGetGovernoratesBy
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddCharityPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createCharity, { isLoading: creating }] = useCreateCharityMutation();
@@ -28,18 +30,18 @@ const AddCharityPage = () => {
 
   const validateNameAr = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الجمعية بالعربية";
+      return t("charities.enterNameAr");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "الاسم يجب أن يكون على الأقل حرفين";
+      return t("charities.nameMinLength");
     }
     
     if (cleanName.length > 100) {
-      return "الاسم يجب أن لا يتجاوز 100 حرف";
+      return t("charities.nameMaxLength");
     }
     
     return "";
@@ -47,18 +49,18 @@ const AddCharityPage = () => {
 
   const validateNameEn = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم الجمعية بالإنجليزية";
+      return t("charities.enterNameEn");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "الاسم يجب أن يكون على الأقل حرفين";
+      return t("charities.nameMinLength");
     }
     
     if (cleanName.length > 100) {
-      return "الاسم يجب أن لا يتجاوز 100 حرف";
+      return t("charities.nameMaxLength");
     }
     
     return "";
@@ -66,18 +68,18 @@ const AddCharityPage = () => {
 
   const validatePhone = (phone: string): string => {
     if (!phone.trim() || phone.trim() === "+965") {
-      return "يرجى إدخال رقم الهاتف";
+      return t("charities.enterPhone");
     }
     
     // Check if it starts with +965 and has more content
     if (!phone.startsWith("+965 ") || phone.length <= 5) {
-      return "يرجى إدخال رقم هاتف صحيح";
+      return t("charities.phoneInvalidFormat");
     }
     
     // Remove +965 prefix and validate the local number
     const localNumber = phone.substring(5);
     if (!/^[0-9\s\-\(\)]+$/.test(localNumber)) {
-      return "رقم الهاتف المحلي غير صحيح";
+      return t("charities.phoneInvalid");
     }
     
     return "";
@@ -85,13 +87,13 @@ const AddCharityPage = () => {
 
   const validateLocation = (countryId: number, governorateId: number, areaId: number): string => {
     if (!countryId || countryId === 0) {
-      return "يرجى اختيار الدولة";
+      return t("charities.selectCountry");
     }
     if (!governorateId || governorateId === 0) {
-      return "يرجى اختيار المحافظة";
+      return t("charities.selectGovernorate");
     }
     if (!areaId || areaId === 0) {
-      return "يرجى اختيار المنطقة";
+      return t("charities.selectArea");
     }
     return "";
   };
@@ -145,7 +147,7 @@ const AddCharityPage = () => {
       const messages = apiErrors[firstField];
       if (Array.isArray(messages) && messages.length > 0) return messages[0];
     }
-    return err?.data?.message || "حدث خطأ أثناء إضافة الجمعية";
+    return err?.data?.message || t("charities.addError");
   };
 
   const extractFieldErrors = (err: any): Record<string, string> => {
@@ -177,7 +179,7 @@ const AddCharityPage = () => {
         ...(phoneError && { phone: phoneError }),
         ...(locationError && { location: locationError }),
       });
-      showNotification("error", "خطأ!", "يرجى تصحيح الأخطاء في النموذج");
+      showNotification("error", t("charities.error"), t("charities.correctErrors"));
       return;
     }
 
@@ -192,7 +194,7 @@ const AddCharityPage = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة الجمعية بنجاح");
+        showNotification("success", t("charities.success"), t("charities.addSuccess"));
         setTimeout(() => {
           router.push("/charities");
         }, 1200);
@@ -215,9 +217,9 @@ const AddCharityPage = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة جمعية جديدة</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("charities.addNew")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">إنشاء جمعية خيرية جديدة</p>
+          <p className="text-sm text-ld mr-12">{t("charities.addDescription")}</p>
         </div>
         <div className="flex items-center gap-4">
           {/* Removed theme toggle */}
@@ -228,11 +230,11 @@ const AddCharityPage = () => {
         <Card>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name_ar" className="mb-2 block">اسم الجمعية (عربي) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_ar" className="mb-2 block">{t("charities.nameAr")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_ar" 
                 name="name_ar" 
-                placeholder="اسم الجمعية بالعربية" 
+                placeholder={t("charities.nameArPlaceholder")} 
                 value={formData.name_ar} 
                 onChange={handleInputChange} 
                 required 
@@ -241,12 +243,12 @@ const AddCharityPage = () => {
               {fieldErrors.name_ar ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الجمعية الخيرية بالعربية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterNameArHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="name_en" className="mb-2 block">اسم الجمعية (إنجليزي) <span className="text-error">*</span></Label>
+              <Label htmlFor="name_en" className="mb-2 block">{t("charities.nameEn")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name_en" 
                 name="name_en" 
@@ -259,16 +261,16 @@ const AddCharityPage = () => {
               {fieldErrors.name_en ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل اسم الجمعية الخيرية بالإنجليزية</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterNameEnHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف <span className="text-error">*</span></Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("charities.phone")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
-                placeholder="+965 xxxx xxxx" 
+                placeholder={t("charities.phonePlaceholder")} 
                 value={formData.phone} 
                 onChange={handleInputChange} 
                 required 
@@ -278,12 +280,12 @@ const AddCharityPage = () => {
               {fieldErrors.phone ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.phone}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل رقم الهاتف الكامل</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.enterPhoneFull")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="country_id" className="mb-2 block">الدولة <span className="text-error">*</span></Label>
+              <Label htmlFor="country_id" className="mb-2 block">{t("charities.country")} <span className="text-error">*</span></Label>
               <Select
                 id="country_id"
                 name="country_id"
@@ -293,7 +295,7 @@ const AddCharityPage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:flag-bold" height={18} />}
               >
-                <option value={0}>اختر الدولة</option>
+                <option value={0}>{t("charities.chooseCountry")}</option>
                 {countriesData?.data?.map((country: any) => (
                   <option key={country.id} value={country.id}>
                     {country.name_ar} - {country.name_en}
@@ -303,12 +305,12 @@ const AddCharityPage = () => {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر الدولة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectCountryHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="governorate_id" className="mb-2 block">المحافظة <span className="text-error">*</span></Label>
+              <Label htmlFor="governorate_id" className="mb-2 block">{t("charities.governorate")} <span className="text-error">*</span></Label>
               <Select
                 id="governorate_id"
                 name="governorate_id"
@@ -319,7 +321,7 @@ const AddCharityPage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:buildings-bold" height={18} />}
               >
-                <option value={0}>اختر المحافظة</option>
+                <option value={0}>{t("charities.chooseGovernorate")}</option>
                 {governoratesData?.data?.map((governorate: any) => (
                   <option key={governorate.id} value={governorate.id}>
                     {governorate.name_ar} - {governorate.name_en}
@@ -329,12 +331,12 @@ const AddCharityPage = () => {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المحافظة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectGovernorateHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="area_id" className="mb-2 block">المنطقة <span className="text-error">*</span></Label>
+              <Label htmlFor="area_id" className="mb-2 block">{t("charities.area")} <span className="text-error">*</span></Label>
               <Select
                 id="area_id"
                 name="area_id"
@@ -345,7 +347,7 @@ const AddCharityPage = () => {
                 className="select-md"
                 icon={() => <Icon icon="solar:home-bold" height={18} />}
               >
-                <option value={0}>اختر المنطقة</option>
+                <option value={0}>{t("charities.chooseArea")}</option>
                 {areasData?.data?.map((area: any) => (
                   <option key={area.id} value={area.id}>
                     {area.name_ar} - {area.name_en}
@@ -355,7 +357,7 @@ const AddCharityPage = () => {
               {fieldErrors.location ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.location}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">اختر المنطقة</p>
+                <p className="mt-1 text-xs text-gray-500">{t("charities.selectAreaHelper")}</p>
               )}
             </div>
           </div>
@@ -364,10 +366,10 @@ const AddCharityPage = () => {
         <Card className="mt-6">
           <div className="flex items-center justify-end gap-3">
             <Link href="/charities">
-              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">إلغاء</button>
+              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">{t("charities.cancel")}</button>
             </Link>
             <button type="submit" disabled={creating} className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50">
-              {creating ? (<><Spinner size="sm" /> جاري الحفظ...</>) : (<><Icon icon="solar:add-circle-bold" height={20} /> حفظ الجمعية</>)}
+              {creating ? (<><Spinner size="sm" /> {t("charities.saving")}</>) : (<><Icon icon="solar:add-circle-bold" height={20} /> {t("charities.saveCharity")}</>)}
             </button>
           </div>
         </Card>

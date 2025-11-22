@@ -10,8 +10,10 @@ import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const ProductsPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
@@ -48,12 +50,12 @@ const ProductsPage = () => {
 
     try {
       await deleteProduct(productToDelete).unwrap();
-      showNotification("success", "تم!", "تم حذف المنتج بنجاح");
+      showNotification("success", t("products.success"), t("products.deleteSuccess"));
       setShowDeleteModal(false);
       setProductToDelete(null);
     } catch (err: any) {
       console.error("Delete product error:", err);
-      showNotification("error", "خطأ!", "حدث خطأ أثناء حذف المنتج");
+      showNotification("error", t("products.error"), t("products.deleteError"));
     }
   };
 
@@ -65,7 +67,7 @@ const ProductsPage = () => {
   const getStatusBadge = (isActive: boolean) => {
     return (
       <Badge color={isActive ? "success" : "failure"} className="w-fit">
-        {isActive ? "نشط" : "غير نشط"}
+        {isActive ? t("products.active") : t("products.inactive")}
       </Badge>
     );
   };
@@ -89,7 +91,7 @@ const ProductsPage = () => {
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-error">حدث خطأ أثناء تحميل المنتجات</p>
+        <p className="text-error">{t("products.loadError")}</p>
       </div>
     );
   }
@@ -99,13 +101,13 @@ const ProductsPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-dark dark:text-white">المنتجات</h1>
-          <p className="text-sm text-ld mt-2">إدارة جميع المنتجات</p>
+          <h1 className="text-3xl font-bold text-dark dark:text-white">{t("products.title")}</h1>
+          <p className="text-sm text-ld mt-2">{t("products.subtitle")}</p>
         </div>
         <Link href="/products/add">
           <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
             <Icon icon="solar:add-circle-bold" height={20} />
-            إضافة منتج
+            {t("products.addNew")}
           </button>
         </Link>
       </div>
@@ -116,10 +118,10 @@ const ProductsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div>
-              <Label htmlFor="search" className="mb-2 block">البحث</Label>
+              <Label htmlFor="search" className="mb-2 block">{t("products.search")}</Label>
               <TextInput
                 id="search"
-                placeholder="ابحث عن المنتجات..."
+                placeholder={t("products.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 icon={() => <Icon icon="solar:magnifer-bold" height={18} />}
@@ -128,7 +130,7 @@ const ProductsPage = () => {
 
             {/* Category Filter */}
             <div>
-              <Label htmlFor="category" className="mb-2 block">التصنيف الرئيسي</Label>
+              <Label htmlFor="category" className="mb-2 block">{t("products.mainCategory")}</Label>
               <Select
                 id="category"
                 value={categoryFilter}
@@ -139,7 +141,7 @@ const ProductsPage = () => {
                 }}
                 className="select-md"
               >
-                <option value={0}>جميع التصنيفات</option>
+                <option value={0}>{t("products.allCategories")}</option>
                 {categoriesData?.data?.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name_ar} - {category.name_en}
@@ -150,7 +152,7 @@ const ProductsPage = () => {
 
             {/* Subcategory Filter */}
             <div>
-              <Label htmlFor="subcategory" className="mb-2 block">التصنيف الفرعي</Label>
+              <Label htmlFor="subcategory" className="mb-2 block">{t("products.subCategory")}</Label>
               <Select
                 id="subcategory"
                 value={subcategoryFilter}
@@ -161,7 +163,7 @@ const ProductsPage = () => {
                 className="select-md"
                 disabled={!categoryFilter || categoryFilter === 0}
               >
-                <option value={0}>جميع التصنيفات الفرعية</option>
+                <option value={0}>{t("products.allSubcategories")}</option>
                 {subcategoriesData?.data?.filter(sub => sub.category_id === categoryFilter).map((subcategory) => (
                   <option key={subcategory.id} value={subcategory.id}>
                     {subcategory.name_ar} - {subcategory.name_en}
@@ -182,7 +184,7 @@ const ProductsPage = () => {
               }}
               className="px-4 py-2 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
             >
-              إعادة تعيين
+              {t("products.reset")}
             </button>
           </div>
         </div>
@@ -195,13 +197,13 @@ const ProductsPage = () => {
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الصورة</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">اسم المنتج</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">التصنيف</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">رمز المنتج</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">المتغيرات</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الحالة</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الإجراءات</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.image")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.productName")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.category")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.sku")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.variants")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.status")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -248,7 +250,7 @@ const ProductsPage = () => {
                   </td>
                   <td className="px-6 py-4">
                     <Badge color="info" className="w-fit">
-                      {product.variants?.length || 0} متغير
+                      {product.variants?.length || 0} {t("products.variant")}
                     </Badge>
                   </td>
                   <td className="px-6 py-4">
@@ -284,15 +286,15 @@ const ProductsPage = () => {
         {productsData?.pagination && productsData.pagination.last_page > 1 && (
           <div className="flex items-center justify-between mt-6 pt-6 border-t border-ld">
             <div className="text-sm text-ld dark:text-white/70">
-              عرض {productsData.pagination.from} إلى {productsData.pagination.to} من {productsData.pagination.total} منتج
+              {t("products.showing", { from: productsData.pagination.from, to: productsData.pagination.to, total: productsData.pagination.total })}
             </div>
             <Pagination
               currentPage={currentPage}
               totalPages={productsData.pagination.last_page}
               onPageChange={setCurrentPage}
               showIcons
-              previousLabel="السابق"
-              nextLabel="التالي"
+              previousLabel={t("products.previous")}
+              nextLabel={t("products.next")}
             />
           </div>
         )}
@@ -303,10 +305,10 @@ const ProductsPage = () => {
         isOpen={showDeleteModal}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        title="تأكيد الحذف"
-        message="هل أنت متأكد من أنك تريد حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("products.confirmDelete")}
+        message={t("products.deleteMessage")}
+        confirmText={t("products.delete")}
+        cancelText={t("products.cancel")}
         isLoading={deleting}
         type="danger"
       />

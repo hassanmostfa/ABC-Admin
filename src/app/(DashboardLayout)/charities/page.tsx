@@ -6,8 +6,10 @@ import { useGetCharitiesQuery, useDeleteCharityMutation } from "@/store/api/char
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const CharitiesPage = () => {
+  const { t } = useTranslation();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,12 +35,12 @@ const CharitiesPage = () => {
       if (result.success) {
         setShowConfirmModal(false);
         setCharityToDelete(null);
-        showNotification("success", "نجاح!", "تم حذف الجمعية بنجاح");
+        showNotification("success", t("charities.success"), t("charities.deleteSuccess"));
       }
     } catch (err: any) {
       setShowConfirmModal(false);
       setCharityToDelete(null);
-      showNotification("error", "خطأ!", err?.data?.message || "حدث خطأ أثناء حذف الجمعية");
+      showNotification("error", t("charities.error"), err?.data?.message || t("charities.deleteError"));
     }
   };
 
@@ -65,8 +67,8 @@ const CharitiesPage = () => {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-error mb-1">خطأ!</h3>
-            <p className="text-sm text-dark dark:text-white">فشل في تحميل الجمعيات</p>
+            <h3 className="text-lg font-semibold text-error mb-1">{t("charities.error")}</h3>
+            <p className="text-sm text-dark dark:text-white">{t("charities.loadError")}</p>
           </div>
         </div>
       </div>
@@ -84,15 +86,15 @@ const CharitiesPage = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">الجمعيات الخيرية</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("charities.title")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">إدارة قائمة الجمعيات الخيرية</p>
+          <p className="text-sm text-ld mr-12">{t("charities.subtitle")}</p>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/charities/add">
             <Button color="primary" className="flex items-center gap-2">
               <Icon icon="solar:add-circle-bold" height={20} />
-              إضافة جمعية جديدة
+              {t("charities.addNew")}
             </Button>
           </Link>
         </div>
@@ -101,11 +103,11 @@ const CharitiesPage = () => {
       {/* Charities Table */}
       <Card>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-dark dark:text-white">جميع الجمعيات</h2>
+          <h2 className="text-xl font-semibold text-dark dark:text-white">{t("charities.allCharities")}</h2>
           <div className="relative w-80">
             <TextInput
               icon={() => <Icon icon="solar:magnifer-linear" height={20} />}
-              placeholder="ابحث عن جمعية..."
+              placeholder={t("charities.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -118,11 +120,11 @@ const CharitiesPage = () => {
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الاسم</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الاسم (إنجليزي)</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">رقم الهاتف</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الموقع</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">الإجراءات</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("charities.nameAr")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("charities.nameEn")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("charities.phone")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("charities.location")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("charities.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -133,18 +135,18 @@ const CharitiesPage = () => {
                   <td className="px-6 py-4 text-dark dark:text-white">{charity.name_en}</td>
                   <td className="px-6 py-4 text-dark dark:text-white">{charity.phone}</td>
                   <td className="px-6 py-4 text-dark dark:text-white">
-                    {charity.area?.name_ar || 'غير محدد'}, {charity.governorate?.name_ar || 'غير محدد'}, {charity.country?.name_ar || 'غير محدد'}
+                    {charity.area?.name_ar || t("charities.notSpecified")}, {charity.governorate?.name_ar || t("charities.notSpecified")}, {charity.country?.name_ar || t("charities.notSpecified")}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
                       <Link href={`/charities/edit/${charity.id}`}>
-                        <button className="text-primary hover:text-primary/80 transition-colors" title="تعديل">
+                        <button className="text-primary hover:text-primary/80 transition-colors" title={t("charities.edit")}>
                           <Icon icon="solar:pen-bold" height={18} />
                         </button>
                       </Link>
                       <button 
                         className="text-error hover:text-error/80 transition-colors" 
-                        title="حذف"
+                        title={t("charities.delete")}
                         onClick={() => handleDeleteClick(charity.id, charity.name_ar)}
                       >
                         <Icon icon="solar:trash-bin-trash-bold" height={18} />
@@ -159,7 +161,7 @@ const CharitiesPage = () => {
           {charitiesData?.data?.length === 0 && (
             <div className="text-center py-12">
               <Icon icon="solar:buildings-2-bold-duotone" height={64} className="text-ld mx-auto mb-4" />
-              <p className="text-ld dark:text-white/70">لا توجد جمعيات حتى الآن</p>
+              <p className="text-ld dark:text-white/70">{t("charities.noCharities")}</p>
             </div>
           )}
         </div>
@@ -168,15 +170,15 @@ const CharitiesPage = () => {
         {charitiesData?.pagination && charitiesData.pagination.last_page > 1 && (
           <div className="flex items-center justify-between mt-6 pt-6 border-t border-ld">
             <div className="text-sm text-ld dark:text-white/70">
-              عرض {charitiesData.pagination.from} إلى {charitiesData.pagination.to} من {charitiesData.pagination.total} جمعية
+              {t("charities.showing", { from: charitiesData.pagination.from, to: charitiesData.pagination.to, total: charitiesData.pagination.total })}
             </div>
             <Pagination
               currentPage={charitiesData.pagination.current_page}
               totalPages={charitiesData.pagination.last_page}
               onPageChange={onPageChange}
               showIcons
-              previousLabel="السابق"
-              nextLabel="التالي"
+              previousLabel={t("charities.previous")}
+              nextLabel={t("charities.next")}
             />
           </div>
         )}
@@ -187,10 +189,10 @@ const CharitiesPage = () => {
         isOpen={showConfirmModal}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="تأكيد الحذف"
-        message={`هل أنت متأكد من حذف الجمعية "${charityToDelete?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("charities.confirmDelete")}
+        message={t("charities.deleteMessage", { name: charityToDelete?.name })}
+        confirmText={t("charities.delete")}
+        cancelText={t("charities.cancel")}
         isLoading={deleting}
         type="danger"
       />

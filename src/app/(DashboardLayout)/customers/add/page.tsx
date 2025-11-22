@@ -6,8 +6,10 @@ import { useCreateCustomerMutation } from "@/store/api/customersApi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 const AddCustomer = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [createCustomer, { isLoading: creating }] = useCreateCustomerMutation();
@@ -21,24 +23,24 @@ const AddCustomer = () => {
 
   const validateName = (name: string): string => {
     if (!name.trim()) {
-      return "يرجى إدخال اسم العميل";
+      return t("customers.enterName");
     }
     
     // Remove extra spaces and validate length
     const cleanName = name.trim().replace(/\s+/g, ' ');
     
     if (cleanName.length < 2) {
-      return "الاسم يجب أن يكون على الأقل حرفين";
+      return t("customers.nameMinLength");
     }
     
     if (cleanName.length > 50) {
-      return "الاسم يجب أن لا يتجاوز 50 حرف";
+      return t("customers.nameMaxLength");
     }
     
     // Arabic and English letters with spaces
     const nameRegex = /^[\u0600-\u06FFa-zA-Z\s]+$/;
     if (!nameRegex.test(cleanName)) {
-      return "الاسم يجب أن يحتوي على أحرف عربية أو إنجليزية فقط";
+      return t("customers.nameInvalidChars");
     }
     
     return "";
@@ -67,7 +69,7 @@ const AddCustomer = () => {
       const messages = apiErrors[firstField];
       if (Array.isArray(messages) && messages.length > 0) return messages[0];
     }
-    return err?.data?.message || "حدث خطأ أثناء إضافة العميل";
+    return err?.data?.message || t("customers.addError");
   };
 
   const extractFieldErrors = (err: any): Record<string, string> => {
@@ -103,7 +105,7 @@ const AddCustomer = () => {
       }).unwrap();
 
       if (result.success) {
-        showNotification("success", "نجاح!", "تم إضافة العميل بنجاح");
+        showNotification("success", t("customers.success"), t("customers.addSuccess"));
         setTimeout(() => {
           router.push("/customers");
         }, 1200);
@@ -111,7 +113,7 @@ const AddCustomer = () => {
     } catch (err: any) {
       const fieldErrs = extractFieldErrors(err);
       if (Object.keys(fieldErrs).length > 0) setFieldErrors(fieldErrs);
-      showNotification("error", "خطأ!", extractErrorMessage(err));
+      showNotification("error", t("customers.error"), extractErrorMessage(err));
     }
   };
 
@@ -126,9 +128,9 @@ const AddCustomer = () => {
                 <Icon icon="solar:arrow-right-bold" height={20} className="text-dark dark:text-white" />
               </button>
             </Link>
-            <h1 className="text-3xl font-bold text-dark dark:text-white">إضافة عميل جديد</h1>
+            <h1 className="text-3xl font-bold text-dark dark:text-white">{t("customers.addNew")}</h1>
           </div>
-          <p className="text-sm text-ld mr-12">إنشاء حساب عميل جديد</p>
+          <p className="text-sm text-ld mr-12">{t("customers.addDescription")}</p>
         </div>
         <div className="flex items-center gap-4">
           {/* Removed theme toggle */}
@@ -139,11 +141,11 @@ const AddCustomer = () => {
         <Card>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name" className="mb-2 block">الاسم <span className="text-error">*</span></Label>
+              <Label htmlFor="name" className="mb-2 block">{t("customers.name")} <span className="text-error">*</span></Label>
               <TextInput 
                 id="name" 
                 name="name" 
-                placeholder="اسم العميل" 
+                placeholder={t("customers.namePlaceholder")} 
                 value={formData.name} 
                 onChange={handleInputChange} 
                 required 
@@ -152,24 +154,24 @@ const AddCustomer = () => {
               {fieldErrors.name ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.name}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">يجب أن يحتوي على أحرف عربية أو إنجليزية فقط</p>
+                <p className="mt-1 text-xs text-gray-500">{t("customers.nameHelper")}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="email" className="mb-2 block">البريد الإلكتروني</Label>
-              <TextInput id="email" name="email" type="email" placeholder="example@abc.com" value={formData.email} onChange={handleInputChange} icon={() => <Icon icon="solar:letter-bold" height={18} />} />
+              <Label htmlFor="email" className="mb-2 block">{t("customers.email")}</Label>
+              <TextInput id="email" name="email" type="email" placeholder={t("customers.emailPlaceholder")} value={formData.email} onChange={handleInputChange} icon={() => <Icon icon="solar:letter-bold" height={18} />} />
               {fieldErrors.email ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.email}</p>
               ) : null}
             </div>
 
             <div>
-              <Label htmlFor="phone" className="mb-2 block">رقم الهاتف</Label>
+              <Label htmlFor="phone" className="mb-2 block">{t("customers.phone")}</Label>
               <TextInput 
                 id="phone" 
                 name="phone" 
-                placeholder="+965 xxxx xxxx" 
+                placeholder={t("customers.phonePlaceholder")} 
                 value={formData.phone} 
                 onChange={handleInputChange} 
                 style={{direction: "ltr"}}
@@ -178,7 +180,7 @@ const AddCustomer = () => {
               {fieldErrors.phone ? (
                 <p className="mt-1 text-xs text-error">{fieldErrors.phone}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">أدخل رقم الهاتف الكامل</p>
+                <p className="mt-1 text-xs text-gray-500">{t("customers.phoneHelper")}</p>
               )}
             </div>
           </div>
@@ -187,10 +189,10 @@ const AddCustomer = () => {
         <Card className="mt-6">
           <div className="flex items-center justify-end gap-3">
             <Link href="/customers">
-              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">إلغاء</button>
+              <button type="button" className="px-6 py-2.5 border border-ld rounded-lg text-dark dark:text-white hover:bg-lightgray dark:hover:bg-darkgray transition-colors">{t("customers.cancel")}</button>
             </Link>
             <button type="submit" disabled={creating} className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50">
-              {creating ? (<><Spinner size="sm" /> جاري الحفظ...</>) : (<><Icon icon="solar:add-circle-bold" height={20} /> حفظ العميل</>)}
+              {creating ? (<><Spinner size="sm" /> {t("customers.saving")}</>) : (<><Icon icon="solar:add-circle-bold" height={20} /> {t("customers.saveCustomer")}</>)}
             </button>
           </div>
         </Card>
