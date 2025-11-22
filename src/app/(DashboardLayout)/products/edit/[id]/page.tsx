@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 interface ProductVariant {
   id: string;
@@ -30,6 +31,7 @@ interface EditProductProps {
 
 const EditProduct = ({ params }: EditProductProps) => {
   const { id } = use(params);
+  const { t } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const [updateProduct, { isLoading: updating }] = useUpdateProductMutation();
