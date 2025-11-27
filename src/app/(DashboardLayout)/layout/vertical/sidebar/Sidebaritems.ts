@@ -119,6 +119,20 @@ const SidebarContent: MenuItem[] = [
           },
 
           {
+            name: "sidebar.orders",
+            icon: "solar:clipboard-list-line-duotone",
+            id: uniqueId(),
+            url: "/orders",
+          },
+
+          {
+            name: "sidebar.invoices",
+            icon: "solar:document-text-line-duotone",
+            id: uniqueId(),
+            url: "/invoices",
+          },
+
+          {
             name: "sidebar.contentManagement",
             id: uniqueId(),
             icon: "solar:document-text-line-duotone",

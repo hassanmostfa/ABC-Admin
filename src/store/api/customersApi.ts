@@ -56,14 +56,25 @@ export interface UpdateCustomerRequest {
 
 export const customersApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getCustomers: builder.query<CustomersResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc' }>({
-      query: ({ search, page = 1, sort_by, sort_order }) => ({
+    getCustomers: builder.query<CustomersResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; per_page?: number }>({
+      query: ({ search, page = 1, sort_by, sort_order, per_page }) => ({
         url: '/admin/customers',
         params: {
           ...(search && { search }),
           page,
           ...(sort_by && { sort_by }),
           ...(sort_order && { sort_order }),
+          ...(per_page && { per_page }),
+        },
+      }),
+      providesTags: ['Customers'],
+    }),
+
+    getAllCustomers: builder.query<CustomersResponse, void>({
+      query: () => ({
+        url: '/admin/customers',
+        params: {
+          get_all: 1,
         },
       }),
       providesTags: ['Customers'],
@@ -103,7 +114,8 @@ export const customersApi = apiSlice.injectEndpoints({
 });
 
 export const { 
-  useGetCustomersQuery, 
+  useGetCustomersQuery,
+  useGetAllCustomersQuery,
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
