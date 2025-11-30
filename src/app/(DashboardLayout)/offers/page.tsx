@@ -10,7 +10,7 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
 import { useTranslation } from "react-i18next";
 
 const OffersPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showNotification } = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -49,27 +49,19 @@ const OffersPage = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  const getStatusBadge = (isActive: boolean, startDate: string, endDate: string) => {
-    const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
+  const getStatusBadge = (status: string, isActive: boolean) => {
     if (!isActive) {
       return <Badge color="red">{t("offers.statusInactive")}</Badge>;
     }
 
-    if (now < start) {
-      return <Badge color="yellow">{t("offers.statusComingSoon")}</Badge>;
-    }
-
-    if (now > end) {
+    if (status === "expired") {
       return <Badge color="red">{t("offers.statusExpired")}</Badge>;
     }
 
@@ -148,7 +140,7 @@ const OffersPage = () => {
                 className="w-full h-48 object-cover"
               />
               <div className="absolute top-2 right-2 flex gap-2">
-                {getStatusBadge(offer.is_active, offer.offer_start_date, offer.offer_end_date)}
+                {getStatusBadge(offer.status, offer.is_active)}
                 {getTypeBadge(offer.type)}
               </div>
             </div>
@@ -156,10 +148,18 @@ const OffersPage = () => {
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-dark dark:text-white">
-                  {t("offers.offerNumber", { id: offer.id })}
+                  {i18n.language === 'ar' 
+                    ? (offer.title_ar || t("offers.offerNumber", { id: offer.id }))
+                    : (offer.title_en || t("offers.offerNumber", { id: offer.id }))}
                 </h3>
                 {getRewardTypeBadge(offer.reward_type)}
               </div>
+
+              {(offer.description_ar || offer.description_en) && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                  {i18n.language === 'ar' ? offer.description_ar : offer.description_en}
+                </p>
+              )}
 
               <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">

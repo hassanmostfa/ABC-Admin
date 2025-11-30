@@ -169,11 +169,12 @@ export const ordersApi = apiSlice.injectEndpoints({
     createOrder: builder.mutation<OrderResponse, {
       customer_id?: number;
       charity_id?: number;
-      payment_method: 'cash' | 'wallet';
+      customer_address_id?: number;
+      payment_method: 'cash' | 'wallet' | 'online_link';
       delivery_type: 'pickup' | 'delivery';
-      offer_id?: number;
+      offers?: Array<{ offer_id: number; quantity: number }>;
       used_points?: number;
-      items: Array<{ variant_id: number; quantity: number }>;
+      items?: Array<{ variant_id: number; quantity: number }>;
       delivery?: {
         delivery_address: string;
         block: string;

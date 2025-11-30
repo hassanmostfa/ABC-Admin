@@ -119,10 +119,17 @@ const SidebarContent: MenuItem[] = [
           },
 
           {
-            name: "sidebar.orders",
+            name: "sidebar.ordersInquiries",
             icon: "solar:clipboard-list-line-duotone",
             id: uniqueId(),
             url: "/orders",
+          },
+
+          {
+            name: "sidebar.enterSaleOrder",
+            icon: "solar:cart-large-4-line-duotone",
+            id: uniqueId(),
+            url: "/enter-sale-order",
           },
 
           {
@@ -153,6 +160,13 @@ const SidebarContent: MenuItem[] = [
                 url: "/social-media-links",
               },
             ],
+          },
+
+          {
+            name: "sidebar.settings",
+            icon: "solar:settings-line-duotone",
+            id: uniqueId(),
+            url: "/settings",
           },
         ],
       },

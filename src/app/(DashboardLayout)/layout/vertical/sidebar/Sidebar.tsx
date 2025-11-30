@@ -53,13 +53,13 @@ const SidebarLayout = () => {
           <IconSidebar />
         </div>
         <Sidebar
-          className="fixed menu-sidebar bg-white dark:bg-darkgray rtl:pe-4 rtl:ps-0 overflow-y-hidden"
+          className="fixed menu-sidebar bg-white dark:bg-darkgray rtl:pe-4 rtl:ps-0 overflow-y-auto"
           aria-label="Sidebar with multi-level dropdown example"
         >
           <div className="px-6 py-4 flex items-center justify-center sidebarlogo">
             <FullLogo />
           </div>
-          <SimpleBar className="h-[calc(100vh-85px)]">
+          <SimpleBar className="h-[calc(100vh-85px)] overflow-y-auto">
             <SidebarItems className="pe-4 rtl:pe-0 rtl:ps-4 px-5 mt-2">
               <SidebarItemGroup className="sidebar-nav hide-menu">
                 {selectedContent &&

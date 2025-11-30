@@ -113,12 +113,12 @@ const OrdersPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("orders.title")}</h1>
           <p className="text-sm text-ld mt-2">{t("orders.subtitle")}</p>
         </div>
-        <Link href="/orders/add">
+        {/* <Link href="/orders/add">
           <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
             <Icon icon="solar:add-circle-bold" height={20} />
             {t("orders.addNew")}
           </button>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Filters */}

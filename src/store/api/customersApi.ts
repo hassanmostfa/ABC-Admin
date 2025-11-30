@@ -110,14 +110,55 @@ export const customersApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Customers'],
     }),
+
+    searchCustomerByPhone: builder.query<CustomerResponse, string>({
+      query: (phone) => ({
+        url: '/admin/customers',
+        params: {
+          search: phone,
+          per_page: 1,
+        },
+      }),
+      transformResponse: (response: CustomersResponse): CustomerResponse => {
+        if (response.data && response.data.length > 0) {
+          return {
+            success: true,
+            message: response.message,
+            data: response.data[0],
+          };
+        }
+        throw new Error('Customer not found');
+      },
+    }),
+
+    getCustomerAddresses: builder.query<{ success: boolean; message: string; data: any[] }, number>({
+      query: (customerId) => ({
+        url: `/admin/customer-addresses/customer/${customerId}`,
+      }),
+    }),
+
+    createCustomerAddress: builder.mutation<{ success: boolean; message: string; data: any }, { customerId: number; address: any }>({
+      query: ({ customerId, address }) => ({
+        url: `/admin/customer-addresses`,
+        method: 'POST',
+        body: {
+          ...address,
+          customer_id: customerId,
+        },
+      }),
+    }),
   }),
 });
 
 export const { 
-  useGetCustomersQuery,
+  useGetCustomersQuery, 
   useGetAllCustomersQuery,
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
-  useDeleteCustomerMutation 
+  useDeleteCustomerMutation,
+  useSearchCustomerByPhoneQuery,
+  useLazySearchCustomerByPhoneQuery,
+  useGetCustomerAddressesQuery,
+  useCreateCustomerAddressMutation,
 } = customersApi;

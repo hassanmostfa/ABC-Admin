@@ -19,6 +19,10 @@ const AddOfferPage = () => {
 
   const [formData, setFormData] = useState({
     image: null as File | null,
+    title_en: "",
+    title_ar: "",
+    description_en: "",
+    description_ar: "",
     offer_start_date: "",
     offer_end_date: "",
     is_active: true,
@@ -48,7 +52,7 @@ const AddOfferPage = () => {
     return errors && errors.length > 0 ? errors[0] : "";
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
     if (type === "file") {
@@ -294,6 +298,10 @@ const AddOfferPage = () => {
 
       const result = await createOffer({
         image: formData.image!,
+        title_en: formData.title_en || undefined,
+        title_ar: formData.title_ar || undefined,
+        description_en: formData.description_en || undefined,
+        description_ar: formData.description_ar || undefined,
         offer_start_date: formData.offer_start_date,
         offer_end_date: formData.offer_end_date,
         is_active: formData.is_active,
@@ -317,19 +325,31 @@ const AddOfferPage = () => {
       // Handle validation errors
       if (err?.data?.errors) {
         const errors = err.data.errors;
+        const newFieldErrors: Record<string, string> = {};
         const newNestedErrors: Record<string, string[]> = {};
         
-        // Parse nested errors like "conditions.0.quantity" or "rewards.0.quantity"
+        // Parse all errors
         Object.keys(errors).forEach(key => {
           if (key.includes('.')) {
+            // Nested errors like "conditions.0.quantity" or "rewards.0.quantity"
             newNestedErrors[key] = errors[key];
+          } else {
+            // Simple field errors like "offer_start_date"
+            const errorMessages = Array.isArray(errors[key]) ? errors[key] : [errors[key]];
+            newFieldErrors[key] = errorMessages[0] || '';
           }
         });
         
+        setFieldErrors(newFieldErrors);
         setNestedErrors(newNestedErrors);
         
-        // Show general error message
-        showNotification("error", t("offers.validationError"), err?.data?.message || t("offers.correctErrors"));
+        // Get first error message to show in notification
+        const firstError = Object.values(newFieldErrors)[0] || 
+                          (Object.values(newNestedErrors)[0]?.[0]) || 
+                          err?.data?.message || 
+                          t("offers.correctErrors");
+        
+        showNotification("error", t("offers.error"), firstError);
       } else {
         showNotification("error", t("offers.error"), err?.data?.message || t("offers.addError"));
       }
@@ -417,6 +437,72 @@ const AddOfferPage = () => {
               ) : (
                 <p className="mt-1 text-xs text-gray-500">{t("offers.selectImage")}</p>
               )}
+            </div>
+
+            {/* Title Fields */}
+            <div>
+              <Label htmlFor="title_en" className="mb-2 block">{t("offers.titleEn")}</Label>
+              <TextInput
+                id="title_en"
+                name="title_en"
+                type="text"
+                value={formData.title_en}
+                onChange={handleInputChange}
+                placeholder={t("offers.titleEnPlaceholder")}
+                icon={() => <Icon icon="solar:text-bold" height={18} />}
+              />
+              {fieldErrors.title_en ? (
+                <p className="mt-1 text-xs text-error">{fieldErrors.title_en}</p>
+              ) : null}
+            </div>
+
+            <div>
+              <Label htmlFor="title_ar" className="mb-2 block">{t("offers.titleAr")}</Label>
+              <TextInput
+                id="title_ar"
+                name="title_ar"
+                type="text"
+                value={formData.title_ar}
+                onChange={handleInputChange}
+                placeholder={t("offers.titleArPlaceholder")}
+                icon={() => <Icon icon="solar:text-bold" height={18} />}
+              />
+              {fieldErrors.title_ar ? (
+                <p className="mt-1 text-xs text-error">{fieldErrors.title_ar}</p>
+              ) : null}
+            </div>
+
+            {/* Description Fields */}
+            <div className="md:col-span-2">
+              <Label htmlFor="description_en" className="mb-2 block">{t("offers.descriptionEn")}</Label>
+              <textarea
+                id="description_en"
+                name="description_en"
+                value={formData.description_en}
+                onChange={handleInputChange}
+                placeholder={t("offers.descriptionEnPlaceholder")}
+                rows={3}
+                className="w-full px-4 py-2 border border-ld rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-darkgray dark:border-darkgray dark:text-white"
+              />
+              {fieldErrors.description_en ? (
+                <p className="mt-1 text-xs text-error">{fieldErrors.description_en}</p>
+              ) : null}
+            </div>
+
+            <div className="md:col-span-2">
+              <Label htmlFor="description_ar" className="mb-2 block">{t("offers.descriptionAr")}</Label>
+              <textarea
+                id="description_ar"
+                name="description_ar"
+                value={formData.description_ar}
+                onChange={handleInputChange}
+                placeholder={t("offers.descriptionArPlaceholder")}
+                rows={3}
+                className="w-full px-4 py-2 border border-ld rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-darkgray dark:border-darkgray dark:text-white"
+              />
+              {fieldErrors.description_ar ? (
+                <p className="mt-1 text-xs text-error">{fieldErrors.description_ar}</p>
+              ) : null}
             </div>
 
             {/* Points, Dates, and Reward Type in One Row */}
