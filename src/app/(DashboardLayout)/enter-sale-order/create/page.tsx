@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
@@ -33,7 +33,7 @@ interface CartItem {
   image: string;
 }
 
-const CreateSaleOrderPage = () => {
+const CreateSaleOrderPageContent = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -838,6 +838,18 @@ const CreateSaleOrderPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CreateSaleOrderPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-screen">
+        <Spinner size="xl" />
+      </div>
+    }>
+      <CreateSaleOrderPageContent />
+    </Suspense>
   );
 };
 
