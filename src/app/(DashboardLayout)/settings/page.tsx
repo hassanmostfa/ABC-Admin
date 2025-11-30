@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Label, TextInput, Button, Spinner, Tabs } from "flowbite-react";
+import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetSettingsQuery, useUpdateSettingsMutation } from "@/store/api/settingsApi";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -88,8 +88,8 @@ const SettingsPage = () => {
       </div>
 
       <Card>
-        <Tabs activeTab={activeTab} onActiveTabChange={(tab) => setActiveTab(tab as "general" | "delivery")}>
-          <Tabs.Item active title={t("settings.general")} id="general">
+        <Tabs>
+          <TabItem active={activeTab === "general"} title={t("settings.general")} onClick={() => setActiveTab("general")}>
             <div className="space-y-4 mt-4">
               <div>
                 <Label className="mb-2 block">{t("settings.isProduction")}</Label>
@@ -125,9 +125,9 @@ const SettingsPage = () => {
                 </div>
               ))}
             </div>
-          </Tabs.Item>
+          </TabItem>
 
-          <Tabs.Item title={t("settings.delivery")} id="delivery">
+          <TabItem active={activeTab === "delivery"} title={t("settings.delivery")} onClick={() => setActiveTab("delivery")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {deliverySettings.map((setting) => (
                 <div key={setting.key}>
@@ -142,7 +142,7 @@ const SettingsPage = () => {
                 </div>
               ))}
             </div>
-          </Tabs.Item>
+          </TabItem>
         </Tabs>
 
         <div className="mt-6 pt-6 border-t border-ld flex justify-end">

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs } from "flowbite-react";
+import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
 import { useGetOffersQuery } from "@/store/api/offersApi";
@@ -334,8 +334,8 @@ const CreateSaleOrderPage = () => {
         {/* Products & Offers Selection */}
         <div className="lg:col-span-2">
           <Card>
-            <Tabs activeTab={activeTab} onActiveTabChange={(tab) => setActiveTab(tab as "offers" | "products")}>
-              <Tabs.Item active title={t("enterSaleOrder.offers")} id="offers">
+            <Tabs>
+              <TabItem active={activeTab === "offers"} title={t("enterSaleOrder.offers")} onClick={() => setActiveTab("offers")}>
                 <div className="mb-4">
                   <TextInput
                     type="text"
@@ -407,9 +407,9 @@ const CreateSaleOrderPage = () => {
                     )}
                   </div>
                 )}
-              </Tabs.Item>
+              </TabItem>
 
-              <Tabs.Item title={t("enterSaleOrder.products")} id="products">
+              <TabItem active={activeTab === "products"} title={t("enterSaleOrder.products")} onClick={() => setActiveTab("products")}>
                 <div className="mb-4">
                   <TextInput
                     type="text"
@@ -476,7 +476,7 @@ const CreateSaleOrderPage = () => {
                     )}
                   </div>
                 )}
-              </Tabs.Item>
+              </TabItem>
             </Tabs>
           </Card>
         </div>
