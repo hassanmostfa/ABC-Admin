@@ -307,36 +307,14 @@ const CreateSaleOrderPageContent = () => {
         </div>
       </div>
 
-      {/* Customer Info */}
-      <Card>
-        <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">{t("enterSaleOrder.customerInfo")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <Label className="text-sm text-ld">{t("orders.name")}</Label>
-            <p className="font-semibold text-dark dark:text-white">{customer.name}</p>
-          </div>
-          <div>
-            <Label className="text-sm text-ld">{t("orders.phone")}</Label>
-            <p className="font-semibold text-dark dark:text-white">{customer.phone}</p>
-          </div>
-          <div>
-            <Label className="text-sm text-ld">{t("orders.email")}</Label>
-            <p className="font-semibold text-dark dark:text-white">{customer.email || "-"}</p>
-          </div>
-          <div>
-            <Label className="text-sm text-ld">{t("orders.points")}</Label>
-            <p className="font-semibold text-primary">{customer.points || 0}</p>
-          </div>
-        </div>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Products & Offers Selection */}
         <div className="lg:col-span-2">
-          <Card>
-            <Tabs>
-              <TabItem active={activeTab === "offers"} title={t("enterSaleOrder.offers")} onClick={() => setActiveTab("offers")}>
-                <div className="mb-4">
+          <Card className="h-[calc(100vh-180px)] flex flex-col">
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <Tabs>
+                <TabItem active={activeTab === "offers"} title={t("enterSaleOrder.offers")} onClick={() => setActiveTab("offers")}>
+                  <div className="mb-4">
                   <TextInput
                     type="text"
                     placeholder={t("enterSaleOrder.searchOffers")}
@@ -350,7 +328,7 @@ const CreateSaleOrderPageContent = () => {
                     <Spinner size="xl" />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 overflow-y-auto max-h-[calc(100vh-350px)]">
                     {offersData?.data && offersData.data.length > 0 ? (
                       offersData.data
                         .filter(offer => offer.is_active && offer.type === "normal")
@@ -424,7 +402,7 @@ const CreateSaleOrderPageContent = () => {
                     <Spinner size="xl" />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 overflow-y-auto max-h-[calc(100vh-350px)]">
                     {productsData?.data && productsData.data.length > 0 ? (
                       productsData.data
                         .filter(product => product.is_active)
@@ -478,11 +456,40 @@ const CreateSaleOrderPageContent = () => {
                 )}
               </TabItem>
             </Tabs>
+            </div>
           </Card>
         </div>
 
-        {/* Cart & Order Details */}
-        <div className="lg:col-span-1">
+        {/* Customer Info & Cart */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Customer Info */}
+          <Card>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h2>
+              <Link href={`/orders?search=${customer.phone}`}>
+                <button className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
+                  <Icon icon="solar:history-bold" height={16} />
+                  {t("enterSaleOrder.viewHistory")}
+                </button>
+              </Link>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs text-ld">{t("orders.name")}</Label>
+                <p className="font-semibold text-dark dark:text-white text-sm">{customer.name}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-ld">{t("orders.phone")}</Label>
+                <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-ld">{t("orders.points")}</Label>
+                <p className="font-semibold text-primary text-sm">{customer.points || 0}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Cart */}
           <Card>
             <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">{t("enterSaleOrder.cart")}</h2>
             

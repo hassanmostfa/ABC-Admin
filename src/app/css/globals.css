@@ -128,7 +128,6 @@
 }
 
 @utility container {
-  @apply max-w-[1200px];
 
   .landingpage & {
     @apply max-w-[1320px];

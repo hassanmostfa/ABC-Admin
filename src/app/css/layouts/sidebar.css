@@ -111,3 +111,38 @@ transition: color .15s ease-in-out, background-color .15s ease-in-out, border-co
 .miniicons .flowbite-tooltip{
   position: fixed !important;
 }
+
+/* Hide scrollbar for sidebar */
+.menu-sidebar .simplebar-scrollbar::before {
+  background-color: transparent !important;
+}
+
+.menu-sidebar .simplebar-track.simplebar-vertical {
+  width: 0 !important;
+  display: none !important;
+}
+
+.menu-sidebar .simplebar-scrollbar,
+.menu-sidebar .simplebar-track {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+/* Hide all SimpleBar scrollbar elements */
+.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar {
+  display: none !important;
+}
+
+.menu-sidebar .simplebar-content-wrapper {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* Additional hiding for SimpleBar tracks */
+.simplebar-track {
+  display: none !important;
+}
+
+.simplebar-scrollbar {
+  display: none !important;
+}

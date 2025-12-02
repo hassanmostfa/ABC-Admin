@@ -1,16 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Card, Label, TextInput, Spinner, Select, Badge, Pagination } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetOrdersQuery, useUpdateOrderStatusMutation } from "@/store/api/ordersApi";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-const OrdersPage = () => {
+const OrdersPageContent = () => {
   const { t, i18n } = useTranslation();
   const { showNotification } = useNotification();
   const [updateOrderStatus, { isLoading: updating }] = useUpdateOrderStatusMutation();
+  const searchParams = useSearchParams();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +21,14 @@ const OrdersPage = () => {
   const [deliveryTypeFilter, setDeliveryTypeFilter] = useState<string>("");
   const [dateFromFilter, setDateFromFilter] = useState<string>("");
   const [dateToFilter, setDateToFilter] = useState<string>("");
+
+  // Read search param from URL on mount
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+  }, [searchParams]);
 
   const { data: ordersData, isLoading, error } = useGetOrdersQuery({
     search: searchTerm || undefined,
@@ -356,6 +366,18 @@ const OrdersPage = () => {
         )}
       </Card>
     </div>
+  );
+};
+
+const OrdersPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-screen">
+        <Spinner size="xl" />
+      </div>
+    }>
+      <OrdersPageContent />
+    </Suspense>
   );
 };
 
