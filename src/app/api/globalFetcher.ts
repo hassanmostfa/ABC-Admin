@@ -1,7 +1,7 @@
 // SWR fetcher function
 
 // Base URL for all API requests
-const API_BASE_URL = "https://abc.ghazlaapp.com/api";
+const API_BASE_URL = "https://api.abc-juice-kw.com/api";
 
 // Helper function to build full URL
 const buildUrl = (endpoint: string) => {

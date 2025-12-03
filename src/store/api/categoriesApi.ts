@@ -110,7 +110,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
             console.log(`  ${key}:`, value);
           }
           
-          const response = await fetch(`https://abc.ghazlaapp.com/api/admin/categories/${id}`, {
+          const response = await fetch(`https://api.abc-juice-kw.com/api/admin/categories/${id}`, {
             method: 'POST',
             headers,
             body: formData,

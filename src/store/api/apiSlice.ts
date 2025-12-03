@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 
-const API_BASE_URL = "https://abc.ghazlaapp.com/api";
+const API_BASE_URL = "https://api.abc-juice-kw.com/api";
 
 // Define base query with auth token
 const baseQuery = fetchBaseQuery({
