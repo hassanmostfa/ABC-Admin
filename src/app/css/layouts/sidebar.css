@@ -30,8 +30,9 @@
 
 .sidebar-dropdown li a {
     opacity: 0.9;
-    padding: 8px 16px;
+    padding: 6px 16px;
     box-shadow: none !important;
+    margin-bottom: 0 !important;
 }
 .sidebar-dropdown li a.active {
     opacity: 1;
@@ -112,37 +113,71 @@ transition: color .15s ease-in-out, background-color .15s ease-in-out, border-co
   position: fixed !important;
 }
 
-/* Hide scrollbar for sidebar */
-.menu-sidebar .simplebar-scrollbar::before {
-  background-color: transparent !important;
-}
-
-.menu-sidebar .simplebar-track.simplebar-vertical {
-  width: 0 !important;
-  display: none !important;
-}
-
-.menu-sidebar .simplebar-scrollbar,
-.menu-sidebar .simplebar-track {
-  opacity: 0 !important;
-  display: none !important;
-}
-
-/* Hide all SimpleBar scrollbar elements */
-.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar {
-  display: none !important;
-}
-
+/* Modern scrollbar styling for sidebar */
 .menu-sidebar .simplebar-content-wrapper {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
 
-/* Additional hiding for SimpleBar tracks */
-.simplebar-track {
-  display: none !important;
+.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar {
+  width: 6px;
 }
 
-.simplebar-scrollbar {
-  display: none !important;
+.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+/* Dark mode scrollbar */
+.dark .menu-sidebar .simplebar-content-wrapper {
+  scrollbar-color: rgba(75, 85, 99, 0.6) transparent;
+}
+
+.dark .menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+.dark .menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+/* Modern SimpleBar scrollbar styling */
+.menu-sidebar .simplebar-track.simplebar-vertical {
+  width: 6px !important;
+  right: 2px;
+}
+
+.menu-sidebar .simplebar-scrollbar {
+  width: 6px !important;
+  right: 0;
+}
+
+.menu-sidebar .simplebar-scrollbar::before {
+  background: rgba(156, 163, 175, 0.5) !important;
+  border-radius: 10px !important;
+  opacity: 1 !important;
+  transition: background 0.2s ease !important;
+}
+
+.menu-sidebar .simplebar-scrollbar:hover::before {
+  background: rgba(107, 114, 128, 0.7) !important;
+}
+
+/* Dark mode SimpleBar scrollbar */
+.dark .menu-sidebar .simplebar-scrollbar::before {
+  background: rgba(75, 85, 99, 0.6) !important;
+}
+
+.dark .menu-sidebar .simplebar-scrollbar:hover::before {
+  background: rgba(107, 114, 128, 0.8) !important;
 }

@@ -15,3 +15,4 @@ import './offersApi';
 import './contactUsApi';
 import './socialMediaLinksApi';
 import './careersApi';
+import './slidersApi';

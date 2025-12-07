@@ -6,10 +6,12 @@ import SimpleBar from "simplebar-react";
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import Link from "next/link";
 import { Button, HR, Tooltip } from "flowbite-react";
+import { useTranslation } from "react-i18next";
 
 export const IconSidebar = () => {
   const { selectedIconId, setSelectedIconId, setIsCollapse, isCollapse , setIsMobileSidebar} =
     useContext(CustomizerContext) || {};
+  const { t } = useTranslation();
 
   // Handle icon click
   const handleClick = (id: any) => {
@@ -56,7 +58,7 @@ export const IconSidebar = () => {
           {Miniicons.map((links, index) => (
             <Tooltip
               key={links.id}
-              content={links.tooltip}
+              content={links.tooltip.startsWith("sidebar.") ? t(links.tooltip) : links.tooltip}
               placement="right"
               className="flowbite-tooltip"
             >

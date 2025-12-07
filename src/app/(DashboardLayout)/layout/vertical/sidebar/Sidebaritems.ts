@@ -140,33 +140,44 @@ const SidebarContent: MenuItem[] = [
           },
 
           {
-            name: "sidebar.contentManagement",
-            id: uniqueId(),
-            icon: "solar:document-text-line-duotone",
-            children: [
-              {
-                name: "sidebar.contactUs",
-                id: uniqueId(),
-                url: "/contact-us",
-              },
-              {
-                id: uniqueId(),
-                name: "sidebar.jobApplications",
-                url: "/careers",
-              },
-              {
-                id: uniqueId(),
-                name: "sidebar.socialMediaLinks",
-                url: "/social-media-links",
-              },
-            ],
-          },
-
-          {
             name: "sidebar.settings",
             icon: "solar:settings-line-duotone",
             id: uniqueId(),
             url: "/settings",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Content Management",
+    items: [
+      {
+        children: [
+          {
+            id: uniqueId(),
+            name: "sidebar.sliders",
+            icon: "solar:gallery-line-duotone",
+            url: "/sliders",
+          },
+          {
+            name: "sidebar.contactUs",
+            id: uniqueId(),
+            icon: "solar:phone-calling-line-duotone",
+            url: "/contact-us",
+          },
+          {
+            id: uniqueId(),
+            name: "sidebar.jobApplications",
+            icon: "solar:bag-line-duotone",
+            url: "/careers",
+          },
+          {
+            id: uniqueId(),
+            name: "sidebar.socialMediaLinks",
+            icon: "solar:share-circle-line-duotone",
+            url: "/social-media-links",
           },
         ],
       },

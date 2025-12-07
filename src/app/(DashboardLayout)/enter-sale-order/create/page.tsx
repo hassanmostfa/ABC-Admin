@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
-import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem } from "flowbite-react";
+import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
 import { useGetOffersQuery } from "@/store/api/offersApi";
 import { useGetProductsQuery } from "@/store/api/productsApi";
-import { useCreateOrderMutation } from "@/store/api/ordersApi";
+import { useCreateOrderMutation, useGetOrdersQuery } from "@/store/api/ordersApi";
 import { useGetSettingsQuery } from "@/store/api/settingsApi";
 import { useGetAllCountriesQuery } from "@/store/api/countriesApi";
 import { useGetGovernoratesByCountryQuery } from "@/store/api/governoratesApi";
@@ -53,6 +53,7 @@ const CreateSaleOrderPageContent = () => {
   const [usedPoints, setUsedPoints] = useState<number>(0);
   const [offersSearch, setOffersSearch] = useState<string>("");
   const [productsSearch, setProductsSearch] = useState<string>("");
+  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
   
   const { data: offersData, isLoading: loadingOffers } = useGetOffersQuery({ 
     search: offersSearch || undefined,
@@ -66,6 +67,18 @@ const CreateSaleOrderPageContent = () => {
   const { data: settingsData } = useGetSettingsQuery();
   
   const [createOrder, { isLoading: creatingOrder }] = useCreateOrderMutation();
+  
+  // Fetch customer orders for history modal
+  const customerPhone = customerData?.data?.phone || "";
+  const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
+    { 
+      search: customerPhone,
+      page: 1,
+      sort_by: "created_at",
+      sort_order: "desc"
+    },
+    { skip: !showHistoryModal || !customerPhone }
+  );
   
   const [newAddress, setNewAddress] = useState({
     country_id: 0,
@@ -290,6 +303,45 @@ const CreateSaleOrderPageContent = () => {
 
   const customer = customerData.data;
   const addresses = addressesData?.data || [];
+  
+  // Get last 3 orders
+  const recentOrders = ordersData?.data?.slice(0, 3) || [];
+  
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info"; label: string }> = {
+      pending: { color: "warning", label: t("orders.status.pending") },
+      processing: { color: "info", label: t("orders.status.processing") },
+      completed: { color: "success", label: t("orders.status.completed") },
+      cancelled: { color: "failure", label: t("orders.status.cancelled") },
+    };
+    const config = statusConfig[status] || { color: "info", label: status };
+    return (
+      <Badge color={config.color} className="w-fit">
+        {config.label}
+      </Badge>
+    );
+  };
+
+  const getPaymentMethodLabel = (method: string) => {
+    const methods: Record<string, string> = {
+      cash: t("orders.paymentMethod.cash"),
+      wallet: t("orders.paymentMethod.wallet"),
+      card: t("orders.paymentMethod.card"),
+      online_link: t("orders.paymentMethod.onlineLink") || "Online Link",
+    };
+    return methods[method] || method;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(i18n.language === 'ar' ? 'ar-KW' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -466,12 +518,13 @@ const CreateSaleOrderPageContent = () => {
           <Card>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h2>
-              <Link href={`/orders?search=${customer.phone}`}>
-                <button className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
-                  <Icon icon="solar:history-bold" height={16} />
-                  {t("enterSaleOrder.viewHistory")}
-                </button>
-              </Link>
+              <button 
+                onClick={() => setShowHistoryModal(true)}
+                className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1"
+              >
+                <Icon icon="solar:history-bold" height={16} />
+                {t("enterSaleOrder.viewHistory")}
+              </button>
             </div>
             <div className="space-y-3">
               <div>
@@ -844,6 +897,82 @@ const CreateSaleOrderPageContent = () => {
           </Card>
         </div>
       </div>
+      
+      {/* History Modal */}
+      <Modal show={showHistoryModal} onClose={() => setShowHistoryModal(false)} size="xl">
+        <div className="p-6 border-b border-ld">
+          <div className="flex items-center gap-2">
+            <Icon icon="solar:history-bold" height={20} />
+            <h3 className="text-xl font-semibold text-dark dark:text-white">{t("enterSaleOrder.viewHistory")}</h3>
+          </div>
+        </div>
+        <ModalBody>
+          {loadingOrders ? (
+            <div className="flex justify-center py-8">
+              <Spinner size="xl" />
+            </div>
+          ) : recentOrders.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-ld dark:text-white/70">{t("orders.noOrders") || "No orders found"}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recentOrders.map((order) => (
+                <Card key={order.id} className="hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="font-mono text-sm font-semibold text-dark dark:text-white">
+                          {order.order_number}
+                        </span>
+                        {getStatusBadge(order.status)}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <Label className="text-xs text-ld">{t("orders.totalAmount")}</Label>
+                          <p className="font-semibold text-dark dark:text-white">{order.total_amount} KWD</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-ld">{t("orders.paymentMethod")}</Label>
+                          <p className="font-medium text-dark dark:text-white">{getPaymentMethodLabel(order.payment_method)}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-ld">{t("orders.date")}</Label>
+                          <p className="text-dark dark:text-white">{formatDate(order.created_at)}</p>
+                        </div>
+                        {order.delivery_type && (
+                          <div>
+                            <Label className="text-xs text-ld">{t("orders.deliveryType")}</Label>
+                            <p className="text-dark dark:text-white">
+                              {order.delivery_type === "delivery" ? t("orders.deliveryType.delivery") : t("orders.deliveryType.pickup")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <Link href={`/orders/show/${order.id}`}>
+                      <Button size="sm" color="light">
+                        <Icon icon="solar:eye-bold" height={16} className="mr-1" />
+                        {t("orders.view") || "View"}
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </ModalBody>
+        <div className="p-6 border-t border-ld flex items-center gap-3">
+          <Button color="gray" onClick={() => setShowHistoryModal(false)}>
+            {t("common.close") || "Close"}
+          </Button>
+          <Link href={`/orders?search=${customerPhone}`}>
+            <Button color="primary">
+              {t("orders.viewAll") || "View All Orders"}
+            </Button>
+          </Link>
+        </div>
+      </Modal>
     </div>
   );
 };

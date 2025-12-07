@@ -11,6 +11,11 @@ const Miniicons: MiniiconsType[] = [
     icon: "solar:layers-line-duotone",
     tooltip: "Dashboards",
   },
+  {
+    id: 2,
+    icon: "solar:document-text-line-duotone",
+    tooltip: "sidebar.contentManagement",
+  },
   // {
   //   id: 2,
   //   icon: "solar:notes-line-duotone",

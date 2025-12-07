@@ -595,7 +595,7 @@ const customTheme = createTheme({
       inner: "h-full overflow-y-hidden overflow-x-hidden bg-white dark:bg-darkgray rounded-none px-0 py-0",
     },
     item: {
-      base: "flex items-center justify-center rounded-lg px-4 py-3 mb-1 gap-3 text-[15px] leading-[normal] font-normal text-link  hover:text-primary dark:text-white  dark:hover:text-primary overflow-y-hidden",
+      base: "flex items-center justify-center rounded-lg px-4 py-3 mb-0 gap-3 text-[15px] leading-[normal] font-normal text-link  hover:text-primary dark:text-white  dark:hover:text-primary overflow-y-hidden",
       content: {
         base: "flex-1 whitespace-nowrap px-0",
       },
@@ -605,7 +605,7 @@ const customTheme = createTheme({
 
     collapse: {
       button:
-        "group flex gap-3 items-center  rounded-lg px-4 py-3 mb-1 text-15 leading-[normal] font-normal text-link  hover:text-primary dark:text-white w-full dark:hover:text-primary",
+        "group flex gap-3 items-center  rounded-lg px-4 py-3 mb-0 text-15 leading-[normal] font-normal text-link  hover:text-primary dark:text-white w-full dark:hover:text-primary",
       icon: {
         base: "h-6 w-6 text-link text-base",
       },
@@ -614,7 +614,7 @@ const customTheme = createTheme({
       },
     },
     itemGroup: {
-      base: "mt-4 space-y-2 border-t border-ld pt-4 first:mt-0 first:border-t-0 first:pt-0 sidebar-nav ",
+      base: "mt-4 space-y-0 border-t border-ld pt-4 first:mt-0 first:border-t-0 first:pt-0 sidebar-nav ",
     },
   },
 
