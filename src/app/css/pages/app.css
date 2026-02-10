@@ -387,3 +387,8 @@
 #default-range::-ms-thumb {
   background-color: var(--color-primary);
 }
+
+/* Activity logs: space between select value and dropdown arrow */
+.activity-logs-select select {
+  padding-right:30px;
+}

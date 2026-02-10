@@ -62,6 +62,7 @@ const OrdersPageContent = () => {
       cash: t("orders.paymentMethod.cash"),
       wallet: t("orders.paymentMethod.wallet"),
       card: t("orders.paymentMethod.card"),
+      online_link: t("orders.paymentMethod.onlineLink"),
     };
     return methods[method] || method;
   };
@@ -318,7 +319,7 @@ const OrdersPageContent = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-semibold text-dark dark:text-white">
-                      {formatCurrency(order.total_amount)}
+                      {formatCurrency(order.invoice?.amount_due ?? order.total_amount)}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-ld dark:text-white/70">

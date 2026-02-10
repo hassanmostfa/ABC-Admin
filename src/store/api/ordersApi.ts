@@ -63,6 +63,7 @@ export interface Invoice {
   amount_due: number;
   status: string;
   paid_at: string | null;
+  payment_link?: string;
 }
 
 export interface Delivery {
@@ -83,9 +84,9 @@ export interface Order {
   customer_id: number | null;
   charity_id: number | null;
   type: 'customer' | 'charity';
-  payment_method: 'cash' | 'wallet' | 'card';
+  payment_method: 'cash' | 'wallet' | 'card' | 'online_link';
   order_number: string;
-  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  status: 'pending' | 'processing' | 'completed' | 'cancelled' | null;
   total_amount: number;
   offer_id: number | null;
   offer_snapshot: any | null;
@@ -96,6 +97,7 @@ export interface Order {
   items?: OrderItem[];
   invoice?: Invoice;
   delivery?: Delivery;
+  payment_link?: string;
   created_at: string;
   updated_at: string;
 }

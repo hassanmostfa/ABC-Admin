@@ -4,7 +4,7 @@ import { DrawerItems, Navbar, NavbarCollapse } from "flowbite-react";
 import Search from "./Search";
 import { Icon } from "@iconify/react";
 import AppLinks from "./AppLinks";
-import Notifications from "./Notifications";
+// import Notifications from "./Notifications";
 import Profile from "./Profile";
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import { LanguageSelector } from "../../horizontal/navbar/LanguageSelector";
@@ -131,7 +131,7 @@ const Header = ({ layoutType }: HeaderPropsType) => {
               )}
 
               {/* Notification Dropdown */}
-              <Notifications />
+              {/* <Notifications /> */}
 
               {/* Language Dropdown*/}
               <LanguageSelector />

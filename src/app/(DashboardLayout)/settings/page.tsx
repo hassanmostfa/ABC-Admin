@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem } from "flowbite-react";
+import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem, Textarea } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetSettingsQuery, useUpdateSettingsMutation } from "@/store/api/settingsApi";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -13,13 +13,23 @@ const SettingsPage = () => {
   const [updateSettings, { isLoading: updating }] = useUpdateSettingsMutation();
 
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<"general" | "delivery">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "delivery" | "content">("general");
 
   useEffect(() => {
     if (settingsData?.data) {
       const settingsMap: Record<string, string> = {};
       settingsData.data.forEach((setting) => {
-        settingsMap[setting.key] = setting.value;
+        if (setting.translations) {
+          if (setting.key === "about") {
+            settingsMap["about_en"] = setting.translations.en ?? "";
+            settingsMap["about_ar"] = setting.translations.ar ?? "";
+          } else if (setting.key === "terms_and_conditions") {
+            settingsMap["terms_and_conditions_en"] = setting.translations.en ?? "";
+            settingsMap["terms_and_conditions_ar"] = setting.translations.ar ?? "";
+          }
+        } else {
+          settingsMap[setting.key] = setting.value ?? "";
+        }
       });
       setSettings(settingsMap);
     }
@@ -34,10 +44,32 @@ const SettingsPage = () => {
 
   const handleSubmit = async () => {
     try {
-      const settingsArray = Object.entries(settings).map(([key, value]) => ({
-        key,
-        value,
-      }));
+      const settingsArray: { key: string; value?: string | null; translations?: { en?: string; ar?: string } }[] = [];
+
+      // Keys that use simple value only (exclude translatable keys we handle below)
+      const valueOnlyKeys = [
+        "closing_time", "day_offs", "delivery_days", "delivery_price", "is_production",
+        "max_delivery_per_slot", "min_points_to_convert", "minimum_charity_order", "minimum_home_order",
+        "minimum_wallet_charge", "one_point_money_value", "opening_time", "otp_test_code",
+        "slot_interval", "tax", "wallet_charge_gift",
+      ];
+      valueOnlyKeys.forEach((key) => {
+        if (settings[key] !== undefined) {
+          settingsArray.push({ key, value: settings[key] || null });
+        }
+      });
+
+      // Translatable content
+      settingsArray.push({
+        key: "about",
+        value: null,
+        translations: { en: settings["about_en"] ?? "", ar: settings["about_ar"] ?? "" },
+      });
+      settingsArray.push({
+        key: "terms_and_conditions",
+        value: null,
+        translations: { en: settings["terms_and_conditions_en"] ?? "", ar: settings["terms_and_conditions_ar"] ?? "" },
+      });
 
       const result = await updateSettings({ settings: settingsArray }).unwrap();
 
@@ -51,22 +83,25 @@ const SettingsPage = () => {
 
   // General settings
   const generalSettings = [
-    { key: "otp_test_code", label: t("settings.otpTestCode"), type: "text" },
-    { key: "tax", label: t("settings.tax"), type: "number", step: "0.01" },
-    { key: "one_point_dicount", label: t("settings.onePointDiscount"), type: "number", step: "0.01" },
+    { key: "otp_test_code", label: t("settings.otpTestCode"), type: "text" as const },
+    { key: "tax", label: t("settings.tax"), type: "number" as const, step: "0.01" },
+    { key: "one_point_money_value", label: t("settings.onePointMoneyValue"), type: "number" as const, step: "0.01" },
+    { key: "min_points_to_convert", label: t("settings.minPointsToConvert"), type: "number" as const },
+    { key: "minimum_wallet_charge", label: t("settings.minimumWalletCharge"), type: "number" as const, step: "0.01" },
+    { key: "wallet_charge_gift", label: t("settings.walletChargeGift"), type: "number" as const, step: "0.01" },
   ];
 
   // Delivery settings
   const deliverySettings = [
-    { key: "opening_time", label: t("settings.openingTime"), type: "text" },
-    { key: "closing_time", label: t("settings.closingTime"), type: "text" },
-    { key: "delivery_days", label: t("settings.deliveryDays"), type: "number" },
-    { key: "delivery_price", label: t("settings.deliveryPrice"), type: "number", step: "0.01" },
-    { key: "minimum_charity_order", label: t("settings.minimumCharityOrder"), type: "number", step: "0.01" },
-    { key: "minimum_home_order", label: t("settings.minimumHomeOrder"), type: "number", step: "0.01" },
-    { key: "max_delivery_per_slot", label: t("settings.maxDeliveryPerSlot"), type: "number" },
-    { key: "slot_interval", label: t("settings.slotInterval"), type: "number" },
-    { key: "day_offs", label: t("settings.dayOffs"), type: "text" },
+    { key: "opening_time", label: t("settings.openingTime"), type: "text" as const },
+    { key: "closing_time", label: t("settings.closingTime"), type: "text" as const },
+    { key: "delivery_days", label: t("settings.deliveryDays"), type: "number" as const },
+    { key: "delivery_price", label: t("settings.deliveryPrice"), type: "number" as const, step: "0.01" },
+    { key: "minimum_charity_order", label: t("settings.minimumCharityOrder"), type: "number" as const, step: "0.01" },
+    { key: "minimum_home_order", label: t("settings.minimumHomeOrder"), type: "number" as const, step: "0.01" },
+    { key: "max_delivery_per_slot", label: t("settings.maxDeliveryPerSlot"), type: "number" as const },
+    { key: "slot_interval", label: t("settings.slotInterval"), type: "number" as const },
+    { key: "day_offs", label: t("settings.dayOffs"), type: "text" as const },
   ];
 
   if (isLoading) {
@@ -90,8 +125,8 @@ const SettingsPage = () => {
       <Card>
         <Tabs>
           <TabItem active={activeTab === "general"} title={t("settings.general")} onClick={() => setActiveTab("general")}>
-            <div className="space-y-4 mt-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="md:col-span-2">
                 <Label className="mb-2 block">{t("settings.isProduction")}</Label>
                 <div dir="ltr" className="flex items-center gap-3">
                   <button
@@ -141,6 +176,51 @@ const SettingsPage = () => {
                   />
                 </div>
               ))}
+            </div>
+          </TabItem>
+
+          <TabItem active={activeTab === "content"} title={t("settings.content")} onClick={() => setActiveTab("content")}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <Label className="mb-2 block">{t("settings.aboutEn")}</Label>
+                <Textarea
+                  rows={6}
+                  value={settings["about_en"] || ""}
+                  onChange={(e) => handleInputChange("about_en", e.target.value)}
+                  placeholder={t("settings.aboutEnPlaceholder")}
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.aboutAr")}</Label>
+                <Textarea
+                  rows={6}
+                  value={settings["about_ar"] || ""}
+                  onChange={(e) => handleInputChange("about_ar", e.target.value)}
+                  placeholder={t("settings.aboutArPlaceholder")}
+                  dir="rtl"
+                  className="text-right"
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.termsAndConditionsEn")}</Label>
+                <Textarea
+                  rows={8}
+                  value={settings["terms_and_conditions_en"] || ""}
+                  onChange={(e) => handleInputChange("terms_and_conditions_en", e.target.value)}
+                  placeholder={t("settings.termsAndConditionsEnPlaceholder")}
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.termsAndConditionsAr")}</Label>
+                <Textarea
+                  rows={8}
+                  value={settings["terms_and_conditions_ar"] || ""}
+                  onChange={(e) => handleInputChange("terms_and_conditions_ar", e.target.value)}
+                  placeholder={t("settings.termsAndConditionsArPlaceholder")}
+                  dir="rtl"
+                  className="text-right"
+                />
+              </div>
             </div>
           </TabItem>
         </Tabs>

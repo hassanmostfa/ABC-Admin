@@ -1,8 +1,14 @@
 import { apiSlice } from './apiSlice';
 
+export interface SettingTranslations {
+  en?: string;
+  ar?: string;
+}
+
 export interface Setting {
   key: string;
-  value: string;
+  value: string | null;
+  translations?: SettingTranslations;
 }
 
 export interface SettingsResponse {
@@ -11,8 +17,14 @@ export interface SettingsResponse {
   data: Setting[];
 }
 
+export interface UpdateSettingItem {
+  key: string;
+  value?: string | null;
+  translations?: SettingTranslations;
+}
+
 export interface UpdateSettingsRequest {
-  settings: Setting[];
+  settings: UpdateSettingItem[];
 }
 
 export interface UpdateSettingsResponse {

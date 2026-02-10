@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
-import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody } from "flowbite-react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { Icon } from "@iconify/react";
+import Script from "next/script";
 import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
 import { useGetOffersQuery } from "@/store/api/offersApi";
 import { useGetProductsQuery } from "@/store/api/productsApi";
@@ -15,6 +16,9 @@ import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyB8lLTBxa_Fyp9qGWwPcO-1KxRPVmELppE";
+type AddressType = "apartment" | "house" | "office";
 
 interface CartOffer {
   offer_id: number;
@@ -54,6 +58,10 @@ const CreateSaleOrderPageContent = () => {
   const [offersSearch, setOffersSearch] = useState<string>("");
   const [productsSearch, setProductsSearch] = useState<string>("");
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
+  const [showPaymentLinkModal, setShowPaymentLinkModal] = useState<boolean>(false);
+  const [paymentLink, setPaymentLink] = useState<string>("");
+  const [paymentLinkOrderNumber, setPaymentLinkOrderNumber] = useState<string>("");
+  const [paymentLinkCopied, setPaymentLinkCopied] = useState<boolean>(false);
   
   const { data: offersData, isLoading: loadingOffers } = useGetOffersQuery({ 
     search: offersSearch || undefined,
@@ -80,16 +88,45 @@ const CreateSaleOrderPageContent = () => {
     { skip: !showHistoryModal || !customerPhone }
   );
   
-  const [newAddress, setNewAddress] = useState({
+  const [newAddress, setNewAddress] = useState<{
+    country_id: number;
+    governorate_id: number;
+    area_id: number;
+    lat: number | null;
+    lng: number | null;
+    type: AddressType;
+    street: string;
+    house: string;
+    block: string;
+    floor: string;
+    building_name: string;
+    apartment_number: string;
+    company: string;
+    additional_directions: string;
+    address_label: string;
+    phone_number: string;
+  }>({
     country_id: 0,
     governorate_id: 0,
     area_id: 0,
+    lat: null,
+    lng: null,
+    type: "house",
     street: "",
     house: "",
     block: "",
     floor: "",
+    building_name: "",
+    apartment_number: "",
+    company: "",
+    additional_directions: "",
+    address_label: "",
+    phone_number: "",
   });
   const [showAddAddress, setShowAddAddress] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<{ map: any; marker: any } | null>(null);
+  const [mapsLoaded, setMapsLoaded] = useState(false);
   
   // Fetch countries, governorates, and areas
   const { data: countriesData } = useGetAllCountriesQuery();
@@ -118,6 +155,65 @@ const CreateSaleOrderPageContent = () => {
       router.push("/enter-sale-order");
     }
   }, [customerId, router]);
+
+  // Init Google Map when add-address is open and script loaded
+  useEffect(() => {
+    if (!showAddAddress || !mapsLoaded || !mapRef.current || typeof window === "undefined" || !(window as any).google) return;
+
+    const google = (window as any).google;
+    const center = { lat: newAddress.lat ?? 29.3759, lng: newAddress.lng ?? 47.9774 };
+    const map = new google.maps.Map(mapRef.current, {
+      zoom: 14,
+      center,
+      mapTypeControl: true,
+      fullscreenControl: true,
+    });
+    let marker: any = null;
+
+    const updateMarker = (lat: number, lng: number) => {
+      if (marker) marker.setMap(null);
+      marker = new google.maps.Marker({ position: { lat, lng }, map });
+      map.panTo({ lat, lng });
+    };
+    if (newAddress.lat != null && newAddress.lng != null) {
+      updateMarker(newAddress.lat, newAddress.lng);
+    }
+
+    const clickHandler = (e: any) => {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      setNewAddress((prev) => ({ ...prev, lat, lng }));
+      updateMarker(lat, lng);
+
+      // Reverse geocode to suggest address
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ location: { lat, lng } }, (results: any[] | null, status: string) => {
+        if (status === "OK" && results?.[0]) {
+          const addr = results[0];
+          const components = addr.address_components || [];
+          let street = "";
+          let block = "";
+          for (const c of components) {
+            if (c.types.includes("route")) street = c.long_name;
+            if (c.types.includes("sublocality_level_1") || c.types.includes("neighborhood")) block = block || c.long_name;
+          }
+          setNewAddress((prev) => ({
+            ...prev,
+            ...(street && { street: prev.street || street }),
+            ...(block && { block: prev.block || block }),
+          }));
+        }
+      });
+    };
+    map.addListener("click", clickHandler);
+    mapInstanceRef.current = { map, marker };
+
+    return () => {
+      if (mapInstanceRef.current?.marker) mapInstanceRef.current.marker.setMap(null);
+      google.maps.event.clearListeners(map, "click");
+      mapInstanceRef.current = null;
+    };
+  }, [showAddAddress, mapsLoaded]);
 
   const handleAddOffer = (offer: any) => {
     const existingIndex = cartOffers.findIndex(item => item.offer_id === offer.id);
@@ -189,41 +285,80 @@ const CreateSaleOrderPageContent = () => {
   };
 
   const handleAddAddress = async () => {
-    if (!newAddress.country_id || !newAddress.governorate_id || !newAddress.area_id || 
-        !newAddress.street.trim() || !newAddress.house.trim() || !newAddress.block.trim()) {
+    const { type, country_id, governorate_id, area_id, street, phone_number, house, block, floor, building_name, apartment_number, company, additional_directions, address_label, lat, lng } = newAddress;
+
+    if (!country_id || !governorate_id || !area_id || !street.trim() || !phone_number.trim()) {
       showNotification("error", t("enterSaleOrder.error"), t("orders.enterAllAddressFields"));
       return;
+    }
+    if (type === "house" && (!house.trim() || !block.trim())) {
+      showNotification("error", t("enterSaleOrder.error"), t("orders.enterAllAddressFields"));
+      return;
+    }
+    if (type === "apartment" && !building_name.trim()) {
+      showNotification("error", t("enterSaleOrder.error"), t("orders.enterAllAddressFields"));
+      return;
+    }
+    if (type === "office" && (!building_name.trim() || !company.trim() || !block.trim())) {
+      showNotification("error", t("enterSaleOrder.error"), t("orders.enterAllAddressFields"));
+      return;
+    }
+
+    const basePayload: Record<string, unknown> = {
+      country_id,
+      governorate_id,
+      area_id,
+      type,
+      street: street.trim(),
+      phone_number: phone_number.trim(),
+      ...(lat != null && lng != null && { lat, lng }),
+    };
+
+    if (type === "house") {
+      basePayload.house = house.trim();
+      basePayload.block = block.trim();
+    } else if (type === "apartment") {
+      basePayload.building_name = building_name.trim();
+      if (apartment_number.trim()) basePayload.apartment_number = apartment_number.trim();
+      if (floor.trim()) basePayload.floor = floor.trim();
+      if (additional_directions.trim()) basePayload.additional_directions = additional_directions.trim();
+      if (address_label.trim()) basePayload.address_label = address_label.trim();
+    } else if (type === "office") {
+      basePayload.building_name = building_name.trim();
+      basePayload.company = company.trim();
+      if (floor.trim()) basePayload.floor = floor.trim();
+      basePayload.block = block.trim();
     }
 
     try {
       const result = await createAddress({
         customerId,
-        address: {
-          country_id: newAddress.country_id,
-          governorate_id: newAddress.governorate_id,
-          area_id: newAddress.area_id,
-          street: newAddress.street,
-          house: newAddress.house,
-          block: newAddress.block,
-          floor: newAddress.floor || undefined,
-        },
+        address: basePayload,
       }).unwrap();
 
       if (result.success) {
         showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.addressCreated"));
         setShowAddAddress(false);
-        // Reset to Kuwait default
-        const kuwaitId = countriesData?.data?.find((c: any) => 
-          c.name_en?.toLowerCase().includes('kuwait') || c.name_ar?.includes('الكويت')
-        )?.id || newAddress.country_id;
-        setNewAddress({ 
+        const kuwaitId = countriesData?.data?.find((c: any) =>
+          c.name_en?.toLowerCase().includes("kuwait") || c.name_ar?.includes("الكويت")
+        )?.id ?? country_id;
+        setNewAddress({
           country_id: kuwaitId,
           governorate_id: 0,
           area_id: 0,
+          lat: null,
+          lng: null,
+          type: "house",
           street: "",
           house: "",
           block: "",
           floor: "",
+          building_name: "",
+          apartment_number: "",
+          company: "",
+          additional_directions: "",
+          address_label: "",
+          phone_number: "",
         });
         refetchAddresses();
       }
@@ -272,10 +407,19 @@ const CreateSaleOrderPageContent = () => {
       const result = await createOrder(orderData).unwrap();
 
       if (result.success) {
-        showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.orderCreated"));
-        setTimeout(() => {
-          router.push("/orders");
-        }, 1500);
+        const data = result.data as { payment_link?: string; order_number?: string; invoice?: { payment_link?: string } };
+        const link = data?.payment_link || data?.invoice?.payment_link;
+        if (paymentMethod === "online_link" && link) {
+          setPaymentLink(link);
+          setPaymentLinkOrderNumber(data?.order_number || "");
+          setShowPaymentLinkModal(true);
+          showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.orderCreated"));
+        } else {
+          showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.orderCreated"));
+          setTimeout(() => {
+            router.push("/orders");
+          }, 1500);
+        }
       }
     } catch (err: any) {
       showNotification("error", t("enterSaleOrder.error"), err?.data?.message || t("enterSaleOrder.orderError"));
@@ -345,6 +489,11 @@ const CreateSaleOrderPageContent = () => {
 
   return (
     <div className="space-y-6">
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`}
+        onLoad={() => setMapsLoaded(true)}
+        strategy="lazyOnload"
+      />
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -383,7 +532,11 @@ const CreateSaleOrderPageContent = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 overflow-y-auto max-h-[calc(100vh-350px)]">
                     {offersData?.data && offersData.data.length > 0 ? (
                       offersData.data
-                        .filter(offer => offer.is_active && offer.type === "normal")
+                        .filter(offer => {
+                          const isActive = offer.is_active && offer.type === "normal";
+                          const notExpired = offer.status !== "expired" && new Date(offer.offer_end_date) >= new Date(new Date().setHours(0, 0, 0, 0));
+                          return isActive && notExpired;
+                        })
                         .map((offer) => (
                           <Card key={offer.id} className="hover:shadow-lg transition-shadow">
                             <div className="flex flex-col">
@@ -669,7 +822,6 @@ const CreateSaleOrderPageContent = () => {
               const settings = settingsData?.data || [];
               const taxRate = parseFloat(settings.find((s: any) => s.key === "tax")?.value || "0");
               const deliveryPrice = parseFloat(settings.find((s: any) => s.key === "delivery_price")?.value || "0");
-              const onePointDiscount = parseFloat(settings.find((s: any) => s.key === "one_point_dicount")?.value || "0");
 
               // Calculate tax
               const tax = subtotal * taxRate;
@@ -677,13 +829,8 @@ const CreateSaleOrderPageContent = () => {
               // Calculate delivery fees (only if delivery type is delivery)
               const deliveryFees = deliveryType === "delivery" ? deliveryPrice : 0;
 
-              // Calculate points discount
-              const maxPoints = customer.points || 0;
-              const pointsDiscountAmount = usedPoints * onePointDiscount;
-              const pointsDiscount = Math.min(pointsDiscountAmount, subtotal);
-
               // Calculate total
-              const total = subtotal + tax + deliveryFees - pointsDiscount;
+              const total = subtotal + tax + deliveryFees;
 
               return (
                 <div className="mt-6 pt-6 border-t border-ld space-y-3 mb-4">
@@ -699,12 +846,10 @@ const CreateSaleOrderPageContent = () => {
                     <span className="text-ld">{t("orders.deliveryFees")}</span>
                     <span className="font-semibold text-dark dark:text-white">{deliveryFees.toFixed(3)} KWD</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-ld">{t("orders.pointsDiscount")}</span>
-                    <span className="font-semibold text-success">-{pointsDiscount.toFixed(3)} KWD</span>
-                  </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-ld">
-                    <span className="text-dark dark:text-white">{t("orders.total")}</span>
+                    <span className="text-dark dark:text-white">
+                      {paymentMethod === "online_link" ? t("orders.amountDue") : t("orders.total")}
+                    </span>
                     <span className="text-primary">{total.toFixed(3)} KWD</span>
                   </div>
                 </div>
@@ -742,25 +887,9 @@ const CreateSaleOrderPageContent = () => {
                         onChange={() => setPaymentMethod("online_link")}
                         className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
                       />
-                      <span className="text-sm text-dark dark:text-white">{t("orders.paymentMethod.online_link")}</span>
+                      <span className="text-sm text-dark dark:text-white">{t("orders.paymentMethod.onlineLink")}</span>
                     </label>
                   </div>
-                </div>
-
-                <div>
-                  <Label className="mb-2 block">{t("orders.usedPoints")} ({t("orders.available")}: {customer.points || 0})</Label>
-                  <TextInput
-                    type="number"
-                    min="0"
-                    max={customer.points || 0}
-                    value={usedPoints}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0;
-                      const maxPoints = customer.points || 0;
-                      setUsedPoints(Math.min(Math.max(0, value), maxPoints));
-                    }}
-                    placeholder="0"
-                  />
                 </div>
 
                 {deliveryType === "delivery" && (
@@ -802,19 +931,28 @@ const CreateSaleOrderPageContent = () => {
 
                     {showAddAddress && (
                       <div className="mt-4 space-y-3 p-4 border border-ld rounded-lg">
+                        <div>
+                          <Label className="mb-2 block">{t("enterSaleOrder.addressType")}</Label>
+                          <Select
+                            value={newAddress.type}
+                            style={{ paddingRight: "30px" }}
+                            onChange={(e) => setNewAddress({ ...newAddress, type: e.target.value as AddressType })}
+                          >
+                            <option value="house">{t("enterSaleOrder.addressType.house")}</option>
+                            <option value="apartment">{t("enterSaleOrder.addressType.apartment")}</option>
+                            <option value="office">{t("enterSaleOrder.addressType.office")}</option>
+                          </Select>
+                        </div>
+
                         {newAddress.country_id > 0 && (
                           <div>
                             <Label className="mb-2 block">{t("orders.governorate")}</Label>
                             <Select
-                              dir="ltr"
+                              style={{ paddingRight: "30px" }}
                               value={newAddress.governorate_id}
                               onChange={(e) => {
                                 const governorateId = parseInt(e.target.value);
-                                setNewAddress({ 
-                                  ...newAddress, 
-                                  governorate_id: governorateId,
-                                  area_id: 0,
-                                });
+                                setNewAddress({ ...newAddress, governorate_id: governorateId, area_id: 0 });
                               }}
                             >
                               <option value={0}>{t("orders.selectGovernorate")}</option>
@@ -845,26 +983,102 @@ const CreateSaleOrderPageContent = () => {
                           </div>
                         )}
 
+                        <div>
+                          <Label className="mb-2 block">{t("enterSaleOrder.addressPhoneNumber")}</Label>
+                          <TextInput
+                            dir="ltr"
+                            placeholder="+96512345678"
+                            value={newAddress.phone_number}
+                            onChange={(e) => setNewAddress({ ...newAddress, phone_number: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="mb-2 block">{t("enterSaleOrder.selectLocationOnMap")}</Label>
+                          <div ref={mapRef} className="w-full h-48 rounded-lg overflow-hidden bg-lightgray dark:bg-darkgray" />
+                          {(newAddress.lat != null && newAddress.lng != null) && (
+                            <p className="text-xs text-ld mt-1">
+                              {t("enterSaleOrder.latLng")}: {newAddress.lat.toFixed(5)}, {newAddress.lng.toFixed(5)}
+                            </p>
+                          )}
+                        </div>
+
                         <TextInput
                           placeholder={t("orders.street")}
                           value={newAddress.street}
                           onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                         />
-                        <TextInput
-                          placeholder={t("orders.houseNumber")}
-                          value={newAddress.house}
-                          onChange={(e) => setNewAddress({ ...newAddress, house: e.target.value })}
-                        />
-                        <TextInput
-                          placeholder={t("orders.block")}
-                          value={newAddress.block}
-                          onChange={(e) => setNewAddress({ ...newAddress, block: e.target.value })}
-                        />
-                        <TextInput
-                          placeholder={t("orders.floor")}
-                          value={newAddress.floor}
-                          onChange={(e) => setNewAddress({ ...newAddress, floor: e.target.value })}
-                        />
+
+                        {newAddress.type === "house" && (
+                          <>
+                            <TextInput
+                              placeholder={t("orders.houseNumber")}
+                              value={newAddress.house}
+                              onChange={(e) => setNewAddress({ ...newAddress, house: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("orders.block")}
+                              value={newAddress.block}
+                              onChange={(e) => setNewAddress({ ...newAddress, block: e.target.value })}
+                            />
+                          </>
+                        )}
+
+                        {newAddress.type === "apartment" && (
+                          <>
+                            <TextInput
+                              placeholder={t("enterSaleOrder.buildingName")}
+                              value={newAddress.building_name}
+                              onChange={(e) => setNewAddress({ ...newAddress, building_name: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("enterSaleOrder.apartmentNumber")}
+                              value={newAddress.apartment_number}
+                              onChange={(e) => setNewAddress({ ...newAddress, apartment_number: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("orders.floor")}
+                              value={newAddress.floor}
+                              onChange={(e) => setNewAddress({ ...newAddress, floor: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("enterSaleOrder.additionalDirections")}
+                              value={newAddress.additional_directions}
+                              onChange={(e) => setNewAddress({ ...newAddress, additional_directions: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("enterSaleOrder.addressLabel")}
+                              value={newAddress.address_label}
+                              onChange={(e) => setNewAddress({ ...newAddress, address_label: e.target.value })}
+                            />
+                          </>
+                        )}
+
+                        {newAddress.type === "office" && (
+                          <>
+                            <TextInput
+                              placeholder={t("enterSaleOrder.buildingName")}
+                              value={newAddress.building_name}
+                              onChange={(e) => setNewAddress({ ...newAddress, building_name: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("enterSaleOrder.company")}
+                              value={newAddress.company}
+                              onChange={(e) => setNewAddress({ ...newAddress, company: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("orders.floor")}
+                              value={newAddress.floor}
+                              onChange={(e) => setNewAddress({ ...newAddress, floor: e.target.value })}
+                            />
+                            <TextInput
+                              placeholder={t("orders.block")}
+                              value={newAddress.block}
+                              onChange={(e) => setNewAddress({ ...newAddress, block: e.target.value })}
+                            />
+                          </>
+                        )}
+
                         <Button
                           size="sm"
                           onClick={handleAddAddress}
@@ -925,12 +1139,14 @@ const CreateSaleOrderPageContent = () => {
                         <span className="font-mono text-sm font-semibold text-dark dark:text-white">
                           {order.order_number}
                         </span>
-                        {getStatusBadge(order.status)}
+                        {getStatusBadge(order.status || "pending")}
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
                           <Label className="text-xs text-ld">{t("orders.totalAmount")}</Label>
-                          <p className="font-semibold text-dark dark:text-white">{order.total_amount} KWD</p>
+                          <p className="font-semibold text-dark dark:text-white">
+                            {order.invoice?.amount_due ?? order.total_amount} KWD
+                          </p>
                         </div>
                         <div>
                           <Label className="text-xs text-ld">{t("orders.paymentMethod")}</Label>
@@ -971,6 +1187,64 @@ const CreateSaleOrderPageContent = () => {
               {t("orders.viewAll") || "View All Orders"}
             </Button>
           </Link>
+        </div>
+      </Modal>
+
+      {/* Payment Link Modal (online_link orders) */}
+      <Modal show={showPaymentLinkModal} onClose={() => { setShowPaymentLinkModal(false); router.push("/orders"); }} size="lg">
+        <ModalHeader className="border-b border-ld">
+          <div className="flex items-center gap-2">
+            <Icon icon="solar:link-circle-bold" height={24} className="text-primary" />
+            <span className="text-dark dark:text-white">{t("enterSaleOrder.paymentLinkTitle")}</span>
+          </div>
+        </ModalHeader>
+        <ModalBody className="pt-6">
+          <p className="text-sm text-ld dark:text-white/70 mb-4">
+            {t("enterSaleOrder.paymentLinkDescription")}
+            {paymentLinkOrderNumber && (
+              <span className="font-mono font-semibold text-dark dark:text-white ms-1">{paymentLinkOrderNumber}</span>
+            )}
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <TextInput
+                readOnly
+                value={paymentLink}
+                className="flex-1 font-mono text-sm bg-lightgray dark:bg-darkgray border-ld"
+              />
+              <Button
+                color="gray"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(paymentLink);
+                    setPaymentLinkCopied(true);
+                    showNotification("success", t("enterSaleOrder.copied"), t("enterSaleOrder.linkCopied"));
+                    setTimeout(() => setPaymentLinkCopied(false), 2000);
+                  } catch {
+                    showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.copyFailed"));
+                  }
+                }}
+                className="shrink-0"
+              >
+                <Icon icon={paymentLinkCopied ? "solar:check-circle-bold" : "solar:copy-bold"} height={18} className="me-1" />
+                {paymentLinkCopied ? t("enterSaleOrder.copied") : t("enterSaleOrder.copyLink")}
+              </Button>
+            </div>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(paymentLink)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium transition-colors"
+            >
+              <Icon icon="ri:whatsapp-fill" height={22} />
+              {t("enterSaleOrder.shareViaWhatsApp")}
+            </a>
+          </div>
+        </ModalBody>
+        <div className="p-6 border-t border-ld flex justify-end">
+          <Button color="gray" onClick={() => { setShowPaymentLinkModal(false); router.push("/orders"); }}>
+            {t("enterSaleOrder.closeAndGoToOrders")}
+          </Button>
         </div>
       </Modal>
     </div>
