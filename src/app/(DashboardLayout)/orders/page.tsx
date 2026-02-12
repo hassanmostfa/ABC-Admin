@@ -309,13 +309,13 @@ const OrdersPageContent = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {getStatusBadge(order.status)}
+                    {getStatusBadge(order.status ?? '')}
                   </td>
                   <td className="px-6 py-4 text-dark dark:text-white">
-                    {getPaymentMethodLabel(order.payment_method)}
+                    {getPaymentMethodLabel(order.payment_method ?? '')}
                   </td>
                   <td className="px-6 py-4 text-dark dark:text-white">
-                    {getDeliveryTypeLabel(order.delivery_type)}
+                    {getDeliveryTypeLabel(order.delivery_type ?? '')}
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-semibold text-dark dark:text-white">
