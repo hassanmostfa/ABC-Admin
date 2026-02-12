@@ -45,7 +45,7 @@ const YourPerformance = () => {
         grid: { padding: { bottom: -80 } },
         legend: { show: false },
         dataLabels: { enabled: false, name: { show: false } },
-        stroke: { width: 2, colors: "var(--color-surface-ld)" },
+        stroke: { width: 2, colors: ["var(--color-surface-ld)"] },
         tooltip: { fillSeriesColor: false },
         colors: [
           "var(--color-warning)",
