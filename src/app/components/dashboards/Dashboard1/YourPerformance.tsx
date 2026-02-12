@@ -33,7 +33,7 @@ const YourPerformance = () => {
       ],
       total,
       options: {
-        chart: { height: 230, fontFamily: "inherit", type: "donut" },
+        chart: { height: 230, fontFamily: "inherit", type: "donut" as const },
         plotOptions: {
           pie: {
             startAngle: -90,
