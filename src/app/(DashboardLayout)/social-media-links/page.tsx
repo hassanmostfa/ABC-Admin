@@ -6,6 +6,7 @@ import { useGetSocialMediaLinksQuery, useDeleteSocialMediaLinkMutation } from "@
 import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import { useTranslation } from "react-i18next";
 
 const SocialMediaLinksPage = () => {
@@ -96,12 +97,14 @@ const SocialMediaLinksPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("socialMediaLinks.title")}</h1>
           <p className="text-sm text-ld">{t("socialMediaLinks.subtitle")}</p>
         </div>
-        <Link href="/social-media-links/add">
-          <Button color="blue">
-            <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-            {t("socialMediaLinks.addNew")}
-          </Button>
-        </Link>
+        <HasPermission resource="social_media_links" action="add">
+          <Link href="/social-media-links/add">
+            <Button color="blue">
+              <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
+              {t("socialMediaLinks.addNew")}
+            </Button>
+          </Link>
+        </HasPermission>
       </div>
 
       {/* Social Media Links Table */}
@@ -173,18 +176,22 @@ const SocialMediaLinksPage = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center gap-4 justify-center">
-                      <Link href={`/social-media-links/edit/${link.id}`}>
-                        <button className="text-primary hover:text-primary/80 transition-colors" title={t("socialMediaLinks.edit")}>
-                          <Icon icon="solar:pen-bold" height={18} />
+                      <HasPermission resource="social_media_links" action="edit">
+                        <Link href={`/social-media-links/edit/${link.id}`}>
+                          <button className="text-primary hover:text-primary/80 transition-colors" title={t("socialMediaLinks.edit")}>
+                            <Icon icon="solar:pen-bold" height={18} />
+                          </button>
+                        </Link>
+                      </HasPermission>
+                      <HasPermission resource="social_media_links" action="delete">
+                        <button 
+                          className="text-error hover:text-error/80 transition-colors" 
+                          title={t("socialMediaLinks.delete")}
+                          onClick={() => handleDeleteClick(link.id, link.title_ar || link.title_en || t("socialMediaLinks.url"))}
+                        >
+                          <Icon icon="solar:trash-bin-trash-bold" height={18} />
                         </button>
-                      </Link>
-                      <button 
-                        className="text-error hover:text-error/80 transition-colors" 
-                        title={t("socialMediaLinks.delete")}
-                        onClick={() => handleDeleteClick(link.id, link.title_ar || link.title_en || t("socialMediaLinks.url"))}
-                      >
-                        <Icon icon="solar:trash-bin-trash-bold" height={18} />
-                      </button>
+                      </HasPermission>
                     </div>
                   </td>
                 </tr>

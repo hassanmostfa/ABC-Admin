@@ -25,10 +25,15 @@ export interface Admin {
   };
 }
 
+// Permission structure: { view: 0|1, add: 0|1, edit: 0|1, delete: 0|1 }
+export type PermissionAction = 'view' | 'add' | 'edit' | 'delete';
+export type RolePermissions = Record<string, Record<PermissionAction, number>>;
+
 export interface LoginResponse {
   success: boolean;
   data: {
     admin: Admin;
+    role_permissions: RolePermissions;
     token: string;
     token_type: string;
   };

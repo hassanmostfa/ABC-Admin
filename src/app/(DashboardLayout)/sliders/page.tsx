@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
 import Image from "next/image";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 
 const SlidersPage = () => {
   const { t } = useTranslation();
@@ -174,10 +175,12 @@ const SlidersPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("sliders.title") || "Sliders"}</h1>
           <p className="text-ld mt-1">{t("sliders.subtitle") || "Manage all sliders"}</p>
         </div>
-        <Button onClick={openCreateModal} color="primary">
-          <Icon icon="solar:add-circle-bold" height={20} className="mr-2" />
-          {t("sliders.addSlider") || "Add Slider"}
-        </Button>
+        <HasPermission resource="sliders" action="add">
+          <Button onClick={openCreateModal} color="primary">
+            <Icon icon="solar:add-circle-bold" height={20} className="mr-2" />
+            {t("sliders.addSlider") || "Add Slider"}
+          </Button>
+        </HasPermission>
       </div>
 
       {/* Sliders Grid */}
@@ -230,23 +233,27 @@ const SlidersPage = () => {
 
                   {/* Actions */}
                   <div className="flex items-center justify-end gap-2 pt-2">
-                    <button
-                      onClick={() => openEditModal(slider)}
-                      className="w-8 h-8 rounded-lg border border-ld flex items-center justify-center hover:bg-lightprimary dark:hover:bg-darkprimary transition-colors text-primary hover:text-primary"
-                      title={t("sliders.edit") || "Edit"}
-                    >
-                      <Icon icon="solar:pen-bold" height={18} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedSlider(slider);
-                        setShowDeleteModal(true);
-                      }}
-                      className="w-8 h-8 rounded-lg border border-ld flex items-center justify-center hover:bg-lighterror dark:hover:bg-darkerror transition-colors text-error hover:text-error"
-                      title={t("sliders.delete") || "Delete"}
-                    >
-                      <Icon icon="solar:trash-bin-trash-bold" height={18} />
-                    </button>
+                    <HasPermission resource="sliders" action="edit">
+                      <button
+                        onClick={() => openEditModal(slider)}
+                        className="w-8 h-8 rounded-lg border border-ld flex items-center justify-center hover:bg-lightprimary dark:hover:bg-darkprimary transition-colors text-primary hover:text-primary"
+                        title={t("sliders.edit") || "Edit"}
+                      >
+                        <Icon icon="solar:pen-bold" height={18} />
+                      </button>
+                    </HasPermission>
+                    <HasPermission resource="sliders" action="delete">
+                      <button
+                        onClick={() => {
+                          setSelectedSlider(slider);
+                          setShowDeleteModal(true);
+                        }}
+                        className="w-8 h-8 rounded-lg border border-ld flex items-center justify-center hover:bg-lighterror dark:hover:bg-darkerror transition-colors text-error hover:text-error"
+                        title={t("sliders.delete") || "Delete"}
+                      >
+                        <Icon icon="solar:trash-bin-trash-bold" height={18} />
+                      </button>
+                    </HasPermission>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Sidebar, SidebarItemGroup, SidebarItems } from "flowbite-react";
 import { IconSidebar } from "./IconSidebar";
 import SidebarContent from "./Sidebaritems";
@@ -7,11 +7,18 @@ import NavItems from "./NavItems";
 import NavCollapse from "./NavCollapse";
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import SimpleBar from "simplebar-react";
-
+import { useAppSelector } from "@/store/hooks";
+import { selectRolePermissions } from "@/store/selectors/authSelectors";
+import { filterSidebarByPermissions } from "./filterSidebarByPermissions";
 
 const MobileSidebar = () => {
-  const { selectedIconId, setSelectedIconId } = useContext(CustomizerContext) || {};
-  const selectedContent = SidebarContent.find(
+  const { selectedIconId } = useContext(CustomizerContext) || {};
+  const rolePermissions = useAppSelector(selectRolePermissions);
+  const filteredContent = useMemo(
+    () => filterSidebarByPermissions(SidebarContent, rolePermissions),
+    [rolePermissions]
+  );
+  const selectedContent = filteredContent.find(
     (data) => data.id === selectedIconId
   );
   return (

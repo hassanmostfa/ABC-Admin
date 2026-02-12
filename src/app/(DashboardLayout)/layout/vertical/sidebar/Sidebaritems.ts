@@ -6,6 +6,8 @@ export interface ChildItem {
   item?: any;
   url?: any;
   color?: string;
+  /** Permission resource(s) - single string or array for composite (show if any match) */
+  permission?: string | string[];
 }
 
 export interface MenuItem {
@@ -33,6 +35,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:atom-line-duotone",
             id: uniqueId(),
             url: "/",
+            permission: "dashboard",
           },
           {
             name: "sidebar.adminManagement",
@@ -43,11 +46,13 @@ const SidebarContent: MenuItem[] = [
                 name: "sidebar.rolesAndPermissions",
                 id: uniqueId(),
                 url: "/roles-and-permissions",
+                permission: ["roles", "permissions"],
               },
               {
                 id: uniqueId(),
                 name: "sidebar.admins",
                 url: "/admins",
+                permission: "admins",
               },
             ],
           },
@@ -60,16 +65,19 @@ const SidebarContent: MenuItem[] = [
                 name: "sidebar.countries",
                 id: uniqueId(),
                 url: "/countries",
+                permission: "countries",
               },
               {
                 id: uniqueId(),
                 name: "sidebar.governorates",
                 url: "/governorates",
+                permission: "governorates",
               },
               {
                 id: uniqueId(),
                 name: "sidebar.areas",
                 url: "/areas",
+                permission: "areas",
               },
             ],
           },
@@ -82,11 +90,13 @@ const SidebarContent: MenuItem[] = [
                 name: "sidebar.mainCategories",
                 id: uniqueId(),
                 url: "/categories",
+                permission: "categories",
               },
               {
                 id: uniqueId(),
                 name: "sidebar.subCategories",
                 url: "/subcategories",
+                permission: "subcategories",
               },
             ],
           },
@@ -95,6 +105,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:users-group-two-rounded-outline",
             id: uniqueId(),
             url: "/customers",
+            permission: "customers",
           },
 
           {
@@ -102,6 +113,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:cart-line-duotone",
             id: uniqueId(),
             url: "/products",
+            permission: "products",
           },
 
           {
@@ -109,6 +121,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:buildings-2-line-duotone",
             id: uniqueId(),
             url: "/charities",
+            permission: "charities",
           },
 
           {
@@ -116,6 +129,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:gift-line-duotone",
             id: uniqueId(),
             url: "/offers",
+            permission: "offers",
           },
 
           {
@@ -123,6 +137,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:clipboard-list-line-duotone",
             id: uniqueId(),
             url: "/orders",
+            permission: "orders",
           },
 
           {
@@ -130,6 +145,7 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:cart-large-4-line-duotone",
             id: uniqueId(),
             url: "/enter-sale-order",
+            permission: "orders",
           },
 
           {
@@ -137,18 +153,28 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:document-text-line-duotone",
             id: uniqueId(),
             url: "/invoices",
+            permission: "invoices",
           },
           {
             name: "sidebar.refundRequests",
             icon: "solar:refresh-line-duotone",
             id: uniqueId(),
             url: "/refund-requests",
+            permission: "refund_requests",
           },
           {
             name: "sidebar.payments",
             icon: "solar:wallet-money-line-duotone",
             id: uniqueId(),
             url: "/payments",
+            permission: "transactions",
+          },
+          {
+            name: "sidebar.pointsTransactions",
+            icon: "solar:star-bold-duotone",
+            id: uniqueId(),
+            url: "/points-transactions",
+            permission: "points_transactions",
           },
 
           {
@@ -156,12 +182,14 @@ const SidebarContent: MenuItem[] = [
             icon: "solar:settings-line-duotone",
             id: uniqueId(),
             url: "/settings",
+            permission: "settings",
           },
           {
             name: "sidebar.activityLogs",
             icon: "solar:history-line-duotone",
             id: uniqueId(),
             url: "/activity-logs",
+            permission: "activity_logs",
           },
         ],
       },
@@ -178,36 +206,42 @@ const SidebarContent: MenuItem[] = [
             name: "sidebar.sliders",
             icon: "solar:gallery-line-duotone",
             url: "/sliders",
+            permission: "sliders",
           },
           {
             name: "sidebar.contactUs",
             id: uniqueId(),
             icon: "solar:phone-calling-line-duotone",
             url: "/contact-us",
+            permission: "contact_us",
           },
           {
             id: uniqueId(),
             name: "sidebar.jobApplications",
             icon: "solar:bag-line-duotone",
             url: "/careers",
+            permission: "careers",
           },
           {
             id: uniqueId(),
             name: "sidebar.socialMediaLinks",
             icon: "solar:share-circle-line-duotone",
             url: "/social-media-links",
+            permission: "social_media_links",
           },
           {
             id: uniqueId(),
             name: "sidebar.faqs",
             icon: "solar:question-circle-line-duotone",
             url: "/faqs",
+            permission: "faqs",
           },
           {
             id: uniqueId(),
             name: "sidebar.teamMembers",
             icon: "solar:users-group-rounded-line-duotone",
             url: "/team-members",
+            permission: "team_members",
           },
         ],
       },

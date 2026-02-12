@@ -7,6 +7,7 @@ import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
 import Image from "next/image";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import { useTranslation } from "react-i18next";
 
 const OffersPage = () => {
@@ -118,12 +119,14 @@ const OffersPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("offers.title")}</h1>
           <p className="text-sm text-ld">{t("offers.subtitle")}</p>
         </div>
-        <Link href="/offers/add">
-          <Button className="bg-primary hover:bg-primary/90">
-            <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
-            {t("offers.addNew")}
-          </Button>
-        </Link>
+        <HasPermission resource="offers" action="add">
+          <Link href="/offers/add">
+            <Button className="bg-primary hover:bg-primary/90">
+              <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
+              {t("offers.addNew")}
+            </Button>
+          </Link>
+        </HasPermission>
       </div>
 
 
@@ -184,19 +187,23 @@ const OffersPage = () => {
 
               <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2">
-                  <Link href={`/offers/edit/${offer.id}`}>
-                    <Button size="sm" color="blue">
-                      <Icon icon="solar:pen-bold" height={16} />
+                  <HasPermission resource="offers" action="edit">
+                    <Link href={`/offers/edit/${offer.id}`}>
+                      <Button size="sm" color="blue">
+                        <Icon icon="solar:pen-bold" height={16} />
+                      </Button>
+                    </Link>
+                  </HasPermission>
+                  <HasPermission resource="offers" action="delete">
+                    <Button 
+                      size="sm" 
+                      color="red"
+                      onClick={() => handleDeleteClick(offer.id)}
+                      disabled={deleting}
+                    >
+                      <Icon icon="solar:trash-bin-trash-bold" height={16} />
                     </Button>
-                  </Link>
-                  <Button 
-                    size="sm" 
-                    color="red"
-                    onClick={() => handleDeleteClick(offer.id)}
-                    disabled={deleting}
-                  >
-                    <Icon icon="solar:trash-bin-trash-bold" height={16} />
-                  </Button>
+                  </HasPermission>
                 </div>
               </div>
             </div>
@@ -218,12 +225,14 @@ const OffersPage = () => {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 {t("offers.noOffersDescription")}
               </p>
-              <Link href="/offers/add">
-                <Button className="bg-primary hover:bg-primary/90">
-                  <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
-                  {t("offers.addNew")}
-                </Button>
-              </Link>
+              <HasPermission resource="offers" action="add">
+                <Link href="/offers/add">
+                  <Button className="bg-primary hover:bg-primary/90">
+                    <Icon icon="solar:add-circle-bold" height={20} className="ml-2" />
+                    {t("offers.addNew")}
+                  </Button>
+                </Link>
+              </HasPermission>
             </div>
           </div>
         </Card>

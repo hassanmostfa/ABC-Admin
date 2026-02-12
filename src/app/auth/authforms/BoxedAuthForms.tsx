@@ -31,6 +31,7 @@ const BoxedAuthLogin = () => {
           token: result.data.token,
           tokenType: result.data.token_type,
           admin: result.data.admin,
+          rolePermissions: result.data.role_permissions || {},
         }));
         
         // Redirect to dashboard

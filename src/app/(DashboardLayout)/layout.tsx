@@ -5,6 +5,7 @@ import Header from "./layout/vertical/header/Header";
 import { Customizer } from "./layout/shared/customizer/Customizer";
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import AuthGuard from "@/components/auth/AuthGuard";
+import RolePermissionsRefresher from "@/components/auth/RolePermissionsRefresher";
 
 export default function Layout({
   children,
@@ -14,6 +15,7 @@ export default function Layout({
   const { activeLayout, isLayout } = useContext(CustomizerContext);
   return (
     <AuthGuard>
+      <RolePermissionsRefresher />
       <div className="flex w-full min-h-screen dark:bg-darkgray">
         <div className="page-wrapper flex w-full  ">
           {/* Header/sidebar */}

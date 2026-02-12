@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import { useDeleteFaqMutation, useGetFaqsQuery } from "@/store/api/faqsApi";
 
 const FaqsPage = () => {
@@ -98,12 +99,14 @@ const FaqsPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("faqs.title")}</h1>
           <p className="text-sm text-ld">{t("faqs.subtitle")}</p>
         </div>
-        <Link href="/faqs/add">
-          <Button color="blue">
-            <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-            {t("faqs.addNew")}
-          </Button>
-        </Link>
+        <HasPermission resource="faqs" action="add">
+          <Link href="/faqs/add">
+            <Button color="blue">
+              <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
+              {t("faqs.addNew")}
+            </Button>
+          </Link>
+        </HasPermission>
       </div>
 
       {/* FAQs Table */}
@@ -158,21 +161,25 @@ const FaqsPage = () => {
                     <td className="px-6 py-4 text-ld dark:text-white/70 text-center">{formatDate(faq.created_at)}</td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <Link href={`/faqs/edit/${faq.id}`}>
+                        <HasPermission resource="faqs" action="edit">
+                          <Link href={`/faqs/edit/${faq.id}`}>
+                            <button
+                              className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors"
+                              title={t("faqs.edit")}
+                            >
+                              <Icon icon="solar:pen-bold" height={18} className="text-primary" />
+                            </button>
+                          </Link>
+                        </HasPermission>
+                        <HasPermission resource="faqs" action="delete">
                           <button
-                            className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors"
-                            title={t("faqs.edit")}
+                            onClick={() => handleDeleteClick(faq.id, primaryQ || `FAQ #${faq.id}`)}
+                            className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors"
+                            title={t("faqs.delete")}
                           >
-                            <Icon icon="solar:pen-bold" height={18} className="text-primary" />
+                            <Icon icon="solar:trash-bin-minimalistic-bold" height={18} className="text-error" />
                           </button>
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteClick(faq.id, primaryQ || `FAQ #${faq.id}`)}
-                          className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors"
-                          title={t("faqs.delete")}
-                        >
-                          <Icon icon="solar:trash-bin-minimalistic-bold" height={18} className="text-error" />
-                        </button>
+                        </HasPermission>
                       </div>
                     </td>
                   </tr>

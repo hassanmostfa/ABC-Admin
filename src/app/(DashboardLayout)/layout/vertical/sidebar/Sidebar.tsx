@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { Drawer, Sidebar, SidebarItemGroup, SidebarItems } from "flowbite-react";
 import { IconSidebar } from "./IconSidebar";
 import SidebarContent from "./Sidebaritems";
@@ -9,11 +9,19 @@ import { CustomizerContext } from "@/app/context/CustomizerContext";
 import SimpleBar from "simplebar-react";
 import FullLogo from "@/app/(DashboardLayout)/layout/shared/logo/FullLogo";
 import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
+import { selectRolePermissions } from "@/store/selectors/authSelectors";
+import { filterSidebarByPermissions } from "./filterSidebarByPermissions";
 
 const SidebarLayout = () => {
   const { selectedIconId, setSelectedIconId } =
     useContext(CustomizerContext) || {};
-  const selectedContent = SidebarContent.find(
+  const rolePermissions = useAppSelector(selectRolePermissions);
+  const filteredContent = useMemo(
+    () => filterSidebarByPermissions(SidebarContent, rolePermissions),
+    [rolePermissions]
+  );
+  const selectedContent = filteredContent.find(
     (data) => data.id === selectedIconId
   );
 
@@ -37,7 +45,7 @@ const SidebarLayout = () => {
   }, []);
 
   const activeMenuId = React.useMemo(() => {
-    return findActiveUrl(SidebarContent, pathname);
+    return findActiveUrl(filteredContent, pathname);
   }, [findActiveUrl, pathname]);
 
   React.useEffect(() => {
@@ -48,18 +56,18 @@ const SidebarLayout = () => {
 
   return (
     <>
-      <div className="xl:block hidden overflow-y-hidden">
-        <div className="minisidebar-icon border-e border-ld fixed start-0 z-1 overflow-y-hidden">
+      <div className="xl:block hidden">
+        <div className="minisidebar-icon border-e border-ld fixed start-0 z-1 overflow-y-auto">
           <IconSidebar />
         </div>
         <Sidebar
-          className="fixed menu-sidebar bg-white dark:bg-darkgray rtl:pe-4 rtl:ps-0"
+          className="fixed menu-sidebar bg-white dark:bg-darkgray rtl:pe-4 rtl:ps-0 overflow-hidden flex flex-col"
           aria-label="Sidebar with multi-level dropdown example"
         >
-          <div className="px-6 py-4 flex items-center justify-center sidebarlogo">
+          <div className="px-6 py-4 flex items-center justify-center sidebarlogo flex-shrink-0">
             <FullLogo />
           </div>
-          <SimpleBar className="h-[calc(100vh-85px)]">
+          <SimpleBar className="h-[calc(100vh-85px)] overflow-y-auto flex-1 min-h-0" autoHide={false}>
             <SidebarItems className="pe-4 rtl:pe-0 rtl:ps-4 px-5 mt-2">
               <SidebarItemGroup className="sidebar-nav hide-menu">
                 {selectedContent &&

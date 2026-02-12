@@ -6,6 +6,7 @@ import { useGetSubcategoriesQuery, useDeleteSubcategoryMutation } from "@/store/
 import { useGetCategoriesQuery } from "@/store/api/categoriesApi";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -102,12 +103,14 @@ const SubcategoriesPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("subcategories.title")}</h1>
           <p className="text-sm text-ld mt-2">{t("subcategories.subtitle")}</p>
         </div>
-        <Link href="/subcategories/add">
-          <button className="px-4 py-2 bg-primary text-white rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors">
-            <Icon icon="solar:add-circle-bold" height={20} />
-            {t("subcategories.addNew")}
-          </button>
-        </Link>
+        <HasPermission resource="subcategories" action="add">
+          <Link href="/subcategories/add">
+            <button className="px-4 py-2 bg-primary text-white rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors">
+              <Icon icon="solar:add-circle-bold" height={20} />
+              {t("subcategories.addNew")}
+            </button>
+          </Link>
+        </HasPermission>
       </div>
 
       {/* Subcategories Table */}
@@ -194,14 +197,18 @@ const SubcategoriesPage = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Link href={`/subcategories/edit/${subcategory.id}`}>
-                        <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors" title={t("subcategories.edit")}>
-                          <Icon icon="solar:pen-bold" height={18} className="text-primary" />
+                      <HasPermission resource="subcategories" action="edit">
+                        <Link href={`/subcategories/edit/${subcategory.id}`}>
+                          <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors" title={t("subcategories.edit")}>
+                            <Icon icon="solar:pen-bold" height={18} className="text-primary" />
+                          </button>
+                        </Link>
+                      </HasPermission>
+                      <HasPermission resource="subcategories" action="delete">
+                        <button onClick={() => handleDeleteClick(subcategory.id, subcategory.name_ar)} className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors" title={t("subcategories.delete")}>
+                          <Icon icon="solar:trash-bin-minimalistic-bold" height={18} className="text-error" />
                         </button>
-                      </Link>
-                      <button onClick={() => handleDeleteClick(subcategory.id, subcategory.name_ar)} className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors" title={t("subcategories.delete")}>
-                        <Icon icon="solar:trash-bin-minimalistic-bold" height={18} className="text-error" />
-                      </button>
+                      </HasPermission>
                     </div>
                   </td>
                 </tr>

@@ -113,71 +113,33 @@ transition: color .15s ease-in-out, background-color .15s ease-in-out, border-co
   position: fixed !important;
 }
 
-/* Modern scrollbar styling for sidebar */
+/* Icon sidebar (minisidebar) scroll - hidden scrollbar, keep scrolling */
+.minisidebar-icon {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.minisidebar-icon::-webkit-scrollbar {
+  display: none;
+}
+
+/* Sidebar scroll - hidden scrollbar, keep scrolling */
 .menu-sidebar .simplebar-content-wrapper {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar {
-  width: 6px;
+  display: none;
 }
 
-.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 10px;
-}
-
-.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
-  border-radius: 10px;
-  transition: background 0.2s ease;
-}
-
-.menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.7);
-}
-
-/* Dark mode scrollbar */
-.dark .menu-sidebar .simplebar-content-wrapper {
-  scrollbar-color: rgba(75, 85, 99, 0.6) transparent;
-}
-
-.dark .menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.6);
-}
-
-.dark .menu-sidebar .simplebar-content-wrapper::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.8);
-}
-
-/* Modern SimpleBar scrollbar styling */
+/* Hide SimpleBar's custom scrollbar track & thumb */
 .menu-sidebar .simplebar-track.simplebar-vertical {
-  width: 6px !important;
-  right: 2px;
-}
-
-.menu-sidebar .simplebar-scrollbar {
-  width: 6px !important;
-  right: 0;
-}
-
-.menu-sidebar .simplebar-scrollbar::before {
-  background: rgba(156, 163, 175, 0.5) !important;
-  border-radius: 10px !important;
-  opacity: 1 !important;
-  transition: background 0.2s ease !important;
-}
-
-.menu-sidebar .simplebar-scrollbar:hover::before {
-  background: rgba(107, 114, 128, 0.7) !important;
-}
-
-/* Dark mode SimpleBar scrollbar */
-.dark .menu-sidebar .simplebar-scrollbar::before {
-  background: rgba(75, 85, 99, 0.6) !important;
-}
-
-.dark .menu-sidebar .simplebar-scrollbar:hover::before {
-  background: rgba(107, 114, 128, 0.8) !important;
+  display: none !important;
 }

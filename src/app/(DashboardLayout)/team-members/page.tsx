@@ -11,6 +11,7 @@ import {
 import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import { useTranslation } from "react-i18next";
 
 const TeamMembersPage = () => {
@@ -105,12 +106,14 @@ const TeamMembersPage = () => {
           </h1>
           <p className="text-sm text-ld">{t("teamMembers.subtitle")}</p>
         </div>
-        <Link href="/team-members/add">
-          <Button color="blue">
-            <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-            {t("teamMembers.addNew")}
-          </Button>
-        </Link>
+        <HasPermission resource="team_members" action="add">
+          <Link href="/team-members/add">
+            <Button color="blue">
+              <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
+              {t("teamMembers.addNew")}
+            </Button>
+          </Link>
+        </HasPermission>
       </div>
 
       <Card>
@@ -179,21 +182,25 @@ const TeamMembersPage = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center gap-4 justify-center">
-                      <Link href={`/team-members/edit/${member.id}`}>
+                      <HasPermission resource="team_members" action="edit">
+                        <Link href={`/team-members/edit/${member.id}`}>
+                          <button
+                            className="text-primary hover:text-primary/80 transition-colors"
+                            title={t("teamMembers.edit")}
+                          >
+                            <Icon icon="solar:pen-bold" height={18} />
+                          </button>
+                        </Link>
+                      </HasPermission>
+                      <HasPermission resource="team_members" action="delete">
                         <button
-                          className="text-primary hover:text-primary/80 transition-colors"
-                          title={t("teamMembers.edit")}
+                          className="text-error hover:text-error/80 transition-colors"
+                          title={t("teamMembers.delete")}
+                          onClick={() => handleDeleteClick(member.id, member.name)}
                         >
-                          <Icon icon="solar:pen-bold" height={18} />
+                          <Icon icon="solar:trash-bin-trash-bold" height={18} />
                         </button>
-                      </Link>
-                      <button
-                        className="text-error hover:text-error/80 transition-colors"
-                        title={t("teamMembers.delete")}
-                        onClick={() => handleDeleteClick(member.id, member.name)}
-                      >
-                        <Icon icon="solar:trash-bin-trash-bold" height={18} />
-                      </button>
+                      </HasPermission>
                     </div>
                   </td>
                 </tr>

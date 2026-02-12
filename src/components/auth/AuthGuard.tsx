@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
-import { selectIsAuthenticated } from "@/store/selectors/authSelectors";
+import { selectIsAuthenticated, selectRolePermissions } from "@/store/selectors/authSelectors";
+import { canAccessRoute } from "@/utils/permissions";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,11 +14,12 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const rolePermissions = useAppSelector(selectRolePermissions);
 
   useEffect(() => {
     // Check if user is authenticated
     const token = localStorage.getItem("token");
-    
+
     // Public routes that don't require authentication
     const publicRoutes = [
       "/auth/auth1/login",
@@ -39,13 +41,23 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
     // If not authenticated and not on a public route, redirect to login
     if (!token && !isAuthenticated && !isPublicRoute) {
       router.push("/auth/auth2/login");
+      return;
     }
 
     // If authenticated and on a public route, redirect to dashboard
     if ((token || isAuthenticated) && isPublicRoute) {
       router.push("/");
+      return;
     }
-  }, [isAuthenticated, pathname, router]);
+
+    // If authenticated, check route permissions (only for dashboard routes, not auth routes)
+    if ((token || isAuthenticated) && !isPublicRoute && pathname) {
+      const hasAccess = canAccessRoute(rolePermissions, pathname);
+      if (!hasAccess) {
+        router.push("/"); // Redirect to dashboard if no permission
+      }
+    }
+  }, [isAuthenticated, pathname, router, rolePermissions]);
 
   return <>{children}</>;
 };

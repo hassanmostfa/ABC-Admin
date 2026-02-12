@@ -5,11 +5,19 @@ import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Background from '/public/images/backgrounds/welcome-bg.png';
 import { useTranslation } from "react-i18next";
-
+import { useGetStatisticsQuery } from "@/store/api/statisticsApi";
+import Link from "next/link";
+import { Spinner } from "flowbite-react";
 
 const WelcomeBox = () => {
   const { t } = useTranslation();
-  
+  const { data, isLoading } = useGetStatisticsQuery();
+  const stats = data?.data;
+
+  const totalOrders = stats?.orders?.total ?? 0;
+  const pendingOrders = stats?.orders?.by_status?.pending ?? 0;
+  const customersCount = stats?.customers_count ?? 0;
+
   return (
     <>
       <CardBox className="bg-primary dark:bg-primary pb-0 h-full">
@@ -25,17 +33,34 @@ const WelcomeBox = () => {
               </div>
               <h5 className="text-xl text-white">{t("dashboard.welcomeBack")}</h5>
             </div>
-
-            <div className="flex  w-full xl:mt-12 sm:mt-12 lg:mt-6 mt-6">
-              <div className="border-e border-white/20 pe-4">
-                <p className="text-white opacity-75 text-sm mb-1">{t("dashboard.budget")}</p>
-                <h2 className="text-white text-2xl">98,450 {t("dashboard.currency")}</h2>
+            {isLoading ? (
+              <div className="mt-6 flex gap-4">
+                <Spinner color="white" size="sm" />
               </div>
-              <div className="ps-4"> 
-                <p className="text-white opacity-75 text-sm mb-1">{t("dashboard.expenses")}</p>
-                <h2 className="text-white text-2xl">2,440 {t("dashboard.currency")}</h2>
+            ) : (
+              <div className="flex flex-wrap gap-6 mt-6">
+                <div>
+                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.totalOrders")}</p>
+                  <p className="text-white text-xl font-semibold">{totalOrders}</p>
+                </div>
+                <div>
+                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.pendingOrders")}</p>
+                  <p className="text-white text-xl font-semibold">
+                    {pendingOrders > 0 ? (
+                      <Link href="/orders?status=pending" className="hover:underline">
+                        {pendingOrders}
+                      </Link>
+                    ) : (
+                      pendingOrders
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.totalCustomers")}</p>
+                  <p className="text-white text-xl font-semibold">{customersCount}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="md:col-span-5 col-span-12 md:ms-auto ms-auto me-auto">
           <Image

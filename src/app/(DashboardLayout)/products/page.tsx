@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import ConfirmModal from "@/components/shared/ConfirmModal";
+import HasPermission from "@/components/shared/HasPermission";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
@@ -104,12 +105,14 @@ const ProductsPage = () => {
           <h1 className="text-3xl font-bold text-dark dark:text-white">{t("products.title")}</h1>
           <p className="text-sm text-ld mt-2">{t("products.subtitle")}</p>
         </div>
-        <Link href="/products/add">
-          <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
-            <Icon icon="solar:add-circle-bold" height={20} />
-            {t("products.addNew")}
-          </button>
-        </Link>
+        <HasPermission resource="products" action="add">
+          <Link href="/products/add">
+            <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+              <Icon icon="solar:add-circle-bold" height={20} />
+              {t("products.addNew")}
+            </button>
+          </Link>
+        </HasPermission>
       </div>
 
       {/* Filters */}
@@ -263,17 +266,21 @@ const ProductsPage = () => {
                           <Icon icon="solar:eye-bold" height={16} className="text-primary" />
                         </button>
                       </Link>
-                      <Link href={`/products/edit/${product.id}`}>
-                        <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors">
-                          <Icon icon="solar:pen-bold" height={16} className="text-primary" />
+                      <HasPermission resource="products" action="edit">
+                        <Link href={`/products/edit/${product.id}`}>
+                          <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors">
+                            <Icon icon="solar:pen-bold" height={16} className="text-primary" />
+                          </button>
+                        </Link>
+                      </HasPermission>
+                      <HasPermission resource="products" action="delete">
+                        <button
+                          onClick={() => handleDeleteClick(product.id)}
+                          className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors"
+                        >
+                          <Icon icon="solar:trash-bin-minimalistic-bold" height={16} className="text-error" />
                         </button>
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteClick(product.id)}
-                        className="h-8 w-8 rounded-full hover:bg-lighterror dark:hover:bg-darkerror flex items-center justify-center transition-colors"
-                      >
-                        <Icon icon="solar:trash-bin-minimalistic-bold" height={16} className="text-error" />
-                      </button>
+                      </HasPermission>
                     </div>
                   </td>
                 </tr>
