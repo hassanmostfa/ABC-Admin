@@ -134,7 +134,7 @@ const OrderShow = ({ params }: OrderShowProps) => {
         </div>
         <div className="flex items-center gap-3">
           <Select
-            value={order.status}
+            value={order.status ?? ''}
             onChange={(e) => handleStatusChange(e.target.value)}
             className="w-80"
             icon={() => <Icon icon="solar:arrow-down-bold" height={20} />}
@@ -162,15 +162,15 @@ const OrderShow = ({ params }: OrderShowProps) => {
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.status")}</label>
-                <div className="mt-1">{getStatusBadge(order.status)}</div>
+                <div className="mt-1">{getStatusBadge(order.status ?? '')}</div>
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.paymentMethod")}</label>
-                <p className="font-medium text-dark dark:text-white">{getPaymentMethodLabel(order.payment_method)}</p>
+                <p className="font-medium text-dark dark:text-white">{getPaymentMethodLabel(order.payment_method ?? '')}</p>
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.deliveryType")}</label>
-                <p className="font-medium text-dark dark:text-white">{getDeliveryTypeLabel(order.delivery_type)}</p>
+                <p className="font-medium text-dark dark:text-white">{getDeliveryTypeLabel(order.delivery_type ?? '')}</p>
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.createdAt")}</label>
