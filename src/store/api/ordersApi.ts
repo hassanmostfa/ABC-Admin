@@ -56,6 +56,7 @@ export interface Invoice {
   invoice_number: string;
   total_before_discounts: number;
   tax_amount: number;
+  delivery_fee?: number;
   offer_discount: number;
   used_points: number;
   points_discount: number;
