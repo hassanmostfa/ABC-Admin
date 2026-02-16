@@ -17,6 +17,7 @@ const WelcomeBox = () => {
   const totalOrders = stats?.orders?.total ?? 0;
   const pendingOrders = stats?.orders?.by_status?.pending ?? 0;
   const customersCount = stats?.customers_count ?? 0;
+  const totalRevenue = stats?.total_revenue ?? 0;
 
   return (
     <>
@@ -40,24 +41,8 @@ const WelcomeBox = () => {
             ) : (
               <div className="flex flex-wrap gap-6 mt-6">
                 <div>
-                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.totalOrders")}</p>
-                  <p className="text-white text-xl font-semibold">{totalOrders}</p>
-                </div>
-                <div>
-                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.pendingOrders")}</p>
-                  <p className="text-white text-xl font-semibold">
-                    {pendingOrders > 0 ? (
-                      <Link href="/orders?status=pending" className="hover:underline">
-                        {pendingOrders}
-                      </Link>
-                    ) : (
-                      pendingOrders
-                    )}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.totalCustomers")}</p>
-                  <p className="text-white text-xl font-semibold">{customersCount}</p>
+                  <p className="text-white/75 text-sm mb-0.5">{t("dashboard.welcome.totalRevenue")}</p>
+                  <p className="text-white text-xl font-semibold">{totalRevenue} {t("dashboard.currency")}</p>
                 </div>
               </div>
             )}

@@ -726,10 +726,12 @@ const AddOfferPage = () => {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-dark dark:text-white">{t("offers.rewards")}</h2>
-            <Button type="button" size="sm" onClick={addReward}>
-              <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
-              {t("offers.addReward")}
-            </Button>
+            {formData.reward_type === "products" && (
+              <Button type="button" size="sm" onClick={addReward}>
+                <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
+                {t("offers.addReward")}
+              </Button>
+            )}
           </div>
           
           {fieldErrors.rewards && (

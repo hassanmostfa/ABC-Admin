@@ -29,9 +29,11 @@ const InvoicesPage = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info"; label: string }> = {
+    const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info" | "purple"; label: string }> = {
       pending: { color: "warning", label: t("invoices.status.pending") },
       paid: { color: "success", label: t("invoices.status.paid") },
+      cancelled: { color: "failure", label: t("invoices.status.cancelled") },
+      refunded: { color: "purple", label: t("invoices.status.refunded") },
     };
 
     const config = statusConfig[status] || { color: "info", label: status };
@@ -150,6 +152,8 @@ const InvoicesPage = () => {
                 <option value="">{t("invoices.allStatuses")}</option>
                 <option value="pending">{t("invoices.status.pending")}</option>
                 <option value="paid">{t("invoices.status.paid")}</option>
+                <option value="cancelled">{t("invoices.status.cancelled")}</option>
+                <option value="refunded">{t("invoices.status.refunded")}</option>
               </Select>
             </div>
 
@@ -300,9 +304,7 @@ const InvoicesPage = () => {
                           {t("invoices.markAsPaid")}
                         </button>
                       ) : (
-                        <Badge color="success" className="w-fit">
-                          {t("invoices.status.paid")}
-                        </Badge>
+                        getStatusBadge(invoice.status)
                       )}
                     </td>
                   </tr>

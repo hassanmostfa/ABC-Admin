@@ -19,9 +19,11 @@ const InvoiceShow = ({ params }: InvoiceShowProps) => {
   const { data: invoiceData, isLoading, error } = useGetInvoiceByIdQuery(invoiceId);
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info"; label: string }> = {
+    const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info" | "purple"; label: string }> = {
       pending: { color: "warning", label: t("invoices.status.pending") },
       paid: { color: "success", label: t("invoices.status.paid") },
+      cancelled: { color: "failure", label: t("invoices.status.cancelled") },
+      refunded: { color: "purple", label: t("invoices.status.refunded") },
     };
 
     const config = statusConfig[status] || { color: "info", label: status };

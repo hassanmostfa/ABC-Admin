@@ -333,12 +333,12 @@ const OrderShow = ({ params }: OrderShowProps) => {
                   <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.tax_amount)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-ld dark:text-white/70">{t("orders.offerDiscount")}</span>
-                  <span className="font-medium text-dark dark:text-white text-success">-{formatCurrency(order.invoice.offer_discount)}</span>
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.deliveryFees")}</span>
+                  <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.delivery_fee ?? 0)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-ld dark:text-white/70">{t("orders.pointsDiscount")}</span>
-                  <span className="font-medium text-dark dark:text-white text-success">-{formatCurrency(order.invoice.points_discount)}</span>
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.offerDiscount")}</span>
+                  <span className="font-medium text-dark dark:text-white text-success">-{formatCurrency(order.invoice.offer_discount)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-ld dark:text-white/70">{t("orders.totalDiscount")}</span>
