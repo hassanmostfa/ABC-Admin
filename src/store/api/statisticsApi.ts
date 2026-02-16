@@ -56,6 +56,7 @@ export interface StatisticsResponse {
   message: string;
   data: {
     orders?: OrdersStats;
+    total_revenue?: number;
     customers_count: number;
     charities_count: number;
     products_count: number;
