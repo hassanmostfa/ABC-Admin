@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
-import { Card, Label, TextInput, Spinner, Select, Badge, Pagination } from "flowbite-react";
+import { Card, Label, TextInput, Spinner, Select, Badge, Pagination, Tabs, TabItem } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetOrdersQuery, useUpdateOrderStatusMutation } from "@/store/api/ordersApi";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -75,6 +75,19 @@ const OrdersPageContent = () => {
     return types[type] || type;
   };
 
+  const getInvoiceStatusBadge = (status?: string) => {
+    const value = (status || "").toLowerCase();
+    const isPaid = value === "paid" || value === "completed";
+    const isFailed = value === "failed" || value === "cancelled";
+    const color: "success" | "failure" | "warning" = isPaid ? "success" : isFailed ? "failure" : "warning";
+
+    return (
+      <Badge color={color} className="w-fit">
+        {status || "-"}
+      </Badge>
+    );
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -84,7 +97,8 @@ const OrdersPageContent = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', {
+    const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'KWD',
       minimumFractionDigits: 0,
@@ -135,7 +149,7 @@ const OrdersPageContent = () => {
       {/* Filters */}
       <Card>
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
               <Label htmlFor="search" className="mb-2 block">{t("orders.search")}</Label>
@@ -149,26 +163,6 @@ const OrdersPageContent = () => {
                 }}
                 icon={() => <Icon icon="solar:magnifer-bold" height={18} />}
               />
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <Label htmlFor="status" className="mb-2 block">{t("orders.status")}</Label>
-              <Select
-                id="status"
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="select-md"
-              >
-                <option value="">{t("orders.allStatuses")}</option>
-                <option value="pending">{t("orders.status.pending")}</option>
-                <option value="processing">{t("orders.status.processing")}</option>
-                <option value="completed">{t("orders.status.completed")}</option>
-                <option value="cancelled">{t("orders.status.cancelled")}</option>
-              </Select>
             </div>
 
             {/* Payment Method Filter */}
@@ -265,33 +259,74 @@ const OrdersPageContent = () => {
 
       {/* Orders Table */}
       <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+        <Tabs
+          aria-label="Order status tabs"
+          variant="underline"
+          onActiveTabChange={(activeTab: number) => {
+            const statusByTab = ["", "pending", "processing", "completed", "cancelled"];
+            setStatusFilter(statusByTab[activeTab] ?? "");
+            setCurrentPage(1);
+          }}
+        >
+          <TabItem
+            active={statusFilter === ""}
+            title={t("orders.allStatuses")}
+          >
+            <></>
+          </TabItem>
+          <TabItem
+            active={statusFilter === "pending"}
+            title={t("orders.status.pending")}
+          >
+            <></>
+          </TabItem>
+          <TabItem
+            active={statusFilter === "processing"}
+            title={t("orders.status.processing")}
+          >
+            <></>
+          </TabItem>
+          <TabItem
+            active={statusFilter === "completed"}
+            title={t("orders.status.completed")}
+          >
+            <></>
+          </TabItem>
+          <TabItem
+            active={statusFilter === "cancelled"}
+            title={t("orders.status.cancelled")}
+          >
+            <></>
+          </TabItem>
+        </Tabs>
+        <div className="overflow-x-auto mt-4">
+          <table className="w-full text-sm text-center">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.orderNumber")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.customer")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.status")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.paymentMethod")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.deliveryType")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.totalAmount")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.createdAt")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("orders.actions")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">#</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.orderNumber")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.customer")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.status")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.paymentMethod")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.deliveryType")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.totalAmount")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.invoiceStatus")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.createdAt")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {ordersData?.data?.map((order, index) => (
                 <tr key={order.id} className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors">
-                  <td className="px-6 py-4 text-dark dark:text-white font-medium">
+                  <td className="px-6 py-4 text-center text-dark dark:text-white font-medium">
                     {ordersData.pagination ? (ordersData.pagination.from + index) : (index + 1)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div className="font-mono text-sm font-medium text-dark dark:text-white">
                       {order.order_number}
                     </div>
                   </td>
-                  <td className="px-6 py-4" style={{ width: "180px" }}>
+                  <td className="px-6 py-4 text-center" style={{ width: "180px" }}>
                     <div>
                       {order.type === "customer" && order.customer ? (
                         <>
@@ -308,25 +343,28 @@ const OrdersPageContent = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     {getStatusBadge(order.status ?? '')}
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-center text-dark dark:text-white">
                     {getPaymentMethodLabel(order.payment_method ?? '')}
                   </td>
-                  <td className="px-6 py-4 text-dark dark:text-white">
+                  <td className="px-6 py-4 text-center text-dark dark:text-white">
                     {getDeliveryTypeLabel(order.delivery_type ?? '')}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div className="font-semibold text-dark dark:text-white">
                       {formatCurrency(order.invoice?.amount_due ?? order.total_amount)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-ld dark:text-white/70">
+                  <td className="px-6 py-4 text-center">
+                    {getInvoiceStatusBadge(order.invoice?.status)}
+                  </td>
+                  <td className="px-6 py-4 text-center text-sm text-ld dark:text-white/70">
                     {formatDate(order.created_at)}
                   </td>
-                  <td className="px-6 py-4">
-                    <Link href={`/orders/show/${order.id}`}>
+                  <td className="px-6 py-4 text-center">
+                    <Link href={`/orders/show/${order.id}`} className="inline-flex">
                       <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors">
                         <Icon icon="solar:eye-bold" height={16} className="text-primary" />
                       </button>
@@ -336,7 +374,7 @@ const OrdersPageContent = () => {
               ))}
               {(!ordersData?.data || ordersData.data.length === 0) && (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-ld dark:text-white/70">
+                  <td colSpan={10} className="px-6 py-8 text-center text-ld dark:text-white/70">
                     {t("orders.noOrders")}
                   </td>
                 </tr>

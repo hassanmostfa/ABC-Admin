@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 const CustomersPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -145,7 +145,10 @@ const CustomersPage = () => {
                   </td>
                   <td className="px-6 py-4 text-dark dark:text-white">{customer.points}</td>
                   <td className="px-6 py-4 text-dark dark:text-white">
-                    {new Date(customer.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" })}
+                    {new Date(customer.created_at).toLocaleDateString(
+                      i18n.language === "ar" ? "ar-EG" : "en-US",
+                      { year: "numeric", month: "long", day: "numeric" }
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">

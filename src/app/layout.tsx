@@ -31,7 +31,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" type="image/svg+xml" />
         <ThemeModeScript />
       </head>
-      <body className={`${manrope.className} ${cairo.variable}`} style={{ fontFamily: 'var(--font-cairo), Manrope, sans-serif' }}>
+      <body className={`${manrope.className} ${cairo.variable}`} style={{ fontFamily: 'var(--font-cairo), Manrope, sans-serif' }} suppressHydrationWarning>
         <ReduxProvider>
           <NotificationProvider>
             <ThemeProvider theme={customTheme}>

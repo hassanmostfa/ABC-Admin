@@ -56,7 +56,8 @@ const OrderShow = ({ params }: OrderShowProps) => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', {
+    const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'KWD',
       minimumFractionDigits: 2,
@@ -116,6 +117,7 @@ const OrderShow = ({ params }: OrderShowProps) => {
   }
 
   const order = orderData.data;
+  const latestPayment = (order as any).payments?.[0];
 
   return (
     <div className="space-y-6">
@@ -232,37 +234,37 @@ const OrderShow = ({ params }: OrderShowProps) => {
             <Card>
               <h2 className="text-xl font-bold text-dark dark:text-white mb-4">{t("orders.orderItems")}</h2>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm text-center">
                   <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
                     <tr>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.product")}</th>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.sku")}</th>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.quantity")}</th>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.unitPrice")}</th>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.totalPrice")}</th>
-                      <th className="px-4 py-3 font-semibold text-dark dark:text-white text-right">{t("orders.isOffer")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.product")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.sku")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("products.size")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.quantity")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.unitPrice")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.totalPrice")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.isOffer")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {order.items.map((item) => (
                       <tr key={item.id} className="border-b border-ld">
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 text-center">
                           <div>
                             <p className="font-medium text-dark dark:text-white">{item.name}</p>
-                            <p className="text-xs text-ld dark:text-white/70">
-                              {item.product_variant.product_name_ar} - {item.product_variant.variant_size}
-                            </p>
+                            <p className="text-xs text-ld dark:text-white/70">{item.product_variant.product_name_ar}</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-dark dark:text-white font-mono text-xs">{item.sku}</td>
-                        <td className="px-4 py-3 text-dark dark:text-white">{item.quantity}</td>
-                        <td className="px-4 py-3 text-dark dark:text-white">{formatCurrency(item.unit_price)}</td>
-                        <td className="px-4 py-3 text-dark dark:text-white font-semibold">{formatCurrency(item.total_price)}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3 text-center text-dark dark:text-white font-mono text-xs">{item.sku}</td>
+                        <td className="px-4 py-3 text-center text-dark dark:text-white">{item.product_variant.variant_size || "-"}</td>
+                        <td className="px-4 py-3 text-center text-dark dark:text-white">{item.quantity}</td>
+                        <td className="px-4 py-3 text-center text-dark dark:text-white">{formatCurrency(item.unit_price)}</td>
+                        <td className="px-4 py-3 text-center text-dark dark:text-white font-semibold">{formatCurrency(item.total_price)}</td>
+                        <td className="px-4 py-3 text-center">
                           {item.is_offer ? (
-                            <Badge color="success" className="w-fit">{t("orders.yes")}</Badge>
+                            <Badge color="success" className="w-fit mx-auto">{t("orders.yes")}</Badge>
                           ) : (
-                            <Badge color="gray" className="w-fit">{t("orders.no")}</Badge>
+                            <Badge color="gray" className="w-fit mx-auto">{t("orders.no")}</Badge>
                           )}
                         </td>
                       </tr>
@@ -328,10 +330,12 @@ const OrderShow = ({ params }: OrderShowProps) => {
                   <span className="text-sm text-ld dark:text-white/70">{t("orders.totalBeforeDiscounts")}</span>
                   <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.total_before_discounts)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-ld dark:text-white/70">{t("orders.taxAmount")}</span>
-                  <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.tax_amount)}</span>
-                </div>
+                {Number(order.invoice.tax_amount ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-ld dark:text-white/70">{t("orders.taxAmount")}</span>
+                    <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.tax_amount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-sm text-ld dark:text-white/70">{t("orders.deliveryFees")}</span>
                   <span className="font-medium text-dark dark:text-white">{formatCurrency(order.invoice.delivery_fee ?? 0)}</span>
@@ -360,6 +364,59 @@ const OrderShow = ({ params }: OrderShowProps) => {
                   <div className="flex justify-between">
                     <span className="text-sm text-ld dark:text-white/70">{t("orders.paidAt")}</span>
                     <span className="font-medium text-dark dark:text-white">{formatDateTime(order.invoice.paid_at)}</span>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Payment Data */}
+          {latestPayment && (
+            <Card>
+              <h2 className="text-xl font-bold text-dark dark:text-white mb-4">{t("orders.paymentData")}</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.paymentNumber")}</span>
+                  <span className="font-medium text-dark dark:text-white">{latestPayment.payment_number || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.gateway")}</span>
+                  <span className="font-medium text-dark dark:text-white">{latestPayment.gateway || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.method")}</span>
+                  <span className="font-medium text-dark dark:text-white">{latestPayment.method || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.paidAmount")}</span>
+                  <span className="font-medium text-dark dark:text-white">{formatCurrency(Number(latestPayment.amount || 0))}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-ld dark:text-white/70">{t("orders.paymentStatus")}</span>
+                  <span className="font-medium text-dark dark:text-white">{latestPayment.status || "-"}</span>
+                </div>
+                {latestPayment.paid_at && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-ld dark:text-white/70">{t("orders.paymentDate")}</span>
+                    <span className="font-medium text-dark dark:text-white">{formatDateTime(latestPayment.paid_at)}</span>
+                  </div>
+                )}
+                {latestPayment.track_id && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-sm text-ld dark:text-white/70">{t("orders.trackId")}</span>
+                    <span className="font-medium text-dark dark:text-white break-all text-right">{latestPayment.track_id}</span>
+                  </div>
+                )}
+                {latestPayment.tran_id && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-sm text-ld dark:text-white/70">{t("orders.transactionId")}</span>
+                    <span className="font-medium text-dark dark:text-white break-all text-right">{latestPayment.tran_id}</span>
+                  </div>
+                )}
+                {latestPayment.receipt_id && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-sm text-ld dark:text-white/70">{t("orders.receiptId")}</span>
+                    <span className="font-medium text-dark dark:text-white break-all text-right">{latestPayment.receipt_id}</span>
                   </div>
                 )}
               </div>

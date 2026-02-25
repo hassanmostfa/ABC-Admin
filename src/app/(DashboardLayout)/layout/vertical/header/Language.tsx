@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next'
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import Image from "next/image";
@@ -32,6 +32,7 @@ const Languages = [
 
 export const Language = () => {
   const { i18n } = useTranslation();
+  const [mounted, setMounted] = useState(false);
 
   const {
     isLanguage, setIsLanguage
@@ -43,6 +44,10 @@ export const Language = () => {
     i18n.changeLanguage(isLanguage);
   }, [isLanguage]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <>
      <div className="relative group/menu">
@@ -52,13 +57,17 @@ export const Language = () => {
           dismissOnClick={false}
           renderTrigger={() => (
             <span className="h-8 w-8 hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary ">
-              <Image
-                src={currentLang.icon}
-                height={35}
-                width={32}
-                alt="language"
-                className="rounded-full h-5 w-5 object-cover cursor-pointer"
-              />
+              {mounted ? (
+                <Image
+                  src={currentLang.icon}
+                  height={35}
+                  width={32}
+                  alt="language"
+                  className="rounded-full h-5 w-5 object-cover cursor-pointer"
+                />
+              ) : (
+                <span className="h-5 w-5 rounded-full bg-lightgray dark:bg-darkgray" />
+              )}
             </span>
           )}
         >

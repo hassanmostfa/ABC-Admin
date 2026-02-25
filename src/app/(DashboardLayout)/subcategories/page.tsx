@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
 const SubcategoriesPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -193,7 +193,10 @@ const SubcategoriesPage = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 text-dark dark:text-white text-center">
-                    {new Date(subcategory.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" })}
+                    {new Date(subcategory.created_at).toLocaleDateString(
+                      i18n.language === "ar" ? "ar-EG" : "en-US",
+                      { year: "numeric", month: "long", day: "numeric" }
+                    )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">

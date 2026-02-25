@@ -1,5 +1,5 @@
-"use-client";
-import React, { useContext } from "react";
+"use client";
+import React, { useContext, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Miniicons from "./MiniSidebar";
 import SimpleBar from "simplebar-react";
@@ -12,6 +12,11 @@ export const IconSidebar = () => {
   const { selectedIconId, setSelectedIconId, setIsCollapse, isCollapse , setIsMobileSidebar} =
     useContext(CustomizerContext) || {};
   const { t } = useTranslation();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   // Always show both Dashboard and Content Management (إدارة المحتوي) icons - content is validated when expanded
   // Handle icon click
@@ -59,7 +64,11 @@ export const IconSidebar = () => {
           {Miniicons.map((links, index) => (
             <Tooltip
               key={links.id}
-              content={links.tooltip.startsWith("sidebar.") ? t(links.tooltip) : links.tooltip}
+              content={
+                links.tooltip.startsWith("sidebar.")
+                  ? (hydrated ? t(links.tooltip) : "")
+                  : links.tooltip
+              }
               placement="right"
               className="flowbite-tooltip"
             >

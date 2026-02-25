@@ -191,7 +191,6 @@ const AddAdmin = () => {
                 onChange={handleInputChange}
                 required
                 className="select-md"
-                icon={() => <Icon icon="solar:shield-user-bold" height={18} />}
               >
                 <option value="">{t("admins.chooseRole")}</option>
                 {rolesData?.data?.map((role) => (

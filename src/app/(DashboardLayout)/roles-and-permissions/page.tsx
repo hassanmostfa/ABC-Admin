@@ -11,7 +11,7 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
 import { useTranslation } from "react-i18next";
 
 const RolesAndPermissions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
@@ -175,11 +175,14 @@ const RolesAndPermissions = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 text-ld dark:text-white/70 text-center">
-                    {new Date(role.created_at).toLocaleDateString("ar-EG", {
+                    {new Date(role.created_at).toLocaleDateString(
+                      i18n.language === "ar" ? "ar-EG" : "en-US",
+                      {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
-                    })}
+                      }
+                    )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">

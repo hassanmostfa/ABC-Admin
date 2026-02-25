@@ -7,7 +7,7 @@ import { useGetPointsTransactionsQuery } from "@/store/api/pointsTransactionsApi
 import { useTranslation } from "react-i18next";
 
 const PointsTransactionsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,7 +31,8 @@ const PointsTransactionsPage = () => {
 
   const formatCurrency = (amount: number | null) => {
     if (amount == null) return "—";
-    return new Intl.NumberFormat("ar-SA", {
+    const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: "KWD",
       minimumFractionDigits: 2,
@@ -151,16 +152,16 @@ const PointsTransactionsPage = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm text-center">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.type")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.customer")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.points")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.amount")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.description")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("pointsTransactions.createdAt")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">#</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.type")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.customer")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.points")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.amount")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.description")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("pointsTransactions.createdAt")}</th>
               </tr>
             </thead>
             <tbody>
@@ -169,11 +170,11 @@ const PointsTransactionsPage = () => {
                   key={tx.id}
                   className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-dark dark:text-white">
+                  <td className="px-4 py-3 text-center font-medium text-dark dark:text-white">
                     {pagination && !searchQuery.trim() ? pagination.from + index : index + 1}
                   </td>
-                  <td className="px-4 py-3">{getTypeBadge(tx.type)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">{getTypeBadge(tx.type)}</td>
+                  <td className="px-4 py-3 text-center">
                     {tx.customer ? (
                       <div>
                         <div className="font-medium text-dark dark:text-white">{tx.customer.name}</div>
@@ -183,12 +184,12 @@ const PointsTransactionsPage = () => {
                       "—"
                     )}
                   </td>
-                  <td className="px-4 py-3 font-semibold text-dark dark:text-white">{tx.points}</td>
-                  <td className="px-4 py-3 text-dark dark:text-white">{formatCurrency(tx.amount)}</td>
-                  <td className="px-4 py-3 text-ld dark:text-white/70 max-w-xs truncate" title={tx.description || ""}>
+                  <td className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{tx.points}</td>
+                  <td className="px-4 py-3 text-center text-dark dark:text-white">{formatCurrency(tx.amount)}</td>
+                  <td className="px-4 py-3 text-center text-ld dark:text-white/70 max-w-xs truncate" title={tx.description || ""}>
                     {tx.description || "—"}
                   </td>
-                  <td className="px-4 py-3 text-ld dark:text-white/70 whitespace-nowrap">
+                  <td className="px-4 py-3 text-center text-ld dark:text-white/70 whitespace-nowrap">
                     {formatDate(tx.created_at)}
                   </td>
                 </tr>

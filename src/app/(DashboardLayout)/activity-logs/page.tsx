@@ -223,31 +223,31 @@ const ActivityLogsPage = () => {
       {/* Activity Logs Table */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm text-center">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   #
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.timestamp")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.admin")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.action")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.model")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.method")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.ipAddress")}
                 </th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                   {t("activityLogs.userAgent")}
                 </th>
               </tr>
@@ -258,15 +258,15 @@ const ActivityLogsPage = () => {
                   key={`${log.timestamp}-${log.model}-${log.model_id}-${index}`}
                   className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-dark dark:text-white">
+                  <td className="px-4 py-3 text-center font-medium text-dark dark:text-white">
                     {data?.pagination
                       ? data.pagination.from + index
                       : index + 1}
                   </td>
-                  <td className="px-4 py-3 text-ld dark:text-white/70 whitespace-nowrap">
+                  <td className="px-4 py-3 text-center text-ld dark:text-white/70 whitespace-nowrap">
                     {formatTimestamp(log.timestamp)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <div>
                       <div className="font-medium text-dark dark:text-white">
                         {log.admin_name}
@@ -276,8 +276,8 @@ const ActivityLogsPage = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">{getActionBadge(log.action)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">{getActionBadge(log.action)}</td>
+                  <td className="px-4 py-3 text-center">
                     <span className="text-dark dark:text-white font-medium">
                       {log.model}
                     </span>
@@ -285,13 +285,13 @@ const ActivityLogsPage = () => {
                       #{log.model_id}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     {getMethodBadge(log.method)}
                   </td>
-                  <td className="px-4 py-3 text-ld dark:text-white/70 font-mono text-xs">
+                  <td className="px-4 py-3 text-center text-ld dark:text-white/70 font-mono text-xs">
                     {log.ip_address}
                   </td>
-                  <td className="px-4 py-3 max-w-[200px]">
+                  <td className="px-4 py-3 text-center max-w-[200px]">
                     <Tooltip content={log.user_agent} placement="left">
                       <span className="text-ld dark:text-white/70 text-xs truncate block cursor-help">
                         {truncateUserAgent(log.user_agent)}

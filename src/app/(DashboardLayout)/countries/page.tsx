@@ -10,7 +10,7 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
 import { useTranslation } from "react-i18next";
 
 const CountriesPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showNotification } = useNotification();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -164,7 +164,10 @@ const CountriesPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-dark dark:text-white text-center">
-                      {new Date(country.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" })}
+                      {new Date(country.created_at).toLocaleDateString(
+                        i18n.language === "ar" ? "ar-EG" : "en-US",
+                        { year: "numeric", month: "long", day: "numeric" }
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-4">

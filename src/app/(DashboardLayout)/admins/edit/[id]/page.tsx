@@ -215,7 +215,7 @@ const EditAdmin = () => {
                 value={formData.role_id}
                 onChange={handleInputChange}
                 required
-                className="select-md"
+                className="select-md"            
               >
                 <option value="">{t("admins.chooseRole")}</option>
                 {rolesData?.data?.map((role) => (

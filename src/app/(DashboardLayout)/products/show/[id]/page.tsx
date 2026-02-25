@@ -16,7 +16,7 @@ interface ProductShowProps {
 }
 
 const ProductShow = ({ params }: ProductShowProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { showNotification } = useNotification();
   const resolvedParams = use(params);
@@ -63,11 +63,12 @@ const ProductShow = ({ params }: ProductShowProps) => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'KWD',
-      currencyDisplay: 'name',
-    }).format(price).replace('دينار كويتي', 'دينار كوبتي');
+    const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
+    const formattedNumber = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    }).format(price);
+    return `${formattedNumber} ${t("products.currencyKwd")}`;
   };
 
   if (isLoading) {

@@ -81,6 +81,15 @@ const ProductsPage = () => {
     });
   };
 
+  const cleanProductName = (name?: string) => {
+    if (!name) return "";
+    return name
+      .replace(/\(?\s*\bpack\s*of\b\s*[-:]?\s*[a-z0-9x]+\s*\)?/gi, "")
+      .replace(/\(?\s*الشده\s*[-:]?\s*[\u0660-\u06690-9x]+\s*\)?/gi, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -196,27 +205,28 @@ const ProductsPage = () => {
       {/* Products Table */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm text-center">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.image")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.productName")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.category")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.sku")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.variants")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.status")}</th>
-                <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("products.actions")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">#</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.image")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.productName")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.category")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.sku")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.size")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.variants")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.status")}</th>
+                <th className="px-6 py-3 text-center font-semibold text-dark dark:text-white">{t("products.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {productsData?.data?.map((product, index) => (
                 <tr key={product.id} className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors">
-                  <td className="px-6 py-4 text-dark dark:text-white font-medium">
+                  <td className="px-6 py-4 text-center text-dark dark:text-white font-medium">
                     {productsData.pagination ? (productsData.pagination.from + index) : (index + 1)}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-lightgray dark:bg-darkgray">
+                  <td className="px-6 py-4 text-center">
+                    <div className="w-12 h-12 mx-auto rounded-lg overflow-hidden bg-lightgray dark:bg-darkgray">
                       {product.variants?.[0]?.image && typeof product.variants[0].image === 'string' ? (
                         <Image
                           src={product.variants[0].image}
@@ -232,13 +242,13 @@ const ProductsPage = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div>
-                      <div className="font-medium text-dark dark:text-white">{product.name_ar}</div>
-                      <div className="text-sm text-ld dark:text-white/70">{product.name_en}</div>
+                      <div className="font-medium text-dark dark:text-white">{cleanProductName(product.name_ar)}</div>
+                      <div className="text-sm text-ld dark:text-white/70">{cleanProductName(product.name_en)}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div>
                       <div className="font-medium text-dark dark:text-white">
                         {product.category?.name_ar}
@@ -248,19 +258,22 @@ const ProductsPage = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-mono text-sm text-dark dark:text-white">
+                  <td className="px-6 py-4 text-center font-mono text-sm text-dark dark:text-white">
                     {product.sku}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center text-dark dark:text-white">
+                    {product.variants?.[0]?.size || "-"}
+                  </td>
+                  <td className="px-6 py-4 text-center">
                     <Badge color="info" className="w-fit">
                       {product.variants?.length || 0} {t("products.variant")}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     {getStatusBadge(product.is_active)}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
                       <Link href={`/products/show/${product.id}`}>
                         <button className="h-8 w-8 rounded-full hover:bg-lightprimary dark:hover:bg-darkprimary flex items-center justify-center transition-colors">
                           <Icon icon="solar:eye-bold" height={16} className="text-primary" />

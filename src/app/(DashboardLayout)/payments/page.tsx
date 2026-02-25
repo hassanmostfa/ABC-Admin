@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import type { Payment } from "@/store/api/paymentsApi";
 
 const PaymentsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
@@ -47,7 +47,8 @@ const PaymentsPage = () => {
 
   const formatCurrency = (amount: number | null) => {
     if (amount == null) return "—";
-    return new Intl.NumberFormat("ar-SA", {
+    const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: "KWD",
       minimumFractionDigits: 2,
@@ -238,20 +239,20 @@ const PaymentsPage = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-right">
+          <table className="w-full text-sm text-center">
             <thead className="text-xs uppercase bg-lightgray dark:bg-darkgray">
               <tr>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">#</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.paymentNumber")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.type")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.customer")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.amount")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.bonusAmount")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.totalAmount")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.method")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.status")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.paidAt")}</th>
-                <th className="px-4 py-3 font-semibold text-dark dark:text-white">{t("payments.actions")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">#</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.paymentNumber")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.type")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.customer")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.amount")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.bonusAmount")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.totalAmount")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.method")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.status")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.paidAt")}</th>
+                <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("payments.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -263,16 +264,16 @@ const PaymentsPage = () => {
                     key={payment.id}
                     className="border-b border-ld hover:bg-lightgray dark:hover:bg-darkgray transition-colors"
                   >
-                    <td className="px-4 py-3 font-medium text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center font-medium text-dark dark:text-white">
                       {pagination && !searchQuery.trim() ? pagination.from + index : index + 1}
                     </td>
-                    <td className="px-4 py-3 font-mono text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center font-mono text-dark dark:text-white">
                       {payment.payment_number}
                     </td>
-                    <td className="px-4 py-3 text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center text-dark dark:text-white">
                       {getTypeLabel(payment.type)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-center">
                       {customer ? (
                         <div>
                           <div className="font-medium text-dark dark:text-white">{customer.name}</div>
@@ -282,23 +283,23 @@ const PaymentsPage = () => {
                         "—"
                       )}
                     </td>
-                    <td className="px-4 py-3 font-semibold text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center font-semibold text-dark dark:text-white">
                       {formatCurrency(payment.amount)}
                     </td>
-                    <td className="px-4 py-3 text-ld dark:text-white/70">
+                    <td className="px-4 py-3 text-center text-ld dark:text-white/70">
                       {payment.bonus_amount ? formatCurrency(payment.bonus_amount) : "—"}
                     </td>
-                    <td className="px-4 py-3 text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center text-dark dark:text-white">
                       {formatCurrency(payment.total_amount)}
                     </td>
-                    <td className="px-4 py-3 text-dark dark:text-white">
+                    <td className="px-4 py-3 text-center text-dark dark:text-white">
                       {getMethodLabel(payment.method)}
                     </td>
-                    <td className="px-4 py-3">{getStatusBadge(payment.status)}</td>
-                    <td className="px-4 py-3 text-ld dark:text-white/70 whitespace-nowrap">
+                    <td className="px-4 py-3 text-center">{getStatusBadge(payment.status)}</td>
+                    <td className="px-4 py-3 text-center text-ld dark:text-white/70 whitespace-nowrap">
                       {formatDate(payment.paid_at)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-center">
                       {orderLink ? (
                         <Link href={orderLink}>
                           <button

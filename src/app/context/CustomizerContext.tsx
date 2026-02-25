@@ -39,30 +39,9 @@ interface CustomizerContextProps {
 }
 // Create the provider component
 export const CustomizerContextProvider: React.FC<CustomizerContextProps> = ({ children }) => {
-  // Load language from localStorage or use config default
-  const getStoredLanguage = (): string => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('app-language');
-      if (stored) return stored;
-    }
-    return config.isLanguage;
-  };
-
-  // Load direction from localStorage or derive from language
-  const getStoredDirection = (language: string): string => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('app-direction');
-      if (stored) return stored;
-    }
-    return language === "ar" ? "rtl" : "ltr";
-  };
-
-  const initialLanguage = getStoredLanguage();
-  const initialDirection = getStoredDirection(initialLanguage);
-
   const [isMobileSidebar, setIsMobileSidebar] = useState<boolean>(false);
   const [selectedIconId, setSelectedIconId] = useState<number>(1);
-  const [activeDir, setActiveDir] = useState<string>(initialDirection);
+  const [activeDir, setActiveDir] = useState<string>(config.activeDir);
   const [activeMode, setActiveMode] = useState<string>(config.activeMode);
   const [activeTheme, setActiveTheme] = useState<string>(config.activeTheme);
   const [activeLayout, setActiveLayout] = useState<string>(config.activeLayout);
@@ -70,7 +49,23 @@ export const CustomizerContextProvider: React.FC<CustomizerContextProps> = ({ ch
   const [isLayout, setIsLayout] = useState<string>(config.isLayout);
   const [isBorderRadius, setIsBorderRadius] = useState<number>(config.isBorderRadius);
   const [isCollapse, setIsCollapse] = useState<string>(config.isCollapse);
-  const [isLanguage, setIsLanguage] = useState<string>(initialLanguage);
+  const [isLanguage, setIsLanguage] = useState<string>(config.isLanguage);
+
+  // Load persisted language/direction after mount (hydration-safe)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedLanguage = localStorage.getItem('app-language');
+    const storedDirection = localStorage.getItem('app-direction');
+
+    if (storedLanguage) {
+      setIsLanguage(storedLanguage);
+    }
+    if (storedDirection) {
+      setActiveDir(storedDirection);
+    } else if (storedLanguage) {
+      setActiveDir(storedLanguage === "ar" ? "rtl" : "ltr");
+    }
+  }, []);
 
   // Save language to localStorage whenever it changes
   useEffect(() => {
@@ -82,15 +77,15 @@ export const CustomizerContextProvider: React.FC<CustomizerContextProps> = ({ ch
     }
   }, [isLanguage]);
 
-  // Set initial direction and sync i18n on mount
+  // Keep direction and i18n in sync with language
   useEffect(() => {
     const direction = isLanguage === "ar" ? "rtl" : "ltr";
     setActiveDir(direction);
-    // Ensure i18n is synced with the stored language on mount
+
     if (i18n.language !== isLanguage) {
       i18n.changeLanguage(isLanguage);
     }
-  }, []);
+  }, [isLanguage]);
 
   // Set attributes immediately
   useEffect(() => {

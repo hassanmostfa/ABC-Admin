@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next'
 import { CustomizerContext } from "@/app/context/CustomizerContext";
 import Image from "next/image";
@@ -22,6 +22,7 @@ const Languages = [
 export const LanguageSelector = () => {
   const { i18n } = useTranslation();
   const { isLanguage, setIsLanguage, setActiveDir } = useContext(CustomizerContext);
+  const [mounted, setMounted] = useState(false);
   
   const currentLang = Languages.find((_lang) => _lang.value === isLanguage) || Languages[0];
 
@@ -36,6 +37,10 @@ export const LanguageSelector = () => {
     }
   }, [isLanguage, setActiveDir]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="flex items-center">
       <Dropdown
@@ -44,16 +49,25 @@ export const LanguageSelector = () => {
         dismissOnClick={false}
         renderTrigger={() => (
           <div className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-lightprimary cursor-pointer">
-            <Image
-              src={currentLang.icon}
-              height={20}
-              width={20}
-              alt="language"
-              className="rounded-full h-5 w-5 object-cover"
-            />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {currentLang.value.toUpperCase()}
-            </span>
+            {mounted ? (
+              <>
+                <Image
+                  src={currentLang.icon}
+                  height={20}
+                  width={20}
+                  alt="language"
+                  className="rounded-full h-5 w-5 object-cover"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {currentLang.value.toUpperCase()}
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="h-5 w-5 rounded-full bg-lightgray dark:bg-darkgray" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">--</span>
+              </>
+            )}
             <Icon 
               icon="solar:alt-arrow-down-linear" 
               className="text-gray-500" 

@@ -46,7 +46,7 @@ const NavItems: React.FC<NavItemsProps> = React.memo(({ item }) => {
             }`}
           ></span>
         )}
-        <span className="max-w-36 overflow-hidden">
+        <span className="max-w-36 overflow-hidden" suppressHydrationWarning>
           {t(`${item.name}`)}
         </span>
       </span>

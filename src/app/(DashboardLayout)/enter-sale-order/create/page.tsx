@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef, Suspense } from "react";
-import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody, ModalHeader } from "flowbite-react";
+import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody, ModalHeader, Pagination } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import Script from "next/script";
 import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
 import { useGetOffersQuery } from "@/store/api/offersApi";
 import { useGetProductsQuery } from "@/store/api/productsApi";
+import { useGetAllCategoriesQuery } from "@/store/api/categoriesApi";
+import { useGetSubcategoriesQuery } from "@/store/api/subcategoriesApi";
 import { useCreateOrderMutation, useGetOrdersQuery } from "@/store/api/ordersApi";
 import { useGetSettingsQuery } from "@/store/api/settingsApi";
 import { useGetAllCountriesQuery } from "@/store/api/countriesApi";
@@ -57,7 +59,13 @@ const CreateSaleOrderPageContent = () => {
   const [usedPoints, setUsedPoints] = useState<number>(0);
   const [offersSearch, setOffersSearch] = useState<string>("");
   const [productsSearch, setProductsSearch] = useState<string>("");
+  const [offersPage, setOffersPage] = useState<number>(1);
+  const [productsPage, setProductsPage] = useState<number>(1);
+  const [productCategoryFilter, setProductCategoryFilter] = useState<number>(0);
+  const [productSubcategoryFilter, setProductSubcategoryFilter] = useState<number>(0);
+  const [packOfFilter, setPackOfFilter] = useState<string>("");
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
+  const [showCustomerDetailsModal, setShowCustomerDetailsModal] = useState<boolean>(false);
   const [showPaymentLinkModal, setShowPaymentLinkModal] = useState<boolean>(false);
   const [paymentLink, setPaymentLink] = useState<string>("");
   const [paymentLinkOrderNumber, setPaymentLinkOrderNumber] = useState<string>("");
@@ -65,12 +73,20 @@ const CreateSaleOrderPageContent = () => {
   
   const { data: offersData, isLoading: loadingOffers } = useGetOffersQuery({ 
     search: offersSearch || undefined,
-    per_page: 100,
-    page: 1,
+    per_page: 12,
+    page: offersPage,
   });
   const { data: productsData, isLoading: loadingProducts } = useGetProductsQuery({ 
     search: productsSearch || undefined,
+    page: productsPage,
+    category_id: productCategoryFilter || undefined,
+    subcategory_id: productSubcategoryFilter || undefined,
+  });
+  const { data: categoriesData } = useGetAllCategoriesQuery();
+  const { data: subcategoriesData } = useGetSubcategoriesQuery({
     page: 1,
+    per_page: 100,
+    category_id: productCategoryFilter || undefined,
   });
   const { data: settingsData } = useGetSettingsQuery();
   
@@ -426,26 +442,7 @@ const CreateSaleOrderPageContent = () => {
     }
   };
 
-  if (loadingCustomer) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Spinner size="xl" />
-      </div>
-    );
-  }
-
-  if (!customerData?.data) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-error">{t("enterSaleOrder.error")}</p>
-        <Link href="/enter-sale-order">
-          <Button className="mt-4">{t("enterSaleOrder.searchCustomer")}</Button>
-        </Link>
-      </div>
-    );
-  }
-
-  const customer = customerData.data;
+  const customer = customerData?.data;
   const addresses = addressesData?.data || [];
   
   // Get last 3 orders
@@ -487,6 +484,74 @@ const CreateSaleOrderPageContent = () => {
     });
   };
 
+  const productCategoryOptions = categoriesData?.data || [];
+  const productSubcategoryOptions = subcategoriesData?.data || [];
+
+  const packOfOptions = React.useMemo(() => {
+    const products = productsData?.data || [];
+    const set = new Set<string>();
+
+    products.forEach((product: any) => {
+      const categoryId = product.category_id || product.category?.id;
+      const subcategoryId = product.subcategory_id || product.subcategory?.id;
+
+      if (productCategoryFilter && categoryId !== productCategoryFilter) return;
+      if (productSubcategoryFilter && subcategoryId !== productSubcategoryFilter) return;
+
+      (product.variants || []).forEach((variant: any) => {
+        if (variant.is_active && variant.size) {
+          set.add(String(variant.size));
+        }
+      });
+    });
+
+    return Array.from(set);
+  }, [productsData?.data, productCategoryFilter, productSubcategoryFilter]);
+
+  const filteredProductVariants = React.useMemo(() => {
+    const products = productsData?.data || [];
+
+    return products
+      .filter((product: any) => product.is_active)
+      .flatMap((product: any) =>
+        (product.variants || [])
+          .filter((variant: any) => variant.is_active)
+          .filter((variant: any) => {
+            if (!packOfFilter) return true;
+            return String(variant.size || "") === packOfFilter;
+          })
+          .map((variant: any) => ({ product, variant }))
+      );
+  }, [productsData?.data, productCategoryFilter, productSubcategoryFilter, packOfFilter]);
+
+  const filteredOffers = React.useMemo(() => {
+    const offers = offersData?.data || [];
+    return offers.filter((offer: any) => {
+      const isActive = offer.is_active && offer.type === "normal";
+      const notExpired = offer.status !== "expired" && new Date(offer.offer_end_date) >= new Date(new Date().setHours(0, 0, 0, 0));
+      return isActive && notExpired;
+    });
+  }, [offersData?.data]);
+
+  if (loadingCustomer) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Spinner size="xl" />
+      </div>
+    );
+  }
+
+  if (!customer) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-error">{t("enterSaleOrder.error")}</p>
+        <Link href="/enter-sale-order">
+          <Button className="mt-4">{t("enterSaleOrder.searchCustomer")}</Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <Script
@@ -511,7 +576,27 @@ const CreateSaleOrderPageContent = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Products & Offers Selection */}
         <div className="lg:col-span-2">
-          <Card className="h-[calc(100vh-180px)] flex flex-col">
+          <Card className="flex flex-col">
+            <div className="space-y-3 mb-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button
+                  onClick={() => setShowCustomerDetailsModal(true)}
+                  color="light"
+                  className="w-full"
+                >
+                  <Icon icon="solar:user-id-bold" height={18} className="mr-2" />
+                  {t("enterSaleOrder.customerInfo")}
+                </Button>
+                <Button
+                  onClick={() => setShowHistoryModal(true)}
+                  color="light"
+                  className="w-full"
+                >
+                  <Icon icon="solar:history-bold" height={18} className="mr-2" />
+                  {t("enterSaleOrder.viewHistory")}
+                </Button>
+              </div>
+            </div>
             <div className="flex-1 flex flex-col overflow-hidden">
               <Tabs>
                 <TabItem active={activeTab === "offers"} title={t("enterSaleOrder.offers")} onClick={() => setActiveTab("offers")}>
@@ -520,7 +605,10 @@ const CreateSaleOrderPageContent = () => {
                     type="text"
                     placeholder={t("enterSaleOrder.searchOffers")}
                     value={offersSearch}
-                    onChange={(e) => setOffersSearch(e.target.value)}
+                    onChange={(e) => {
+                      setOffersSearch(e.target.value);
+                      setOffersPage(1);
+                    }}
                     icon={() => <Icon icon="solar:magnifer-line-duotone" height={20} />}
                   />
                 </div>
@@ -529,15 +617,10 @@ const CreateSaleOrderPageContent = () => {
                     <Spinner size="xl" />
                   </div>
                 ) : (
+                  <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 overflow-y-auto max-h-[calc(100vh-350px)]">
-                    {offersData?.data && offersData.data.length > 0 ? (
-                      offersData.data
-                        .filter(offer => {
-                          const isActive = offer.is_active && offer.type === "normal";
-                          const notExpired = offer.status !== "expired" && new Date(offer.offer_end_date) >= new Date(new Date().setHours(0, 0, 0, 0));
-                          return isActive && notExpired;
-                        })
-                        .map((offer) => (
+                    {filteredOffers.length > 0 ? (
+                      filteredOffers.map((offer) => (
                           <Card key={offer.id} className="hover:shadow-lg transition-shadow">
                             <div className="flex flex-col">
                               {offer.image && (
@@ -589,6 +672,19 @@ const CreateSaleOrderPageContent = () => {
                       <p className="text-ld col-span-3 text-center py-8">{t("enterSaleOrder.noOffers")}</p>
                     )}
                   </div>
+                  {offersData?.pagination && offersData.pagination.last_page > 1 && (
+                    <div className="mt-4 flex justify-center">
+                      <Pagination
+                        currentPage={offersPage}
+                        totalPages={offersData.pagination.last_page}
+                        onPageChange={setOffersPage}
+                        showIcons
+                        previousLabel={t("orders.previous")}
+                        nextLabel={t("orders.next")}
+                      />
+                    </div>
+                  )}
+                  </>
                 )}
               </TabItem>
 
@@ -598,24 +694,68 @@ const CreateSaleOrderPageContent = () => {
                     type="text"
                     placeholder={t("enterSaleOrder.searchProducts")}
                     value={productsSearch}
-                    onChange={(e) => setProductsSearch(e.target.value)}
+                    onChange={(e) => {
+                      setProductsSearch(e.target.value);
+                      setProductsPage(1);
+                    }}
                     icon={() => <Icon icon="solar:magnifer-line-duotone" height={20} />}
                   />
+                </div>
+                <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Select
+                    value={productCategoryFilter}
+                    onChange={(e) => {
+                      setProductCategoryFilter(parseInt(e.target.value));
+                      setProductSubcategoryFilter(0);
+                      setPackOfFilter("");
+                      setProductsPage(1);
+                    }}
+                  >
+                    <option value={0}>{t("products.allCategories")}</option>
+                    {productCategoryOptions.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {i18n.language === "ar" ? (category.name_ar || category.name_en) : (category.name_en || category.name_ar)}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={productSubcategoryFilter}
+                    onChange={(e) => {
+                      setProductSubcategoryFilter(parseInt(e.target.value));
+                      setPackOfFilter("");
+                      setProductsPage(1);
+                    }}
+                  >
+                    <option value={0}>{t("products.allSubcategories")}</option>
+                    {productSubcategoryOptions.map((subcategory) => (
+                      <option key={subcategory.id} value={subcategory.id}>
+                        {i18n.language === "ar" ? (subcategory.name_ar || subcategory.name_en) : (subcategory.name_en || subcategory.name_ar)}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={packOfFilter}
+                    onChange={(e) => setPackOfFilter(e.target.value)}
+                  >
+                    <option value="">
+                      {i18n.language === "ar" ? "كل الشده" : "All Pack of"}
+                    </option>
+                    {packOfOptions.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
                 {loadingProducts ? (
                   <div className="flex justify-center py-8">
                     <Spinner size="xl" />
                   </div>
                 ) : (
+                  <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 overflow-y-auto max-h-[calc(100vh-350px)]">
-                    {productsData?.data && productsData.data.length > 0 ? (
-                      productsData.data
-                        .filter(product => product.is_active)
-                        .flatMap((product) => 
-                          product.variants && product.variants.length > 0
-                            ? product.variants
-                                .filter((variant: any) => variant.is_active)
-                                .map((variant: any) => (
+                    {filteredProductVariants.length > 0 ? (
+                      filteredProductVariants.map(({ product, variant }: any) => (
                                   <Card key={variant.id} className="hover:shadow-lg transition-shadow">
                                     <div className="flex flex-col">
                                       {variant.image && typeof variant.image === 'string' && (
@@ -652,12 +792,23 @@ const CreateSaleOrderPageContent = () => {
                                     </div>
                                   </Card>
                                 ))
-                            : []
-                        )
                     ) : (
                       <p className="text-ld col-span-3 text-center py-8">{t("enterSaleOrder.noProducts")}</p>
                     )}
                   </div>
+                  {productsData?.pagination && productsData.pagination.last_page > 1 && (
+                    <div className="mt-4 flex justify-center">
+                      <Pagination
+                        currentPage={productsPage}
+                        totalPages={productsData.pagination.last_page}
+                        onPageChange={setProductsPage}
+                        showIcons
+                        previousLabel={t("orders.previous")}
+                        nextLabel={t("orders.next")}
+                      />
+                    </div>
+                  )}
+                  </>
                 )}
               </TabItem>
             </Tabs>
@@ -667,34 +818,6 @@ const CreateSaleOrderPageContent = () => {
 
         {/* Customer Info & Cart */}
         <div className="lg:col-span-1 space-y-6">
-          {/* Customer Info */}
-          <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h2>
-              <button 
-                onClick={() => setShowHistoryModal(true)}
-                className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1"
-              >
-                <Icon icon="solar:history-bold" height={16} />
-                {t("enterSaleOrder.viewHistory")}
-              </button>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <Label className="text-xs text-ld">{t("orders.name")}</Label>
-                <p className="font-semibold text-dark dark:text-white text-sm">{customer.name}</p>
-              </div>
-              <div>
-                <Label className="text-xs text-ld">{t("orders.phone")}</Label>
-                <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone}</p>
-              </div>
-              <div>
-                <Label className="text-xs text-ld">{t("orders.points")}</Label>
-                <p className="font-semibold text-primary text-sm">{customer.points || 0}</p>
-              </div>
-            </div>
-          </Card>
-
           {/* Cart */}
           <Card>
             <h2 className="text-xl font-semibold text-dark dark:text-white mb-4">{t("enterSaleOrder.cart")}</h2>
@@ -838,10 +961,12 @@ const CreateSaleOrderPageContent = () => {
                     <span className="text-ld">{t("orders.subtotal")}</span>
                     <span className="font-semibold text-dark dark:text-white">{subtotal.toFixed(3)} KWD</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-ld">{t("orders.taxAmount")}</span>
-                    <span className="font-semibold text-dark dark:text-white">{tax.toFixed(3)} KWD</span>
-                  </div>
+                  {tax > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-ld">{t("orders.taxAmount")}</span>
+                      <span className="font-semibold text-dark dark:text-white">{tax.toFixed(3)} KWD</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-ld">{t("orders.deliveryFees")}</span>
                     <span className="font-semibold text-dark dark:text-white">{deliveryFees.toFixed(3)} KWD</span>
@@ -1111,6 +1236,41 @@ const CreateSaleOrderPageContent = () => {
           </Card>
         </div>
       </div>
+
+      {/* Customer Details Modal */}
+      <Modal show={showCustomerDetailsModal} onClose={() => setShowCustomerDetailsModal(false)} size="lg">
+        <div className="p-6 border-b border-ld">
+          <div className="flex items-center gap-2">
+            <Icon icon="solar:user-id-bold" height={20} />
+            <h3 className="text-xl font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h3>
+          </div>
+        </div>
+        <ModalBody>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-ld">{t("orders.name")}</Label>
+              <p className="font-semibold text-dark dark:text-white text-sm">{customer.name || "-"}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-ld">{t("orders.phone")}</Label>
+              <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone || "-"}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-ld">{t("orders.email")}</Label>
+              <p className="font-semibold text-dark dark:text-white text-sm">{customer.email || "-"}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-ld">{t("orders.points")}</Label>
+              <p className="font-semibold text-primary text-sm">{customer.points || 0}</p>
+            </div>
+          </div>
+        </ModalBody>
+        <div className="p-6 border-t border-ld flex justify-end">
+          <Button color="gray" onClick={() => setShowCustomerDetailsModal(false)}>
+            {t("common.close") || "Close"}
+          </Button>
+        </div>
+      </Modal>
       
       {/* History Modal */}
       <Modal show={showHistoryModal} onClose={() => setShowHistoryModal(false)} size="xl">

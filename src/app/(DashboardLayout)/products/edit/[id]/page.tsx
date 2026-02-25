@@ -417,7 +417,7 @@ const EditProduct = ({ params }: EditProductProps) => {
         setFieldErrors(fieldErrors);
         errorMessage = Object.values(fieldErrors).join("، ") || errorMessage;
       }
-      showNotification("error", "خطأ!", errorMessage);
+      showNotification("error", t("products.error"), errorMessage);
     } finally {
       // Reset the submitting flag
       isSubmittingRef.current = false;
@@ -521,7 +521,7 @@ const EditProduct = ({ params }: EditProductProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* English Name */}
               <div>
-                <Label htmlFor="name_en" className="mb-2 block">اسم المنتج (الإنجليزية) <span className="text-error">*</span></Label>
+                <Label htmlFor="name_en" className="mb-2 block">{t("products.nameEn")} <span className="text-error">*</span></Label>
                 <TextInput 
                   id="name_en" 
                   name="name_en" 
@@ -534,17 +534,17 @@ const EditProduct = ({ params }: EditProductProps) => {
                 {fieldErrors.name_en ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.name_en}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">اسم المنتج باللغة الإنجليزية</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("products.nameEnHelper")}</p>
                 )}
               </div>
 
               {/* Arabic Name */}
               <div>
-                <Label htmlFor="name_ar" className="mb-2 block">اسم المنتج (العربية) <span className="text-error">*</span></Label>
+                <Label htmlFor="name_ar" className="mb-2 block">{t("products.nameAr")} <span className="text-error">*</span></Label>
                 <TextInput 
                   id="name_ar" 
                   name="name_ar" 
-                  placeholder="أدخل اسم المنتج بالعربية" 
+                  placeholder={t("products.nameArPlaceholder")} 
                   value={formData.name_ar} 
                   onChange={handleInputChange} 
                   required 
@@ -554,13 +554,13 @@ const EditProduct = ({ params }: EditProductProps) => {
                 {fieldErrors.name_ar ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.name_ar}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">اسم المنتج باللغة العربية</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("products.nameArHelper")}</p>
                 )}
               </div>
 
               {/* Category */}
               <div>
-                <Label htmlFor="category_id" className="mb-2 block">التصنيف الرئيسي</Label>
+                <Label htmlFor="category_id" className="mb-2 block">{t("products.mainCategory")}</Label>
                 <Select 
                   id="category_id" 
                   name="category_id" 
@@ -568,7 +568,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                   onChange={handleSelectChange}
                   className="select-md"
                 >
-                  <option value={0}>اختر التصنيف الرئيسي</option>
+                  <option value={0}>{t("products.chooseMainCategory")}</option>
                   {categoriesData?.data?.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name_ar} - {category.name_en}
@@ -578,13 +578,13 @@ const EditProduct = ({ params }: EditProductProps) => {
                 {fieldErrors.category_id ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.category_id}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">اختر التصنيف الرئيسي للمنتج (اختياري)</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("products.chooseMainCategory")}</p>
                 )}
               </div>
 
               {/* Subcategory */}
               <div>
-                <Label htmlFor="subcategory_id" className="mb-2 block">التصنيف الفرعي</Label>
+                <Label htmlFor="subcategory_id" className="mb-2 block">{t("products.subCategory")}</Label>
                 <Select 
                   id="subcategory_id" 
                   name="subcategory_id" 
@@ -593,7 +593,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                   className="select-md"
                   disabled={!formData.category_id || formData.category_id === 0}
                 >
-                  <option value={0}>اختر التصنيف الفرعي</option>
+                  <option value={0}>{t("products.chooseSubCategory")}</option>
                   {subcategoriesData?.data?.map((subcategory) => (
                     <option key={subcategory.id} value={subcategory.id}>
                       {subcategory.name_ar} - {subcategory.name_en}
@@ -603,17 +603,17 @@ const EditProduct = ({ params }: EditProductProps) => {
                 {fieldErrors.subcategory_id ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.subcategory_id}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">اختر التصنيف الفرعي للمنتج (اختياري)</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("products.chooseSubCategory")}</p>
                 )}
               </div>
 
               {/* SKU */}
               <div>
-                <Label htmlFor="sku" className="mb-2 block">رمز المنتج (item)<span className="text-error">*</span></Label>
+                <Label htmlFor="sku" className="mb-2 block">{t("products.sku")}<span className="text-error">*</span></Label>
                 <TextInput 
                   id="sku" 
                   name="sku" 
-                  placeholder="أدخل رمز المنتج" 
+                  placeholder={t("products.skuPlaceholder")} 
                   value={formData.sku} 
                   onChange={handleInputChange} 
                   required 
@@ -622,7 +622,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                 {fieldErrors.sku ? (
                   <p className="mt-1 text-xs text-error">{fieldErrors.sku}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-gray-500">رمز فريد للمنتج</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("products.skuHelper")}</p>
                 )}
               </div>
 
@@ -630,10 +630,10 @@ const EditProduct = ({ params }: EditProductProps) => {
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
                 <div>
                   <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                    حالة المنتج
+                    {t("products.productStatus")}
                   </Label>
                   <p className={`text-sm ${formData.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                    {formData.is_active ? "🟢 المنتج نشط" : "🔴 المنتج غير نشط"}
+                    {formData.is_active ? t("products.productActive") : t("products.productInactive")}
                   </p>
                 </div>
                 <button
@@ -655,7 +655,7 @@ const EditProduct = ({ params }: EditProductProps) => {
             {/* Descriptions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
-                <Label htmlFor="description_en" className="mb-2 block">وصف المنتج (الإنجليزية)</Label>
+                <Label htmlFor="description_en" className="mb-2 block">{t("products.descriptionEn")}</Label>
                 <Textarea 
                   id="description_en" 
                   name="description_en" 
@@ -666,11 +666,11 @@ const EditProduct = ({ params }: EditProductProps) => {
                 />
               </div>
               <div>
-                <Label htmlFor="description_ar" className="mb-2 block">وصف المنتج (العربية)</Label>
+                <Label htmlFor="description_ar" className="mb-2 block">{t("products.descriptionAr")}</Label>
                 <Textarea 
                   id="description_ar" 
                   name="description_ar" 
-                  placeholder="أدخل وصف المنتج بالعربية" 
+                  placeholder={t("products.descriptionArPlaceholder")} 
                   value={formData.description_ar} 
                   onChange={handleInputChange}
                   rows={4}
@@ -687,21 +687,21 @@ const EditProduct = ({ params }: EditProductProps) => {
         <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDown}>
           <Card>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-dark dark:text-white">متغيرات المنتج</h3>
+            <h3 className="text-xl font-semibold text-dark dark:text-white">{t("products.step2Title")}</h3>
             <button
               type="button"
               onClick={addVariant}
               className="px-4 py-2 bg-primary text-white rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors"
             >
               <Icon icon="solar:add-circle-bold" height={20} />
-              إضافة متغير
+              {t("products.addVariant")}
             </button>
           </div>
 
           {variants.map((variant, index) => (
             <div key={variant.id} className="border border-gray-200 rounded-lg p-6 mb-6 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-medium text-dark dark:text-white">متغير {index + 1}</h4>
+                <h4 className="text-lg font-medium text-dark dark:text-white">{t("products.variantNumber", { number: index + 1 })}</h4>
                 {variants.length > 1 && (
                   <button
                     type="button"
@@ -716,7 +716,7 @@ const EditProduct = ({ params }: EditProductProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Variant Image */}
                 <div className="md:col-span-2">
-                  <Label className="mb-2 block">صورة المتغير</Label>
+                  <Label className="mb-2 block">{t("products.variantImage")}</Label>
                   
                   <div className="flex items-start gap-4 mb-4">
                     {variant.imagePreview && (
@@ -745,8 +745,8 @@ const EditProduct = ({ params }: EditProductProps) => {
                     <label className="flex-1 cursor-pointer">
                       <div className="border-2 border-dashed border-ld rounded-lg p-6 text-center hover:border-primary transition-colors">
                         <Icon icon="solar:cloud-upload-bold" height={32} className="text-ld mx-auto mb-2" />
-                        <p className="text-sm text-ld mb-1">انقر لرفع صورة المتغير</p>
-                        <p className="text-xs text-ld">JPEG, JPG, PNG, WebP, GIF (الحد الأقصى 5MB)</p>
+                        <p className="text-sm text-ld mb-1">{t("products.clickToUploadVariant")}</p>
+                        <p className="text-xs text-ld">{t("products.imageFormats")}</p>
                       </div>
                       <input
                         type="file"
@@ -769,9 +769,9 @@ const EditProduct = ({ params }: EditProductProps) => {
 
                 {/* Size */}
                 <div>
-                  <Label className="mb-2 block">الحجم <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.size")} <span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل الحجم" 
+                    placeholder={t("products.sizePlaceholder")} 
                     value={variant.size} 
                     onChange={(e) => handleVariantChange(variant.id, 'size', e.target.value)}
                     icon={() => <Icon icon="solar:ruler-bold" height={18} />}
@@ -783,9 +783,9 @@ const EditProduct = ({ params }: EditProductProps) => {
 
                 {/* SKU */}
                 <div>
-                  <Label className="mb-2 block">رمز المتغير (item)<span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.variantSku")}<span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل رمز المتغير" 
+                    placeholder={t("products.variantSkuPlaceholder")} 
                     value={variant.sku} 
                     onChange={(e) => handleVariantChange(variant.id, 'sku', e.target.value)}
                     icon={() => <Icon icon="solar:qr-code-bold" height={18} />}
@@ -797,9 +797,9 @@ const EditProduct = ({ params }: EditProductProps) => {
 
                 {/* Short Item */}
                 <div>
-                  <Label className="mb-2 block">اسم المختصر (short item)<span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.shortItem")}<span className="text-error">*</span></Label>
                   <TextInput 
-                    placeholder="أدخل اسم المتغير" 
+                    placeholder={t("products.shortItemPlaceholder")} 
                     value={variant.short_item} 
                     onChange={(e) => handleVariantChange(variant.id, 'short_item', e.target.value)}
                     icon={() => <Icon icon="solar:tag-bold" height={18} />}
@@ -811,7 +811,7 @@ const EditProduct = ({ params }: EditProductProps) => {
 
                 {/* Quantity */}
                 <div>
-                  <Label className="mb-2 block">الكمية <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.quantity")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
                     placeholder="0" 
@@ -826,7 +826,7 @@ const EditProduct = ({ params }: EditProductProps) => {
 
                 {/* Price */}
                 <div>
-                  <Label className="mb-2 block">السعر <span className="text-error">*</span></Label>
+                  <Label className="mb-2 block">{t("products.price")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
                     step="0.01"
@@ -844,10 +844,10 @@ const EditProduct = ({ params }: EditProductProps) => {
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg dark:border-gray-700">
                   <div>
                     <Label className="text-base font-medium text-gray-900 dark:text-white block mb-1">
-                      حالة المتغير
+                      {t("products.variantStatus")}
                     </Label>
                     <p className={`text-sm ${variant.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                      {variant.is_active ? "🟢 المتغير نشط" : "🔴 المتغير غير نشط"}
+                      {variant.is_active ? t("products.variantActive") : t("products.variantInactive")}
                     </p>
                   </div>
                   <button
