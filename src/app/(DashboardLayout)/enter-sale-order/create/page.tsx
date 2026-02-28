@@ -65,7 +65,6 @@ const CreateSaleOrderPageContent = () => {
   const [productSubcategoryFilter, setProductSubcategoryFilter] = useState<number>(0);
   const [packOfFilter, setPackOfFilter] = useState<string>("");
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
-  const [showCustomerDetailsModal, setShowCustomerDetailsModal] = useState<boolean>(false);
   const [showPaymentLinkModal, setShowPaymentLinkModal] = useState<boolean>(false);
   const [paymentLink, setPaymentLink] = useState<string>("");
   const [paymentLinkOrderNumber, setPaymentLinkOrderNumber] = useState<string>("");
@@ -578,23 +577,35 @@ const CreateSaleOrderPageContent = () => {
         <div className="lg:col-span-2">
           <Card className="flex flex-col">
             <div className="space-y-3 mb-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Button
-                  onClick={() => setShowCustomerDetailsModal(true)}
-                  color="light"
-                  className="w-full"
-                >
-                  <Icon icon="solar:user-id-bold" height={18} className="mr-2" />
-                  {t("enterSaleOrder.customerInfo")}
-                </Button>
-                <Button
-                  onClick={() => setShowHistoryModal(true)}
-                  color="light"
-                  className="w-full"
-                >
-                  <Icon icon="solar:history-bold" height={18} className="mr-2" />
-                  {t("enterSaleOrder.viewHistory")}
-                </Button>
+              <div className="rounded-lg border border-ld p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon icon="solar:user-id-bold" height={18} />
+                  <h3 className="font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h3>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  <div>
+                    <Label className="text-xs text-ld">{t("orders.name")}</Label>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.name || "-"}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-ld">{t("orders.phone")}</Label>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone || "-"}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-ld">{t("orders.email")}</Label>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.email || "-"}</p>
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      onClick={() => setShowHistoryModal(true)}
+                      color="light"
+                      className="w-full"
+                    >
+                      <Icon icon="solar:history-bold" height={18} className="mr-2" />
+                      {t("enterSaleOrder.viewHistory")}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -1237,41 +1248,6 @@ const CreateSaleOrderPageContent = () => {
         </div>
       </div>
 
-      {/* Customer Details Modal */}
-      <Modal show={showCustomerDetailsModal} onClose={() => setShowCustomerDetailsModal(false)} size="lg">
-        <div className="p-6 border-b border-ld">
-          <div className="flex items-center gap-2">
-            <Icon icon="solar:user-id-bold" height={20} />
-            <h3 className="text-xl font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerInfo")}</h3>
-          </div>
-        </div>
-        <ModalBody>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs text-ld">{t("orders.name")}</Label>
-              <p className="font-semibold text-dark dark:text-white text-sm">{customer.name || "-"}</p>
-            </div>
-            <div>
-              <Label className="text-xs text-ld">{t("orders.phone")}</Label>
-              <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone || "-"}</p>
-            </div>
-            <div>
-              <Label className="text-xs text-ld">{t("orders.email")}</Label>
-              <p className="font-semibold text-dark dark:text-white text-sm">{customer.email || "-"}</p>
-            </div>
-            <div>
-              <Label className="text-xs text-ld">{t("orders.points")}</Label>
-              <p className="font-semibold text-primary text-sm">{customer.points || 0}</p>
-            </div>
-          </div>
-        </ModalBody>
-        <div className="p-6 border-t border-ld flex justify-end">
-          <Button color="gray" onClick={() => setShowCustomerDetailsModal(false)}>
-            {t("common.close") || "Close"}
-          </Button>
-        </div>
-      </Modal>
-      
       {/* History Modal */}
       <Modal show={showHistoryModal} onClose={() => setShowHistoryModal(false)} size="xl">
         <div className="p-6 border-b border-ld">

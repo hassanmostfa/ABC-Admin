@@ -108,12 +108,13 @@ export interface UpdateProductRequest {
 
 export const productsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getProducts: builder.query<ProductsResponse, { search?: string; page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; category_id?: number; subcategory_id?: number }>({
-      query: ({ search, page = 1, sort_by, sort_order, category_id, subcategory_id }) => ({
+    getProducts: builder.query<ProductsResponse, { search?: string; page?: number; per_page?: number; sort_by?: string; sort_order?: 'asc' | 'desc'; category_id?: number; subcategory_id?: number }>({
+      query: ({ search, page = 1, per_page, sort_by, sort_order, category_id, subcategory_id }) => ({
         url: '/admin/products',
         params: {
           ...(search && { search }),
           page,
+          ...(per_page && { per_page }),
           ...(sort_by && { sort_by }),
           ...(sort_order && { sort_order }),
           ...(category_id && { category_id }),
