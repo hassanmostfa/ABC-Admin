@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 type NotificationType = "success" | "error" | "warning" | "info";
 
@@ -36,6 +37,7 @@ export const useNotification = () => {
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notification, setNotification] = useState<Notification | null>(null);
+  const { i18n } = useTranslation();
 
   const showNotification = (
     type: NotificationType,
@@ -108,6 +110,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const colors = getColors();
+  const okLabel = i18n.language === "ar" ? "حسناً" : "OK";
 
   return (
     <NotificationContext.Provider value={{ showNotification, hideNotification }}>
@@ -149,7 +152,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                 onClick={hideNotification}
                 className={`w-full py-3 rounded-lg ${colors.iconBg} text-white font-semibold hover:opacity-90 transition-opacity`}
               >
-                حسناً
+                {okLabel}
               </button>
             </div>
           </div>

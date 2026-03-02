@@ -38,7 +38,7 @@ const baseQueryWith401Logout: BaseQueryFn<
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWith401Logout,
-  tagTypes: ['Auth', 'Admins', 'Roles', 'Permissions', 'Customers' , 'Categories', 'Subcategories', 'Products', 'Charities', 'Countries', 'Governorates', 'Areas', 'Offers', 'ContactUs', 'SocialMediaLinks', 'Careers', 'Orders', 'Invoices', 'Settings', 'Sliders', 'ActivityLogs', 'Faqs', 'RefundRequests', 'Payments', 'TeamMembers', 'PointsTransactions', 'Statistics'],
+  tagTypes: ['Auth', 'Admins', 'Roles', 'Permissions', 'Customers' , 'Categories', 'Subcategories', 'Products', 'Charities', 'Countries', 'Governorates', 'Areas', 'Offers', 'Coupons', 'ContactUs', 'SocialMediaLinks', 'Careers', 'Orders', 'Invoices', 'Settings', 'Sliders', 'ActivityLogs', 'Faqs', 'RefundRequests', 'Payments', 'TeamMembers', 'PointsTransactions', 'Statistics'],
   endpoints: (builder) => ({}),
 });
 

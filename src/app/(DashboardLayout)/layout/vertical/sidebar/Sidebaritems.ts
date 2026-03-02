@@ -133,6 +133,14 @@ const SidebarContent: MenuItem[] = [
           },
 
           {
+            name: "sidebar.coupons",
+            icon: "solar:ticket-sale-line-duotone",
+            id: uniqueId(),
+            url: "/coupons",
+            permission: "coupons",
+          },
+
+          {
             name: "sidebar.ordersInquiries",
             icon: "solar:clipboard-list-line-duotone",
             id: uniqueId(),
