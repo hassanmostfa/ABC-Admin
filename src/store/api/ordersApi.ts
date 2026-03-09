@@ -195,13 +195,25 @@ export const ordersApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Orders'],
     }),
+
+    regenerateOrderPaymentLink: builder.mutation<
+      { success: boolean; message: string; data?: { payment_link?: string; order_number?: string; invoice?: { payment_link?: string } } },
+      number
+    >({
+      query: (orderId) => ({
+        url: `/admin/orders/${orderId}/regenerate-payment-link`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Orders'],
+    }),
   }),
 });
 
-export const { 
-  useGetOrdersQuery, 
+export const {
+  useGetOrdersQuery,
   useGetOrderByIdQuery,
   useUpdateOrderStatusMutation,
   useCreateOrderMutation,
+  useRegenerateOrderPaymentLinkMutation,
 } = ordersApi;
 

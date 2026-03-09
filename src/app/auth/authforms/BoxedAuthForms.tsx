@@ -1,13 +1,14 @@
 "use client";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useLoginMutation } from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 
 const BoxedAuthLogin = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, setLogin] = useState("");
@@ -37,13 +38,10 @@ const BoxedAuthLogin = () => {
         // Redirect to dashboard
         router.push("/");
       } else {
-        setErrorMessage(result.message || "فشل تسجيل الدخول. يرجى التحقق من البيانات المدخلة.");
+        setErrorMessage(result.message || t("auth.login.failed"));
       }
     } catch (err: any) {
-      setErrorMessage(
-        err?.data?.message || 
-        "حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
-      );
+      setErrorMessage(err?.data?.message || t("auth.login.serverError"));
       console.error("Login error:", err);
     }
   };
@@ -59,14 +57,14 @@ const BoxedAuthLogin = () => {
         
         <div className="mb-4">
           <div className="mb-2 block">
-            <Label htmlFor="login">البريد الإلكتروني أو رقم الهاتف</Label>
+            <Label htmlFor="login">{t("auth.login.emailOrPhone")}</Label>
           </div>
           <TextInput
             id="login"
             type="text"
             sizing="md"
             className="form-control"
-            placeholder="أدخل بريدك الإلكتروني أو رقم الهاتف"
+            placeholder={t("auth.login.emailOrPhonePlaceholder")}
             value={login}
             onChange={(e) => setLogin(e.target.value)}
             required
@@ -76,7 +74,7 @@ const BoxedAuthLogin = () => {
         
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between">
-            <Label htmlFor="password">كلمة المرور</Label>
+            <Label htmlFor="password">{t("auth.login.password")}</Label>
             {/* <Link className="text-xs text-primary" href={'/auth/auth2/forgot-password'}>هل نسيت كلمة المرور؟</Link> */}
           </div>
           <TextInput
@@ -84,7 +82,7 @@ const BoxedAuthLogin = () => {
             type="password"
             sizing="md"
             className="form-control"
-            placeholder="أدخل كلمة المرور"
+            placeholder={t("auth.login.passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -105,7 +103,7 @@ const BoxedAuthLogin = () => {
               htmlFor="accept"  
               className="font-medium cursor-pointer"
             >
-              ابقني مسجلاً للدخول
+              {t("auth.login.rememberMe")}
             </Label>
           </div>
         </div>
@@ -115,7 +113,7 @@ const BoxedAuthLogin = () => {
           className="rounded-md w-full bg-sky dark:bg-sky hover:bg-dark dark:hover:bg-dark"
           disabled={isLoading}
         >
-          {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+          {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
         </Button>
       </form>
     </>

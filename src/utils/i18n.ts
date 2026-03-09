@@ -21,7 +21,7 @@ const resources = {
   },
 };
 
-// Get initial language from localStorage or use Arabic as default
+// Get initial language from localStorage or use English as default
 const getInitialLanguage = (): string => {
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem('app-language');
@@ -29,8 +29,7 @@ const getInitialLanguage = (): string => {
       return stored;
     }
   }
-  // Default to Arabic as per config
-  return "ar";
+  return "en";
 };
 
 i18n

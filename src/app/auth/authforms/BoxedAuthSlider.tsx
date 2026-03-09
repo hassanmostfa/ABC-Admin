@@ -1,12 +1,12 @@
 "use client";
-import { Carousel } from "flowbite-react";
 import Image from "next/image";
 import React from "react";
-import { Button } from "flowbite-react";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function BoxedAuthSlider() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   return (
     <>
       <div className="max-w-md mx-auto h-full flex flex-col justify-center items-center boxed-auth">
@@ -23,8 +23,9 @@ export default function BoxedAuthSlider() {
           }`}
         />
 
-        <h1 className="text-4xl md:text-5xl font-bold mt-8 text-center dark:text-white">مرحبا بعودتك</h1>
-
+        <h1 className="text-4xl md:text-5xl font-bold mt-8 text-center dark:text-white">
+          {t("auth.login.welcomeBack")}
+        </h1>
       </div>
     </>
   );

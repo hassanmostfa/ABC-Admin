@@ -8,7 +8,7 @@ import { useGetOffersQuery } from "@/store/api/offersApi";
 import { useGetProductsQuery } from "@/store/api/productsApi";
 import { useGetAllCategoriesQuery } from "@/store/api/categoriesApi";
 import { useGetSubcategoriesQuery } from "@/store/api/subcategoriesApi";
-import { useCreateOrderMutation, useGetOrdersQuery } from "@/store/api/ordersApi";
+import { useCreateOrderMutation, useGetOrdersQuery, useRegenerateOrderPaymentLinkMutation } from "@/store/api/ordersApi";
 import { useGetSettingsQuery } from "@/store/api/settingsApi";
 import { useGetAllCountriesQuery } from "@/store/api/countriesApi";
 import { useGetGovernoratesByCountryQuery } from "@/store/api/governoratesApi";
@@ -69,6 +69,7 @@ const CreateSaleOrderPageContent = () => {
   const [paymentLink, setPaymentLink] = useState<string>("");
   const [paymentLinkOrderNumber, setPaymentLinkOrderNumber] = useState<string>("");
   const [paymentLinkCopied, setPaymentLinkCopied] = useState<boolean>(false);
+  const [orderIdPendingLink, setOrderIdPendingLink] = useState<number | null>(null);
   
   const { data: offersData, isLoading: loadingOffers } = useGetOffersQuery({ 
     search: offersSearch || undefined,
@@ -90,11 +91,12 @@ const CreateSaleOrderPageContent = () => {
   const { data: settingsData } = useGetSettingsQuery();
   
   const [createOrder, { isLoading: creatingOrder }] = useCreateOrderMutation();
+  const [regenerateOrderPaymentLink, { isLoading: regenerating }] = useRegenerateOrderPaymentLinkMutation();
   
   // Fetch customer orders for history modal
   const customerPhone = customerData?.data?.phone || "";
-  const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
-    { 
+const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
+    {
       search: customerPhone,
       page: 1,
       sort_by: "created_at",
@@ -422,11 +424,12 @@ const CreateSaleOrderPageContent = () => {
       const result = await createOrder(orderData).unwrap();
 
       if (result.success) {
-        const data = result.data as { payment_link?: string; order_number?: string; invoice?: { payment_link?: string } };
+        const data = result.data as { id?: number; payment_link?: string; order_number?: string; invoice?: { payment_link?: string } };
         const link = data?.payment_link || data?.invoice?.payment_link;
-        if (paymentMethod === "online_link" && link) {
-          setPaymentLink(link);
+        if (paymentMethod === "online_link") {
+          setPaymentLink(link || "");
           setPaymentLinkOrderNumber(data?.order_number || "");
+          setOrderIdPendingLink(data?.id ?? null);
           setShowPaymentLinkModal(true);
           showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.orderCreated"));
         } else {
@@ -877,7 +880,7 @@ const CreateSaleOrderPageContent = () => {
                               <Icon icon="solar:add-circle-bold" height={16} />
                             </button>
                           </div>
-                          <span className="font-semibold text-primary">{item.price * item.quantity} KWD</span>
+                          <span className="font-semibold text-primary">{(item.price * item.quantity).toFixed(3)} KWD</span>
                         </div>
                       </div>
                     </div>
@@ -932,7 +935,7 @@ const CreateSaleOrderPageContent = () => {
                               <Icon icon="solar:add-circle-bold" height={16} />
                             </button>
                           </div>
-                          <span className="font-semibold text-primary">{item.price * item.quantity} KWD</span>
+                          <span className="font-semibold text-primary">{(item.price * item.quantity).toFixed(3)} KWD</span>
                         </div>
                       </div>
                     </div>
@@ -1327,7 +1330,16 @@ const CreateSaleOrderPageContent = () => {
       </Modal>
 
       {/* Payment Link Modal (online_link orders) */}
-      <Modal show={showPaymentLinkModal} onClose={() => { setShowPaymentLinkModal(false); router.push("/orders"); }} size="lg">
+      <Modal
+        show={showPaymentLinkModal}
+        onClose={() => {
+          setShowPaymentLinkModal(false);
+          setOrderIdPendingLink(null);
+          setPaymentLink("");
+          router.push("/orders");
+        }}
+        size="lg"
+      >
         <ModalHeader className="border-b border-ld">
           <div className="flex items-center gap-2">
             <Icon icon="solar:link-circle-bold" height={24} className="text-primary" />
@@ -1336,49 +1348,92 @@ const CreateSaleOrderPageContent = () => {
         </ModalHeader>
         <ModalBody className="pt-6">
           <p className="text-sm text-ld dark:text-white/70 mb-4">
-            {t("enterSaleOrder.paymentLinkDescription")}
+            {paymentLink
+              ? t("enterSaleOrder.paymentLinkDescription")
+              : t("enterSaleOrder.paymentLinkNotCreated")}
             {paymentLinkOrderNumber && (
               <span className="font-mono font-semibold text-dark dark:text-white ms-1">{paymentLinkOrderNumber}</span>
             )}
           </p>
           <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <TextInput
-                readOnly
-                value={paymentLink}
-                className="flex-1 font-mono text-sm bg-lightgray dark:bg-darkgray border-ld"
-              />
+            {!paymentLink && orderIdPendingLink ? (
               <Button
-                color="gray"
+                color="primary"
+                className="w-full"
+                disabled={regenerating}
                 onClick={async () => {
                   try {
-                    await navigator.clipboard.writeText(paymentLink);
-                    setPaymentLinkCopied(true);
-                    showNotification("success", t("enterSaleOrder.copied"), t("enterSaleOrder.linkCopied"));
-                    setTimeout(() => setPaymentLinkCopied(false), 2000);
-                  } catch {
-                    showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.copyFailed"));
+                    const res = await regenerateOrderPaymentLink(orderIdPendingLink).unwrap();
+                    const link = res.data?.payment_link || res.data?.invoice?.payment_link;
+                    if (link) {
+                      setPaymentLink(link);
+                      setOrderIdPendingLink(null);
+                      showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.linkCopied"));
+                    } else {
+                      showNotification("error", t("enterSaleOrder.error"), res.message || "No link returned");
+                    }
+                  } catch (err: any) {
+                    showNotification("error", t("enterSaleOrder.error"), err?.data?.message || "Failed to regenerate link");
                   }
                 }}
-                className="shrink-0"
               >
-                <Icon icon={paymentLinkCopied ? "solar:check-circle-bold" : "solar:copy-bold"} height={18} className="me-1" />
-                {paymentLinkCopied ? t("enterSaleOrder.copied") : t("enterSaleOrder.copyLink")}
+                {regenerating ? <Spinner size="sm" className="me-2" /> : <Icon icon="solar:refresh-bold" height={18} className="me-2" />}
+                {t("enterSaleOrder.regeneratePaymentLink")}
               </Button>
-            </div>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(paymentLink)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium transition-colors"
-            >
-              <Icon icon="ri:whatsapp-fill" height={22} />
-              {t("enterSaleOrder.shareViaWhatsApp")}
-            </a>
+            ) : (
+              <>
+                <div className="flex gap-2">
+                  <TextInput
+                    readOnly
+                    value={paymentLink}
+                    className="flex-1 font-mono text-sm bg-lightgray dark:bg-darkgray border-ld"
+                  />
+                  <Button
+                    color="gray"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(paymentLink);
+                        setPaymentLinkCopied(true);
+                        showNotification("success", t("enterSaleOrder.copied"), t("enterSaleOrder.linkCopied"));
+                        setTimeout(() => setPaymentLinkCopied(false), 2000);
+                      } catch {
+                        showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.copyFailed"));
+                      }
+                    }}
+                    className="shrink-0"
+                  >
+                    <Icon icon={paymentLinkCopied ? "solar:check-circle-bold" : "solar:copy-bold"} height={18} className="me-1" />
+                    {paymentLinkCopied ? t("enterSaleOrder.copied") : t("enterSaleOrder.copyLink")}
+                  </Button>
+                </div>
+                <a
+                  href={(() => {
+                    const phoneDigits = (customer?.phone || "").replace(/\D/g, "");
+                    const base = "https://wa.me/";
+                    const params = new URLSearchParams({ text: paymentLink });
+                    return phoneDigits ? `${base}${phoneDigits}?${params.toString()}` : `${base}?${params.toString()}`;
+                  })()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium transition-colors"
+                >
+                  <Icon icon="ri:whatsapp-fill" height={22} />
+                  {t("enterSaleOrder.shareViaWhatsApp")}
+                </a>
+              </>
+            )}
           </div>
         </ModalBody>
         <div className="p-6 border-t border-ld flex justify-end">
-          <Button color="gray" onClick={() => { setShowPaymentLinkModal(false); router.push("/orders"); }}>
+          <Button
+            color="gray"
+            onClick={() => {
+              setShowPaymentLinkModal(false);
+              setOrderIdPendingLink(null);
+              setPaymentLink("");
+              router.push("/orders");
+            }}
+          >
             {t("enterSaleOrder.closeAndGoToOrders")}
           </Button>
         </div>
