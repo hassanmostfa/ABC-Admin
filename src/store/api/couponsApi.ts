@@ -1,17 +1,42 @@
 import { apiSlice } from "./apiSlice";
 
 export type CouponDiscountType = "fixed" | "percentage";
+export type CouponType = "general" | "product_variant";
+
+export interface CouponProductVariant {
+  id: number;
+  product_id: number;
+  size: string;
+  short_item: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  image?: string;
+  is_active: boolean;
+  product?: {
+    id: number;
+    name_en: string;
+    name_ar: string;
+    sku: string;
+    is_active: boolean;
+  };
+}
 
 export interface Coupon {
   id: number;
   code: string;
+  type: CouponType;
   discount_type: CouponDiscountType;
   discount_value: number;
+  minimum_order_amount: number;
   usage_limit: number | null;
   used_count: number;
   starts_at: string | null;
   expires_at: string | null;
   is_active: boolean;
+  customer_id: number | null;
+  product_variant_ids: number[];
+  product_variants?: CouponProductVariant[];
   created_at: string;
   updated_at?: string;
 }
@@ -30,7 +55,7 @@ export interface CouponsResponse {
   message: string;
   data: Coupon[];
   pagination: Pagination;
-  filters?: any[];
+  filters?: unknown[];
 }
 
 export interface CouponResponse {
@@ -41,15 +66,20 @@ export interface CouponResponse {
 
 export interface CreateCouponRequest {
   code: string;
+  type: CouponType;
   discount_type: CouponDiscountType;
   discount_value: number;
+  minimum_order_amount?: number;
   usage_limit?: number | null;
   starts_at?: string | null;
   expires_at?: string | null;
-  is_active: boolean;
+  product_variant_ids?: number[];
 }
 
-export interface UpdateCouponRequest extends Partial<CreateCouponRequest> {}
+export interface UpdateCouponRequest extends Partial<Omit<CreateCouponRequest, "code">> {
+  code?: string;
+  is_active?: boolean;
+}
 
 export const couponsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -119,4 +149,3 @@ export const {
   useDeleteCouponMutation,
   useToggleCouponActiveMutation,
 } = couponsApi;
-

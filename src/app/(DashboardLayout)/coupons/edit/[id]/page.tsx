@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
-import { CouponDiscountType, useGetCouponByIdQuery, useUpdateCouponMutation } from "@/store/api/couponsApi";
+import { CouponDiscountType, CouponType, useGetCouponByIdQuery, useUpdateCouponMutation } from "@/store/api/couponsApi";
+import SearchableSelect from "@/components/shared/SearchableSelect";
 
 interface EditCouponPageProps {
   params: Promise<{
@@ -26,10 +27,17 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
   const { data: couponData, isLoading: loadingData, error } = useGetCouponByIdQuery(couponId);
   const [updateCoupon, { isLoading }] = useUpdateCouponMutation();
 
+  type ProductVariantRow = { product_id: number; product_variant_id: number };
+  const [productVariantRows, setProductVariantRows] = useState<ProductVariantRow[]>([
+    { product_id: 0, product_variant_id: 0 },
+  ]);
+
   const [formData, setFormData] = useState({
     code: "",
+    type: "general" as CouponType,
     discount_type: "fixed" as CouponDiscountType,
     discount_value: "",
+    minimum_order_amount: "",
     usage_limit: "",
     used_count: 0,
     starts_at: "",
@@ -39,19 +47,57 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const addProductVariantRow = () => {
+    setProductVariantRows((prev) => [...prev, { product_id: 0, product_variant_id: 0 }]);
+  };
+
+  const removeProductVariantRow = (index: number) => {
+    setProductVariantRows((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateProductVariantRow = (index: number, field: "product_id" | "product_variant_id", value: number) => {
+    setProductVariantRows((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      if (field === "product_id") next[index].product_variant_id = 0;
+      return next;
+    });
+  };
+
   useEffect(() => {
     if (!couponData?.data) return;
     const c = couponData.data;
     setFormData({
       code: c.code || "",
+      type: c.type || "general",
       discount_type: c.discount_type || "fixed",
       discount_value: String(c.discount_value ?? ""),
+      minimum_order_amount: c.minimum_order_amount != null ? String(c.minimum_order_amount) : "",
       usage_limit: c.usage_limit == null ? "" : String(c.usage_limit),
       used_count: c.used_count ?? 0,
       starts_at: c.starts_at ? new Date(c.starts_at).toISOString().split("T")[0] : "",
       expires_at: c.expires_at ? new Date(c.expires_at).toISOString().split("T")[0] : "",
       is_active: !!c.is_active,
     });
+    if (c.type !== "product_variant") {
+      setProductVariantRows([{ product_id: 0, product_variant_id: 0 }]);
+      return;
+    }
+    if (Array.isArray(c.product_variants) && c.product_variants.length > 0) {
+      const rows: ProductVariantRow[] = c.product_variants.map((pv) => ({
+        product_id: pv.product_id,
+        product_variant_id: pv.id,
+      }));
+      setProductVariantRows(rows);
+      return;
+    }
+    if (Array.isArray(c.product_variant_ids) && c.product_variant_ids.length > 0) {
+      setProductVariantRows(
+        c.product_variant_ids.map((vid) => ({ product_id: 0, product_variant_id: vid }))
+      );
+      return;
+    }
+    setProductVariantRows([{ product_id: 0, product_variant_id: 0 }]);
   }, [couponData]);
 
   const validate = () => {
@@ -66,6 +112,12 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
       if (s > x) e.expires_at = t("coupons.expiryAfterStart");
     }
     if (formData.usage_limit && Number(formData.usage_limit) < 0) e.usage_limit = t("coupons.usageLimitInvalid");
+    const validVariantIds = productVariantRows
+      .filter((r) => r.product_id > 0 && r.product_variant_id > 0)
+      .map((r) => r.product_variant_id);
+    if (formData.type === "product_variant" && validVariantIds.length === 0) {
+      e.product_variants = t("coupons.productVariantIdsRequired");
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -75,16 +127,26 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
     if (!validate()) return;
 
     try {
+      const productVariantIds =
+        formData.type === "product_variant"
+          ? productVariantRows
+              .filter((r) => r.product_id > 0 && r.product_variant_id > 0)
+              .map((r) => r.product_variant_id)
+          : undefined;
+
       await updateCoupon({
         id: couponId,
         data: {
           code: formData.code.trim(),
+          type: formData.type,
           discount_type: formData.discount_type,
           discount_value: Number(formData.discount_value),
+          minimum_order_amount: formData.minimum_order_amount ? Number(formData.minimum_order_amount) : undefined,
           usage_limit: formData.usage_limit ? Number(formData.usage_limit) : null,
           starts_at: formData.starts_at || null,
           expires_at: formData.expires_at || null,
           is_active: formData.is_active,
+          ...(formData.type === "product_variant" ? { product_variant_ids: productVariantIds ?? [] } : {}),
         },
       }).unwrap();
 
@@ -154,6 +216,17 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
             </div>
 
             <div>
+              <Label className="mb-2 block">{t("coupons.type")}</Label>
+              <Select
+                value={formData.type}
+                onChange={(e) => setFormData((p) => ({ ...p, type: e.target.value as CouponType }))}
+              >
+                <option value="general">{t("coupons.typeGeneral")}</option>
+                <option value="product_variant">{t("coupons.typeProductVariant")}</option>
+              </Select>
+            </div>
+
+            <div>
               <Label className="mb-2 block">{t("coupons.discountType")}</Label>
               <Select
                 value={formData.discount_type}
@@ -182,6 +255,19 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
             </div>
 
             <div>
+              <Label className="mb-2 block">{t("coupons.minimumOrderAmount")}</Label>
+              <TextInput
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.minimum_order_amount}
+                onChange={(e) => setFormData((p) => ({ ...p, minimum_order_amount: e.target.value }))}
+                placeholder={t("coupons.minimumOrderAmountPlaceholder")}
+                color="gray"
+              />
+            </div>
+
+            <div>
               <Label className="mb-2 block">{t("coupons.usageLimit")}</Label>
               <TextInput
                 type="number"
@@ -199,6 +285,63 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
                 {t("coupons.usedCount")}: {formData.used_count}
               </p>
             </div>
+
+            {formData.type === "product_variant" && (
+              <div className="lg:col-span-2 space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="block">{t("coupons.productVariantIds")}</Label>
+                  <Button type="button" size="sm" onClick={addProductVariantRow}>
+                    <Icon icon="solar:add-circle-bold" height={16} className="ml-1" />
+                    {t("coupons.addProductVariant")}
+                  </Button>
+                </div>
+                {errors.product_variants ? (
+                  <p className="text-xs text-error">{errors.product_variants}</p>
+                ) : null}
+                <div className="space-y-3">
+                  {productVariantRows.map((row, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                    >
+                      <div>
+                        <Label className="mb-1 block">{t("offers.product")}</Label>
+                        <SearchableSelect
+                          value={row.product_id}
+                          onChange={(value) => updateProductVariantRow(index, "product_id", value)}
+                          placeholder={t("offers.chooseProduct")}
+                          showImage={true}
+                          type="product"
+                        />
+                      </div>
+                      <div>
+                        <Label className="mb-1 block">{t("offers.productVariant")}</Label>
+                        <SearchableSelect
+                          value={row.product_variant_id}
+                          onChange={(value) => updateProductVariantRow(index, "product_variant_id", value)}
+                          placeholder={t("offers.chooseVariant")}
+                          showImage={true}
+                          showSize={true}
+                          type="variant"
+                          parentProductId={row.product_id}
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          color="red"
+                          onClick={() => removeProductVariantRow(index)}
+                          disabled={productVariantRows.length === 1}
+                        >
+                          <Icon icon="solar:trash-bin-trash-bold" height={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div>
               <Label className="mb-2 block">{t("coupons.startDate")}</Label>

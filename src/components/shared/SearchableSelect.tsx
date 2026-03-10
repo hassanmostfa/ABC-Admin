@@ -137,7 +137,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   }, [type, productsData?.data, parentProductData?.data]);
 
   const selectedOption = useMemo(() => {
-    const found = options.find((option) => option.id === value);
+    const valueNum = Number(value);
+    const found = options.find((option) => Number(option.id) === valueNum);
     if (found) return found;
 
     if (type === "product" && selectedProductData?.data && value > 0) {
@@ -151,8 +152,22 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
       };
     }
 
+    if (type === "variant" && parentProductData?.data && value > 0) {
+      const variant = (parentProductData.data as any).variants?.find(
+        (v: any) => Number(v?.id) === valueNum || Number(v?.variant_id) === valueNum
+      );
+      if (variant) {
+        return {
+          id: variant.id ?? variant.variant_id ?? valueNum,
+          name: variant.size || variant.name_ar || variant.name_en || variant.name || `#${valueNum}`,
+          image: variant.image,
+          size: variant.size,
+        };
+      }
+    }
+
     return undefined;
-  }, [options, value, type, selectedProductData?.data, isArabic]);
+  }, [options, value, type, selectedProductData?.data, parentProductData?.data, isArabic]);
 
   // If we have a value but no selected option, it means the data is still loading
   const isValueLoading =

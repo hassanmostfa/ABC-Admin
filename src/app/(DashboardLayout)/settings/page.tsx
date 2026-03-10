@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem, Textarea } from "flowbite-react";
+import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem, Textarea, Select } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import { useGetSettingsQuery, useUpdateSettingsMutation } from "@/store/api/settingsApi";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -13,7 +13,7 @@ const SettingsPage = () => {
   const [updateSettings, { isLoading: updating }] = useUpdateSettingsMutation();
 
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<"general" | "delivery" | "content">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "delivery" | "welcomeCoupon" | "content">("general");
 
   useEffect(() => {
     if (settingsData?.data) {
@@ -26,6 +26,9 @@ const SettingsPage = () => {
           } else if (setting.key === "terms_and_conditions") {
             settingsMap["terms_and_conditions_en"] = setting.translations.en ?? "";
             settingsMap["terms_and_conditions_ar"] = setting.translations.ar ?? "";
+          } else if (setting.key === "app_ordering_disabled_message") {
+            settingsMap["app_ordering_disabled_message_en"] = setting.translations.en ?? "";
+            settingsMap["app_ordering_disabled_message_ar"] = setting.translations.ar ?? "";
           }
         } else {
           settingsMap[setting.key] = setting.value ?? "";
@@ -48,10 +51,11 @@ const SettingsPage = () => {
 
       // Keys that use simple value only (exclude translatable keys we handle below)
       const valueOnlyKeys = [
-        "closing_time", "day_offs", "delivery_days", "delivery_price", "is_production",
+        "app_ordering_enabled", "closing_time", "day_offs", "delivery_days", "delivery_price", "is_production",
         "max_delivery_per_slot", "min_points_to_convert", "minimum_charity_order", "minimum_home_order",
         "minimum_wallet_charge", "one_point_money_value", "opening_time", "otp_test_code",
         "slot_interval", "tax", "wallet_charge_gift",
+        "welcome_coupon_enabled", "welcome_coupon_discount_type", "welcome_coupon_discount_value", "welcome_coupon_minimum_order_amount",
       ];
       valueOnlyKeys.forEach((key) => {
         if (settings[key] !== undefined) {
@@ -69,6 +73,11 @@ const SettingsPage = () => {
         key: "terms_and_conditions",
         value: null,
         translations: { en: settings["terms_and_conditions_en"] ?? "", ar: settings["terms_and_conditions_ar"] ?? "" },
+      });
+      settingsArray.push({
+        key: "app_ordering_disabled_message",
+        value: null,
+        translations: { en: settings["app_ordering_disabled_message_en"] ?? "", ar: settings["app_ordering_disabled_message_ar"] ?? "" },
       });
 
       const result = await updateSettings({ settings: settingsArray }).unwrap();
@@ -179,8 +188,121 @@ const SettingsPage = () => {
             </div>
           </TabItem>
 
+          {/* App ordering tab - commented for now
+          <TabItem active={activeTab === "ordering"} title={t("settings.ordering")} onClick={() => setActiveTab("ordering")}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="md:col-span-2">
+                <Label className="mb-2 block">{t("settings.appOrderingEnabled")}</Label>
+                <div dir="ltr" className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("app_ordering_enabled", settings["app_ordering_enabled"] === "1" ? "0" : "1")}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      settings["app_ordering_enabled"] === "1" ? "bg-primary" : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings["app_ordering_enabled"] === "1" ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                  <Label className="text-sm font-medium text-dark dark:text-white">
+                    {settings["app_ordering_enabled"] === "1" ? t("settings.enabled") : t("settings.disabled")}
+                  </Label>
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <h3 className="text-lg font-semibold text-dark dark:text-white mb-2">{t("settings.appOrderingDisabledMessage")}</h3>
+                <p className="text-sm text-ld dark:text-white/70 mb-3">{t("settings.appOrderingDisabledMessageHint")}</p>
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.appOrderingDisabledMessageEn")}</Label>
+                <Textarea
+                  rows={3}
+                  value={settings["app_ordering_disabled_message_en"] || ""}
+                  onChange={(e) => handleInputChange("app_ordering_disabled_message_en", e.target.value)}
+                  placeholder={t("settings.appOrderingDisabledMessagePlaceholder")}
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.appOrderingDisabledMessageAr")}</Label>
+                <Textarea
+                  rows={3}
+                  value={settings["app_ordering_disabled_message_ar"] || ""}
+                  onChange={(e) => handleInputChange("app_ordering_disabled_message_ar", e.target.value)}
+                  placeholder={t("settings.appOrderingDisabledMessagePlaceholder")}
+                  dir="rtl"
+                  className="text-right"
+                />
+              </div>
+            </div>
+          </TabItem>
+          */}
+
+          <TabItem active={activeTab === "welcomeCoupon"} title={t("settings.welcomeCoupon")} onClick={() => setActiveTab("welcomeCoupon")}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="md:col-span-2">
+                <Label className="mb-2 block">{t("settings.welcomeCouponEnabled")}</Label>
+                <div dir="ltr" className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("welcome_coupon_enabled", settings["welcome_coupon_enabled"] === "1" ? "0" : "1")}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      settings["welcome_coupon_enabled"] === "1" ? "bg-primary" : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings["welcome_coupon_enabled"] === "1" ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                  <Label className="text-sm font-medium text-dark dark:text-white">
+                    {settings["welcome_coupon_enabled"] === "1" ? t("settings.enabled") : t("settings.disabled")}
+                  </Label>
+                </div>
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.welcomeCouponDiscountType")}</Label>
+                <Select
+                  value={settings["welcome_coupon_discount_type"] || "percentage"}
+                  onChange={(e) => handleInputChange("welcome_coupon_discount_type", e.target.value)}
+                >
+                  <option value="percentage">{t("coupons.discountTypePercentage")}</option>
+                  <option value="fixed">{t("coupons.discountTypeFixed")}</option>
+                </Select>
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.welcomeCouponDiscountValue")}</Label>
+                <TextInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={settings["welcome_coupon_discount_value"] || ""}
+                  onChange={(e) => handleInputChange("welcome_coupon_discount_value", e.target.value)}
+                  placeholder="10"
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">{t("settings.welcomeCouponMinimumOrderAmount")}</Label>
+                <TextInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={settings["welcome_coupon_minimum_order_amount"] || ""}
+                  onChange={(e) => handleInputChange("welcome_coupon_minimum_order_amount", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </TabItem>
+
           <TabItem active={activeTab === "content"} title={t("settings.content")} onClick={() => setActiveTab("content")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="md:col-span-2">
+                <h3 className="text-lg font-semibold text-dark dark:text-white mb-3">{t("settings.about")}</h3>
+              </div>
               <div>
                 <Label className="mb-2 block">{t("settings.aboutEn")}</Label>
                 <Textarea
@@ -200,6 +322,9 @@ const SettingsPage = () => {
                   dir="rtl"
                   className="text-right"
                 />
+              </div>
+              <div className="md:col-span-2 mt-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-dark dark:text-white mb-3">{t("settings.termsAndConditions")}</h3>
               </div>
               <div>
                 <Label className="mb-2 block">{t("settings.termsAndConditionsEn")}</Label>

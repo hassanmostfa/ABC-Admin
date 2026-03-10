@@ -143,8 +143,10 @@ const CouponsPage = () => {
               <tr>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">#</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white">{t("coupons.code")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.type")}</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.discount")}</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.discountType")}</th>
+                <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.minimumOrderAmount")}</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.usage")}</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.startsAt")}</th>
                 <th className="px-6 py-3 font-semibold text-dark dark:text-white text-center">{t("coupons.expiresAt")}</th>
@@ -161,6 +163,11 @@ const CouponsPage = () => {
                   <td className="px-6 py-4">
                     <div className="font-mono font-semibold text-dark dark:text-white">{coupon.code}</div>
                   </td>
+                  <td className="px-6 py-4 text-center text-ld dark:text-white/80">
+                    {coupon.type === "product_variant"
+                      ? t("coupons.typeProductVariant")
+                      : t("coupons.typeGeneral")}
+                  </td>
                   <td className="px-6 py-4 text-center text-dark dark:text-white font-medium">
                     {discountLabel(coupon.discount_type, coupon.discount_value)}
                   </td>
@@ -168,6 +175,9 @@ const CouponsPage = () => {
                     {coupon.discount_type === "percentage"
                       ? t("coupons.discountTypePercentage")
                       : t("coupons.discountTypeFixed")}
+                  </td>
+                  <td className="px-6 py-4 text-center text-ld dark:text-white/70">
+                    {(coupon.minimum_order_amount ?? 0) > 0 ? `${coupon.minimum_order_amount} KWD` : "—"}
                   </td>
                   <td className="px-6 py-4 text-center text-ld dark:text-white/70">
                     {coupon.used_count} / {coupon.usage_limit ?? "∞"}
