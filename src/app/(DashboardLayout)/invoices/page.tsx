@@ -6,6 +6,7 @@ import { useGetInvoicesQuery, useUpdateInvoiceStatusMutation } from "@/store/api
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
 import Link from "next/link";
+import { formatKuwaitDateTime } from "@/utils/formatKuwaitDateTime";
 
 const InvoicesPage = () => {
   const { t, i18n } = useTranslation();
@@ -42,14 +43,6 @@ const InvoicesPage = () => {
         {config.label}
       </Badge>
     );
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
   };
 
   const formatCurrency = (amount: number) => {
@@ -287,10 +280,10 @@ const InvoicesPage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-ld dark:text-white/70">
-                      {formatDateTime(invoice.paid_at)}
+                      {formatKuwaitDateTime(invoice.paid_at)}
                     </td>
                     <td className="px-6 py-4 text-sm text-ld dark:text-white/70">
-                      {formatDate(invoice.created_at)}
+                      {formatKuwaitDateTime(invoice.created_at)}
                     </td>
                     <td className="px-6 py-4 flex justify-center items-center text-center">
                       {invoice.status === "pending" ? (

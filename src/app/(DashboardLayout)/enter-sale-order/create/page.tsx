@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslation } from "react-i18next";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
 import Image from "next/image";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyB8lLTBxa_Fyp9qGWwPcO-1KxRPVmELppE";
@@ -54,7 +55,7 @@ const CreateSaleOrderPageContent = () => {
   const [cartOffers, setCartOffers] = useState<CartOffer[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "wallet" | "online_link">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "wallet" | "knet" | "cc">("cash");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("delivery");
   const [usedPoints, setUsedPoints] = useState<number>(0);
   const [offersSearch, setOffersSearch] = useState<string>("");
@@ -379,8 +380,8 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
         });
         refetchAddresses();
       }
-    } catch (err: any) {
-      showNotification("error", t("enterSaleOrder.error"), err?.data?.message || "Failed to add address");
+    } catch (err: unknown) {
+      showNotification("error", t("enterSaleOrder.error"), getApiErrorMessage(err, "Failed to add address"));
     }
   };
 
@@ -396,12 +397,16 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
     }
 
     try {
+      const isKnetOrCc = paymentMethod === "knet" || paymentMethod === "cc";
       const orderData: any = {
         customer_id: customerId,
         customer_address_id: selectedAddressId || undefined,
-        payment_method: paymentMethod,
+        payment_method: isKnetOrCc ? "online_link" : paymentMethod,
         delivery_type: deliveryType,
       };
+      if (isKnetOrCc) {
+        orderData.src = paymentMethod === "knet" ? "knet" : "cc";
+      }
 
       if (cartOffers.length > 0) {
         orderData.offers = cartOffers.map(item => ({
@@ -426,7 +431,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
       if (result.success) {
         const data = result.data as { id?: number; payment_link?: string; order_number?: string; invoice?: { payment_link?: string } };
         const link = data?.payment_link || data?.invoice?.payment_link;
-        if (paymentMethod === "online_link") {
+        if (isKnetOrCc) {
           setPaymentLink(link || "");
           setPaymentLinkOrderNumber(data?.order_number || "");
           setOrderIdPendingLink(data?.id ?? null);
@@ -439,8 +444,8 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
           }, 1500);
         }
       }
-    } catch (err: any) {
-      showNotification("error", t("enterSaleOrder.error"), err?.data?.message || t("enterSaleOrder.orderError"));
+    } catch (err: unknown) {
+      showNotification("error", t("enterSaleOrder.error"), getApiErrorMessage(err, t("enterSaleOrder.orderError")));
     }
   };
 
@@ -471,6 +476,8 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
       wallet: t("orders.paymentMethod.wallet"),
       card: t("orders.paymentMethod.card"),
       online_link: t("orders.paymentMethod.onlineLink") || "Online Link",
+      knet: t("enterSaleOrder.paymentKnet"),
+      cc: t("enterSaleOrder.paymentCreditCard"),
     };
     return methods[method] || method;
   };
@@ -987,7 +994,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-ld">
                     <span className="text-dark dark:text-white">
-                      {paymentMethod === "online_link" ? t("orders.amountDue") : t("orders.total")}
+                      {paymentMethod === "knet" || paymentMethod === "cc" ? t("orders.amountDue") : t("orders.total")}
                     </span>
                     <span className="text-primary">{total.toFixed(3)} KWD</span>
                   </div>
@@ -1022,11 +1029,20 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={paymentMethod === "online_link"}
-                        onChange={() => setPaymentMethod("online_link")}
+                        checked={paymentMethod === "knet"}
+                        onChange={() => setPaymentMethod("knet")}
                         className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
                       />
-                      <span className="text-sm text-dark dark:text-white">{t("orders.paymentMethod.onlineLink")}</span>
+                      <span className="text-sm text-dark dark:text-white">{t("enterSaleOrder.paymentKnet")}</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={paymentMethod === "cc"}
+                        onChange={() => setPaymentMethod("cc")}
+                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
+                      />
+                      <span className="text-sm text-dark dark:text-white">{t("enterSaleOrder.paymentCreditCard")}</span>
                     </label>
                   </div>
                 </div>
@@ -1329,7 +1345,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
         </div>
       </Modal>
 
-      {/* Payment Link Modal (online_link orders) */}
+      {/* Payment link modal (KNET / credit card — API uses online_link + src) */}
       <Modal
         show={showPaymentLinkModal}
         onClose={() => {
@@ -1372,8 +1388,8 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                     } else {
                       showNotification("error", t("enterSaleOrder.error"), res.message || "No link returned");
                     }
-                  } catch (err: any) {
-                    showNotification("error", t("enterSaleOrder.error"), err?.data?.message || "Failed to regenerate link");
+                  } catch (err: unknown) {
+                    showNotification("error", t("enterSaleOrder.error"), getApiErrorMessage(err, "Failed to regenerate link"));
                   }
                 }}
               >

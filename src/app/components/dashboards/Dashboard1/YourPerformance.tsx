@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
 import { useGetStatisticsQuery } from "@/store/api/statisticsApi";
-import { Spinner } from "flowbite-react";
+import { DashboardSk } from "./DashboardSkeleton";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -60,9 +60,25 @@ const YourPerformance = () => {
   if (isLoading) {
     return (
       <CardBox>
-        <h5 className="card-title">{t("dashboard.performance.title")}</h5>
-        <div className="flex justify-center py-12">
-          <Spinner size="xl" />
+        <DashboardSk className="h-5 w-48 mb-2" />
+        <DashboardSk className="h-3 w-64 max-w-full" />
+        <div className="grid grid-cols-12 mt-6 gap-6">
+          <div className="md:col-span-6 col-span-12 grid grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex gap-3 items-center">
+                <DashboardSk className="h-10 w-10 shrink-0 rounded-tw" />
+                <div className="flex-1 space-y-2 min-w-0">
+                  <DashboardSk className="h-4 w-12" />
+                  <DashboardSk className="h-3 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="md:col-span-6 col-span-12 flex flex-col items-center justify-center py-4">
+            <DashboardSk className="h-[200px] w-[200px] max-w-full rounded-full" />
+            <DashboardSk className="h-8 w-16 mt-4" />
+            <DashboardSk className="h-3 w-48 mt-3 max-w-full" />
+          </div>
         </div>
       </CardBox>
     );

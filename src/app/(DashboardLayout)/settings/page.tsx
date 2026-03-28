@@ -4,6 +4,7 @@ import { Card, Label, TextInput, Button, Spinner, Tabs, TabItem, Textarea, Selec
 import { Icon } from "@iconify/react";
 import { useGetSettingsQuery, useUpdateSettingsMutation } from "@/store/api/settingsApi";
 import { useNotification } from "@/app/context/NotificationContext";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
 import { useTranslation } from "react-i18next";
 
 const SettingsPage = () => {
@@ -85,8 +86,8 @@ const SettingsPage = () => {
       if (result.success) {
         showNotification("success", t("settings.success"), t("settings.updateSuccess"));
       }
-    } catch (err: any) {
-      showNotification("error", t("settings.error"), err?.data?.message || t("settings.updateError"));
+    } catch (err: unknown) {
+      showNotification("error", t("settings.error"), getApiErrorMessage(err, t("settings.updateError")));
     }
   };
 

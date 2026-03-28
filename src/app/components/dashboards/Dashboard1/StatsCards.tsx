@@ -4,7 +4,7 @@ import CardBox from "../../shared/CardBox";
 import { Icon } from "@iconify/react";
 import { useTranslation } from "react-i18next";
 import { useGetStatisticsQuery } from "@/store/api/statisticsApi";
-import { Spinner } from "flowbite-react";
+import { DashboardSk } from "./DashboardSkeleton";
 
 const StatsCards = () => {
   const { t } = useTranslation();
@@ -61,7 +61,9 @@ const StatsCards = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <CardBox key={i} className="text-center flex flex-col items-center justify-center min-h-[180px]">
-            <Spinner size="lg" />
+            <DashboardSk className="h-16 w-16 rounded-full mb-4" />
+            <DashboardSk className="h-8 w-14 mx-auto mb-2" />
+            <DashboardSk className="h-3 w-28 mx-auto" />
           </CardBox>
         ))}
       </div>

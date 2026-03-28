@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
 import { CouponDiscountType, CouponType, useCreateCouponMutation } from "@/store/api/couponsApi";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
 import SearchableSelect from "@/components/shared/SearchableSelect";
 
 const AddCouponPage = () => {
@@ -100,8 +101,8 @@ const AddCouponPage = () => {
 
       showNotification("success", t("coupons.success"), t("coupons.addSuccess"));
       router.push("/coupons");
-    } catch (err: any) {
-      showNotification("error", t("coupons.error"), err?.data?.message || t("coupons.addError"));
+    } catch (err: unknown) {
+      showNotification("error", t("coupons.error"), getApiErrorMessage(err, t("coupons.addError")));
     }
   };
 

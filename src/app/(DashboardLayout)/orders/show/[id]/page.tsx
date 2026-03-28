@@ -1,12 +1,18 @@
 "use client";
-import React, { use } from "react";
-import { Card, Badge, Spinner, Button, Select } from "flowbite-react";
+import React, { use, useState } from "react";
+import { Card, Badge, Spinner, Button, Select, TextInput } from "flowbite-react";
 import { Icon } from "@iconify/react";
-import { useGetOrderByIdQuery, useUpdateOrderStatusMutation } from "@/store/api/ordersApi";
-import { useRouter } from "next/navigation";
+import {
+  useGetOrderByIdQuery,
+  useUpdateOrderStatusMutation,
+  useRegenerateOrderPaymentLinkMutation,
+  useSwitchOrderToPaymentLinkMutation,
+} from "@/store/api/ordersApi";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
+import { formatKuwaitDate, formatKuwaitDateTime } from "@/utils/formatKuwaitDateTime";
 
 interface OrderShowProps {
   params: Promise<{ id: string }>;
@@ -14,12 +20,15 @@ interface OrderShowProps {
 
 const OrderShow = ({ params }: OrderShowProps) => {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const { showNotification } = useNotification();
   const resolvedParams = use(params);
   const orderId = parseInt(resolvedParams.id);
   const { data: orderData, isLoading, error } = useGetOrderByIdQuery(orderId);
   const [updateOrderStatus, { isLoading: updating }] = useUpdateOrderStatusMutation();
+  const [regeneratePaymentLink, { isLoading: regeneratingLink }] = useRegenerateOrderPaymentLinkMutation();
+  const [switchToPaymentLink] = useSwitchOrderToPaymentLinkMutation();
+  const [paymentLinkCopied, setPaymentLinkCopied] = useState(false);
+  const [switchingPaymentSrc, setSwitchingPaymentSrc] = useState<"knet" | "cc" | null>(null);
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: "success" | "failure" | "warning" | "info"; label: string }> = {
@@ -37,24 +46,6 @@ const OrderShow = ({ params }: OrderShowProps) => {
     );
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  };
-
   const formatCurrency = (amount: number) => {
     const locale = i18n.language?.startsWith("ar") ? "ar-SA" : "en-US";
     return new Intl.NumberFormat(locale, {
@@ -66,9 +57,10 @@ const OrderShow = ({ params }: OrderShowProps) => {
 
   const getPaymentMethodLabel = (method: string) => {
     const methods: Record<string, string> = {
-      cash: t("orders.paymentMethod.cash"),
+      cash: t("orders.paymentMethod.cashOnDelivery"),
       wallet: t("orders.paymentMethod.wallet"),
       card: t("orders.paymentMethod.card"),
+      online_link: t("orders.paymentMethod.onlineLink"),
     };
     return methods[method] || method;
   };
@@ -87,6 +79,22 @@ const OrderShow = ({ params }: OrderShowProps) => {
       showNotification("success", t("orders.success"), t("orders.statusUpdated"));
     } catch (err: any) {
       showNotification("error", t("orders.error"), err?.data?.message || t("orders.updateError"));
+    }
+  };
+
+  const handleSwitchToPaymentLink = async (src: "knet" | "cc") => {
+    setSwitchingPaymentSrc(src);
+    try {
+      const res = await switchToPaymentLink({ orderId, src }).unwrap();
+      showNotification(
+        "success",
+        t("orders.success"),
+        (typeof res.message === "string" && res.message.trim()) ? res.message : t("orders.switchToPaymentLinkSuccess")
+      );
+    } catch (err: unknown) {
+      showNotification("error", t("orders.error"), getApiErrorMessage(err, t("orders.switchToPaymentLinkError")));
+    } finally {
+      setSwitchingPaymentSrc(null);
     }
   };
 
@@ -117,7 +125,12 @@ const OrderShow = ({ params }: OrderShowProps) => {
   }
 
   const order = orderData.data;
+  const orderSrc = order.src;
   const latestPayment = (order as any).payments?.[0];
+  const invoicePending = order.invoice?.status?.toLowerCase() === "pending";
+  const showRegeneratePaymentLink =
+    order.payment_method === "online_link" && order.invoice && invoicePending;
+  const currentPaymentLink = order.invoice?.payment_link || order.payment_link || "";
 
   return (
     <div className="space-y-6">
@@ -168,7 +181,19 @@ const OrderShow = ({ params }: OrderShowProps) => {
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.paymentMethod")}</label>
-                <p className="font-medium text-dark dark:text-white">{getPaymentMethodLabel(order.payment_method ?? '')}</p>
+                <p className="font-medium text-dark dark:text-white">
+                  {getPaymentMethodLabel(order.payment_method ?? "")}
+                  {order.payment_method === "online_link" && orderSrc === "knet" && (
+                    <span className="text-sm font-normal text-ld dark:text-white/70 ms-1">
+                      ({t("enterSaleOrder.paymentKnet")})
+                    </span>
+                  )}
+                  {order.payment_method === "online_link" && orderSrc === "cc" && (
+                    <span className="text-sm font-normal text-ld dark:text-white/70 ms-1">
+                      ({t("enterSaleOrder.paymentCreditCard")})
+                    </span>
+                  )}
+                </p>
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.deliveryType")}</label>
@@ -176,13 +201,47 @@ const OrderShow = ({ params }: OrderShowProps) => {
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.createdAt")}</label>
-                <p className="font-medium text-dark dark:text-white">{formatDateTime(order.created_at)}</p>
+                <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(order.created_at)}</p>
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.updatedAt")}</label>
-                <p className="font-medium text-dark dark:text-white">{formatDateTime(order.updated_at)}</p>
+                <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(order.updated_at)}</p>
               </div>
             </div>
+            {order.payment_method === "cash" && (
+              <div className="mt-6 pt-6 border-t border-ld">
+                <p className="text-sm font-semibold text-dark dark:text-white mb-1">{t("orders.switchToOnlinePayment")}</p>
+                <p className="text-xs text-ld dark:text-white/70 mb-4">{t("orders.switchToOnlinePaymentHint")}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    color="primary"
+                    disabled={switchingPaymentSrc !== null}
+                    onClick={() => handleSwitchToPaymentLink("knet")}
+                  >
+                    {switchingPaymentSrc === "knet" ? (
+                      <Spinner size="sm" className="me-2" />
+                    ) : (
+                      <Icon icon="solar:card-bold" height={18} className="me-2" />
+                    )}
+                    {t("enterSaleOrder.paymentKnet")}
+                  </Button>
+                  <Button
+                    type="button"
+                    color="gray"
+                    disabled={switchingPaymentSrc !== null}
+                    onClick={() => handleSwitchToPaymentLink("cc")}
+                  >
+                    {switchingPaymentSrc === "cc" ? (
+                      <Spinner size="sm" className="me-2" />
+                    ) : (
+                      <Icon icon="solar:card-2-bold" height={18} className="me-2" />
+                    )}
+                    {t("enterSaleOrder.paymentCreditCard")}
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Customer/Charity Information */}
@@ -298,7 +357,7 @@ const OrderShow = ({ params }: OrderShowProps) => {
                 </div>
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("orders.deliveryDateTime")}</label>
-                  <p className="font-medium text-dark dark:text-white">{formatDateTime(order.delivery.delivery_datetime)}</p>
+                  <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(order.delivery.delivery_datetime)}</p>
                 </div>
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("orders.deliveryStatus")}</label>
@@ -360,10 +419,68 @@ const OrderShow = ({ params }: OrderShowProps) => {
                     {order.invoice.status}
                   </Badge>
                 </div>
+                {showRegeneratePaymentLink && (
+                  <div className="pt-2 space-y-3 border-t border-ld mt-3">
+                    <Button
+                      color="primary"
+                      className="w-full"
+                      disabled={regeneratingLink}
+                      onClick={async () => {
+                        try {
+                          await regeneratePaymentLink(orderId).unwrap();
+                          showNotification("success", t("orders.success"), t("orders.paymentLinkRegenerated"));
+                        } catch (err: unknown) {
+                          showNotification(
+                            "error",
+                            t("orders.error"),
+                            getApiErrorMessage(err, t("orders.regeneratePaymentLinkError"))
+                          );
+                        }
+                      }}
+                    >
+                      {regeneratingLink ? (
+                        <Spinner size="sm" className="me-2" />
+                      ) : (
+                        <Icon icon="solar:refresh-bold" height={18} className="me-2" />
+                      )}
+                      {t("orders.regeneratePaymentLink")}
+                    </Button>
+                    {currentPaymentLink ? (
+                      <div className="flex gap-2">
+                        <TextInput
+                          readOnly
+                          value={currentPaymentLink}
+                          className="flex-1 font-mono text-xs bg-lightgray dark:bg-darkgray border-ld"
+                        />
+                        <Button
+                          color="gray"
+                          className="shrink-0"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(currentPaymentLink);
+                              setPaymentLinkCopied(true);
+                              showNotification("success", t("enterSaleOrder.copied"), t("enterSaleOrder.linkCopied"));
+                              setTimeout(() => setPaymentLinkCopied(false), 2000);
+                            } catch {
+                              showNotification("error", t("orders.error"), t("enterSaleOrder.copyFailed"));
+                            }
+                          }}
+                        >
+                          <Icon
+                            icon={paymentLinkCopied ? "solar:check-circle-bold" : "solar:copy-bold"}
+                            height={18}
+                            className="me-1"
+                          />
+                          {paymentLinkCopied ? t("enterSaleOrder.copied") : t("enterSaleOrder.copyLink")}
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
                 {order.invoice.paid_at && (
                   <div className="flex justify-between">
                     <span className="text-sm text-ld dark:text-white/70">{t("orders.paidAt")}</span>
-                    <span className="font-medium text-dark dark:text-white">{formatDateTime(order.invoice.paid_at)}</span>
+                    <span className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(order.invoice.paid_at)}</span>
                   </div>
                 )}
               </div>
@@ -398,7 +515,7 @@ const OrderShow = ({ params }: OrderShowProps) => {
                 {latestPayment.paid_at && (
                   <div className="flex justify-between">
                     <span className="text-sm text-ld dark:text-white/70">{t("orders.paymentDate")}</span>
-                    <span className="font-medium text-dark dark:text-white">{formatDateTime(latestPayment.paid_at)}</span>
+                    <span className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(latestPayment.paid_at)}</span>
                   </div>
                 )}
                 {latestPayment.track_id && (
@@ -438,11 +555,11 @@ const OrderShow = ({ params }: OrderShowProps) => {
                 </div>
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("orders.offerStartDate")}</label>
-                  <p className="font-medium text-dark dark:text-white">{formatDate(order.offer.offer_start_date)}</p>
+                  <p className="font-medium text-dark dark:text-white">{formatKuwaitDate(order.offer.offer_start_date)}</p>
                 </div>
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("orders.offerEndDate")}</label>
-                  <p className="font-medium text-dark dark:text-white">{formatDate(order.offer.offer_end_date)}</p>
+                  <p className="font-medium text-dark dark:text-white">{formatKuwaitDate(order.offer.offer_end_date)}</p>
                 </div>
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("orders.isActive")}</label>

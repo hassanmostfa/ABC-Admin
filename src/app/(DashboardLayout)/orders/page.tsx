@@ -7,6 +7,7 @@ import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { formatKuwaitDateTime } from "@/utils/formatKuwaitDateTime";
 
 const OrdersPageContent = () => {
   const { t, i18n } = useTranslation();
@@ -86,14 +87,6 @@ const OrdersPageContent = () => {
         {status || "-"}
       </Badge>
     );
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
   };
 
   const formatCurrency = (amount: number) => {
@@ -361,7 +354,7 @@ const OrdersPageContent = () => {
                     {getInvoiceStatusBadge(order.invoice?.status)}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-ld dark:text-white/70">
-                    {formatDate(order.created_at)}
+                    {formatKuwaitDateTime(order.created_at)}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <Link href={`/orders/show/${order.id}`} className="inline-flex">

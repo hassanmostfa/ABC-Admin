@@ -6,17 +6,13 @@ import Image from "next/image";
 import Background from '/public/images/backgrounds/welcome-bg.png';
 import { useTranslation } from "react-i18next";
 import { useGetStatisticsQuery } from "@/store/api/statisticsApi";
-import Link from "next/link";
-import { Spinner } from "flowbite-react";
+import { DashboardSk } from "./DashboardSkeleton";
 
 const WelcomeBox = () => {
   const { t } = useTranslation();
   const { data, isLoading } = useGetStatisticsQuery();
   const stats = data?.data;
 
-  const totalOrders = stats?.orders?.total ?? 0;
-  const pendingOrders = stats?.orders?.by_status?.pending ?? 0;
-  const customersCount = stats?.customers_count ?? 0;
   const totalRevenue = stats?.total_revenue ?? 0;
 
   return (
@@ -35,8 +31,9 @@ const WelcomeBox = () => {
               <h5 className="text-xl text-white">{t("dashboard.welcomeBack")}</h5>
             </div>
             {isLoading ? (
-              <div className="mt-6 flex gap-4">
-                <Spinner color="white" size="sm" />
+              <div className="mt-6 space-y-3 max-w-xs">
+                <DashboardSk className="h-3 w-24 bg-white/25" />
+                <DashboardSk className="h-8 w-40 bg-white/30" />
               </div>
             ) : (
               <div className="flex flex-wrap gap-6 mt-6">

@@ -6,6 +6,7 @@ import { useLazySearchCustomerByPhoneQuery, useCreateCustomerMutation } from "@/
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslation } from "react-i18next";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
 
 const EnterSaleOrderPage = () => {
   const { t } = useTranslation();
@@ -41,10 +42,10 @@ const EnterSaleOrderPage = () => {
         // Navigate to next page with customer data
         router.push(`/enter-sale-order/create?customer_id=${result.data.id}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setCustomerNotFound(true);
       setCustomerFound(null);
-      showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.customerNotFound"));
+      showNotification("error", t("enterSaleOrder.error"), getApiErrorMessage(err, t("enterSaleOrder.customerNotFound")));
     }
   };
 
@@ -78,8 +79,9 @@ const EnterSaleOrderPage = () => {
         // Navigate to next page with new customer data
         router.push(`/enter-sale-order/create?customer_id=${result.data.id}`);
       }
-    } catch (err: any) {
-      const errors = err?.data?.errors || {};
+    } catch (err: unknown) {
+      const e = err as { data?: { errors?: Record<string, string[]> } };
+      const errors = e?.data?.errors || {};
       const newFieldErrors: Record<string, string> = {};
       Object.keys(errors).forEach((key) => {
         const messages = errors[key];
@@ -88,7 +90,7 @@ const EnterSaleOrderPage = () => {
         }
       });
       setFieldErrors(newFieldErrors);
-      showNotification("error", t("enterSaleOrder.error"), err?.data?.message || t("customers.addError"));
+      showNotification("error", t("enterSaleOrder.error"), getApiErrorMessage(err, t("customers.addError")));
     }
   };
 

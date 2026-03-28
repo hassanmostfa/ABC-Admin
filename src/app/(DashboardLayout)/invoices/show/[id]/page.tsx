@@ -6,6 +6,7 @@ import { useGetInvoiceByIdQuery } from "@/store/api/invoicesApi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { formatKuwaitDateTime } from "@/utils/formatKuwaitDateTime";
 
 interface InvoiceShowProps {
   params: Promise<{ id: string }>;
@@ -32,25 +33,6 @@ const InvoiceShow = ({ params }: InvoiceShowProps) => {
         {config.label}
       </Badge>
     );
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
   const formatCurrency = (amount: number) => {
@@ -152,17 +134,17 @@ const InvoiceShow = ({ params }: InvoiceShowProps) => {
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("invoices.createdAt")}</label>
-                <p className="font-medium text-dark dark:text-white">{formatDateTime(invoice.created_at)}</p>
+                <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(invoice.created_at)}</p>
               </div>
               {invoice.paid_at && (
                 <div>
                   <label className="text-sm text-ld dark:text-white/70">{t("invoices.paidAt")}</label>
-                  <p className="font-medium text-dark dark:text-white">{formatDateTime(invoice.paid_at)}</p>
+                  <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(invoice.paid_at)}</p>
                 </div>
               )}
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("invoices.updatedAt")}</label>
-                <p className="font-medium text-dark dark:text-white">{formatDateTime(invoice.updated_at)}</p>
+                <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(invoice.updated_at)}</p>
               </div>
             </div>
           </Card>
@@ -197,7 +179,7 @@ const InvoiceShow = ({ params }: InvoiceShowProps) => {
               </div>
               <div>
                 <label className="text-sm text-ld dark:text-white/70">{t("orders.createdAt")}</label>
-                <p className="font-medium text-dark dark:text-white">{formatDateTime(order.created_at)}</p>
+                <p className="font-medium text-dark dark:text-white">{formatKuwaitDateTime(order.created_at)}</p>
               </div>
             </div>
           </Card>

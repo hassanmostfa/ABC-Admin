@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useNotification } from "@/app/context/NotificationContext";
 import { CouponDiscountType, CouponType, useGetCouponByIdQuery, useUpdateCouponMutation } from "@/store/api/couponsApi";
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage";
 import SearchableSelect from "@/components/shared/SearchableSelect";
 
 interface EditCouponPageProps {
@@ -152,8 +153,8 @@ const EditCouponPage = ({ params }: EditCouponPageProps) => {
 
       showNotification("success", t("coupons.success"), t("coupons.updateSuccess"));
       router.push("/coupons");
-    } catch (err: any) {
-      showNotification("error", t("coupons.error"), err?.data?.message || t("coupons.updateError"));
+    } catch (err: unknown) {
+      showNotification("error", t("coupons.error"), getApiErrorMessage(err, t("coupons.updateError")));
     }
   };
 

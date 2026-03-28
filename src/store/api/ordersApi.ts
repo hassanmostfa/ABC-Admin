@@ -86,6 +86,8 @@ export interface Order {
   charity_id: number | null;
   type: 'customer' | 'charity';
   payment_method: 'cash' | 'wallet' | 'card' | 'online_link';
+  /** Present when payment_method is online_link (gateway: knet | cc). */
+  src?: 'knet' | 'cc';
   order_number: string;
   status: 'pending' | 'processing' | 'completed' | 'cancelled' | null;
   total_amount: number;
@@ -123,6 +125,15 @@ export interface OrderResponse {
   success: boolean;
   message: string;
   data: Order;
+}
+
+export interface SwitchToPaymentLinkResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    order: Order;
+    payment_link: string;
+  };
 }
 
 export const ordersApi = apiSlice.injectEndpoints({
@@ -174,6 +185,8 @@ export const ordersApi = apiSlice.injectEndpoints({
       charity_id?: number;
       customer_address_id?: number;
       payment_method: 'cash' | 'wallet' | 'online_link';
+      /** Payment gateway when payment_method is online_link: knet | cc */
+      src?: 'knet' | 'cc';
       delivery_type: 'pickup' | 'delivery';
       offers?: Array<{ offer_id: number; quantity: number }>;
       used_points?: number;
@@ -202,7 +215,19 @@ export const ordersApi = apiSlice.injectEndpoints({
     >({
       query: (orderId) => ({
         url: `/admin/orders/${orderId}/regenerate-payment-link`,
-        method: 'PUT',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Orders'],
+    }),
+
+    switchOrderToPaymentLink: builder.mutation<
+      SwitchToPaymentLinkResponse,
+      { orderId: number; src: 'knet' | 'cc' }
+    >({
+      query: ({ orderId, src }) => ({
+        url: `/admin/orders/${orderId}/switch-to-payment-link`,
+        method: 'POST',
+        body: { src },
       }),
       invalidatesTags: ['Orders'],
     }),
@@ -215,5 +240,6 @@ export const {
   useUpdateOrderStatusMutation,
   useCreateOrderMutation,
   useRegenerateOrderPaymentLinkMutation,
+  useSwitchOrderToPaymentLinkMutation,
 } = ordersApi;
 
