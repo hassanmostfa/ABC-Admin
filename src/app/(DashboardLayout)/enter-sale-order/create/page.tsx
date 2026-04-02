@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { Card, Label, TextInput, Spinner, Select, Button, Badge, Tabs, TabItem, Modal, ModalBody, ModalHeader, Pagination } from "flowbite-react";
 import { Icon } from "@iconify/react";
 import Script from "next/script";
-import { useGetCustomerByIdQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
+import { useSearchCustomerByPhoneQuery, useGetCustomerAddressesQuery, useCreateCustomerAddressMutation } from "@/store/api/customersApi";
+import { useGetDeliverySlotsMutation, DeliverySlot } from "@/store/api/deliverySlotsApi";
 import { useGetOffersQuery } from "@/store/api/offersApi";
 import { useGetProductsQuery } from "@/store/api/productsApi";
 import { useGetAllCategoriesQuery } from "@/store/api/categoriesApi";
@@ -46,8 +47,12 @@ const CreateSaleOrderPageContent = () => {
   const searchParams = useSearchParams();
   const { showNotification } = useNotification();
   
-  const customerId = parseInt(searchParams.get('customer_id') || '0');
-  const { data: customerData, isLoading: loadingCustomer } = useGetCustomerByIdQuery(customerId, { skip: !customerId });
+  const customerPhone = searchParams.get('customer_phone') || '';
+  const { data: customerData, isLoading: loadingCustomer, isError: customerNotFound } = useSearchCustomerByPhoneQuery(
+    customerPhone ? `965${customerPhone}` : '',
+    { skip: !customerPhone }
+  );
+  const customerId = customerData?.data?.id ?? 0;
   const { data: addressesData, refetch: refetchAddresses } = useGetCustomerAddressesQuery(customerId, { skip: !customerId });
   const [createAddress, { isLoading: creatingAddress }] = useCreateCustomerAddressMutation();
   
@@ -55,7 +60,8 @@ const CreateSaleOrderPageContent = () => {
   const [cartOffers, setCartOffers] = useState<CartOffer[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "wallet" | "knet" | "cc">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "wallet" | "online_link">("cash");
+  const [onlinePaySrc, setOnlinePaySrc] = useState<"knet" | "cc">("knet");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("delivery");
   const [usedPoints, setUsedPoints] = useState<number>(0);
   const [offersSearch, setOffersSearch] = useState<string>("");
@@ -71,7 +77,51 @@ const CreateSaleOrderPageContent = () => {
   const [paymentLinkOrderNumber, setPaymentLinkOrderNumber] = useState<string>("");
   const [paymentLinkCopied, setPaymentLinkCopied] = useState<boolean>(false);
   const [orderIdPendingLink, setOrderIdPendingLink] = useState<number | null>(null);
-  
+  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<string>("");
+  const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string>("");
+  const [deliverySlots, setDeliverySlots] = useState<DeliverySlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState<boolean>(false);
+  const [isDayOff, setIsDayOff] = useState<boolean>(false);
+  const [isOutOfRange, setIsOutOfRange] = useState<boolean>(false);
+
+  const [getDeliverySlots] = useGetDeliverySlotsMutation();
+
+  // Generate the next 7 delivery dates starting today
+  const deliveryDates = React.useMemo(() => {
+    const dates: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      dates.push(d);
+    }
+    return dates;
+  }, []);
+
+  const toDateParam = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  const handleSelectDeliveryDate = async (date: Date) => {
+    const dateStr = toDateParam(date);
+    setSelectedDeliveryDate(dateStr);
+    setSelectedDeliveryTime("");
+    setDeliverySlots([]);
+    setIsDayOff(false);
+    setIsOutOfRange(false);
+    setLoadingSlots(true);
+    try {
+      const result = await getDeliverySlots({ date: dateStr }).unwrap();
+      if (result.success) {
+        setIsDayOff(result.data.is_day_off);
+        setIsOutOfRange(result.data.out_of_range);
+        setDeliverySlots(result.data.slots || []);
+      }
+    } catch {
+      setDeliverySlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
   const { data: offersData, isLoading: loadingOffers } = useGetOffersQuery({ 
     search: offersSearch || undefined,
     per_page: 12,
@@ -95,15 +145,15 @@ const CreateSaleOrderPageContent = () => {
   const [regenerateOrderPaymentLink, { isLoading: regenerating }] = useRegenerateOrderPaymentLinkMutation();
   
   // Fetch customer orders for history modal
-  const customerPhone = customerData?.data?.phone || "";
+  const customerFullPhone = customerData?.data?.phone || "";
 const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
     {
-      search: customerPhone,
+      search: customerFullPhone,
       page: 1,
       sort_by: "created_at",
       sort_order: "desc"
     },
-    { skip: !showHistoryModal || !customerPhone }
+    { skip: !showHistoryModal || !customerFullPhone }
   );
   
   const [newAddress, setNewAddress] = useState<{
@@ -169,10 +219,10 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
   }, [countriesData, showAddAddress]);
 
   useEffect(() => {
-    if (!customerId) {
+    if (!customerPhone) {
       router.push("/enter-sale-order");
     }
-  }, [customerId, router]);
+  }, [customerPhone, router]);
 
   // Init Google Map when add-address is open and script loaded
   useEffect(() => {
@@ -396,17 +446,25 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
       return;
     }
 
+    if (!selectedDeliveryDate) {
+      showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.selectDeliveryDate"));
+      return;
+    }
+
+    if (!selectedDeliveryTime) {
+      showNotification("error", t("enterSaleOrder.error"), t("enterSaleOrder.selectDeliveryTime"));
+      return;
+    }
+
     try {
-      const isKnetOrCc = paymentMethod === "knet" || paymentMethod === "cc";
       const orderData: any = {
         customer_id: customerId,
         customer_address_id: selectedAddressId || undefined,
-        payment_method: isKnetOrCc ? "online_link" : paymentMethod,
+        payment_method: paymentMethod,
         delivery_type: deliveryType,
+        delivery_date: selectedDeliveryDate,
+        delivery_time: selectedDeliveryTime,
       };
-      if (isKnetOrCc) {
-        orderData.src = paymentMethod === "knet" ? "knet" : "cc";
-      }
 
       if (cartOffers.length > 0) {
         orderData.offers = cartOffers.map(item => ({
@@ -426,12 +484,16 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
         orderData.used_points = usedPoints;
       }
 
+      if (paymentMethod === "online_link") {
+        orderData.src = onlinePaySrc === "knet" ? "knet" : "cc";
+      }
+
       const result = await createOrder(orderData).unwrap();
 
       if (result.success) {
         const data = result.data as { id?: number; payment_link?: string; order_number?: string; invoice?: { payment_link?: string } };
         const link = data?.payment_link || data?.invoice?.payment_link;
-        if (isKnetOrCc) {
+        if (paymentMethod === "online_link") {
           setPaymentLink(link || "");
           setPaymentLinkOrderNumber(data?.order_number || "");
           setOrderIdPendingLink(data?.id ?? null);
@@ -476,8 +538,6 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
       wallet: t("orders.paymentMethod.wallet"),
       card: t("orders.paymentMethod.card"),
       online_link: t("orders.paymentMethod.onlineLink") || "Online Link",
-      knet: t("enterSaleOrder.paymentKnet"),
-      cc: t("enterSaleOrder.paymentCreditCard"),
     };
     return methods[method] || method;
   };
@@ -550,12 +610,17 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
     );
   }
 
-  if (!customer) {
+  if (customerNotFound || (!loadingCustomer && customerPhone && !customer)) {
     return (
-      <div className="text-center py-8">
-        <p className="text-error">{t("enterSaleOrder.error")}</p>
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <Icon icon="solar:user-cross-bold-duotone" height={48} className="text-error" />
+        <p className="text-lg font-semibold text-dark dark:text-white">{t("enterSaleOrder.customerNotFound")}</p>
+        <p className="text-sm text-ld">{`+965${customerPhone}`}</p>
         <Link href="/enter-sale-order">
-          <Button className="mt-4">{t("enterSaleOrder.searchCustomer")}</Button>
+          <Button className="bg-primary hover:bg-primary/90">
+            <Icon icon="solar:arrow-left-bold" height={16} className="mr-2" />
+            {t("enterSaleOrder.searchCustomer")}
+          </Button>
         </Link>
       </div>
     );
@@ -994,7 +1059,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-ld">
                     <span className="text-dark dark:text-white">
-                      {paymentMethod === "knet" || paymentMethod === "cc" ? t("orders.amountDue") : t("orders.total")}
+                      {paymentMethod === "online_link" ? t("orders.amountDue") : t("orders.total")}
                     </span>
                     <span className="text-primary">{total.toFixed(3)} KWD</span>
                   </div>
@@ -1029,22 +1094,117 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={paymentMethod === "knet"}
-                        onChange={() => setPaymentMethod("knet")}
+                        checked={paymentMethod === "online_link"}
+                        onChange={() => setPaymentMethod("online_link")}
                         className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
                       />
-                      <span className="text-sm text-dark dark:text-white">{t("enterSaleOrder.paymentKnet")}</span>
+                      <span className="text-sm text-dark dark:text-white">{t("enterSaleOrder.payOnline")}</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={paymentMethod === "cc"}
-                        onChange={() => setPaymentMethod("cc")}
-                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
-                      />
-                      <span className="text-sm text-dark dark:text-white">{t("enterSaleOrder.paymentCreditCard")}</span>
-                    </label>
+                    {paymentMethod === "online_link" && (
+                      <div className="ms-6 mt-2 border border-ld rounded-lg p-3 bg-lightgray/30 dark:bg-darkgray/30">
+                        <p className="text-xs font-medium text-dark dark:text-white mb-2">{t("enterSaleOrder.chooseOnlineGateway")}</p>
+                        <Tabs>
+                          <TabItem
+                            active={onlinePaySrc === "knet"}
+                            title={t("enterSaleOrder.paymentKnet")}
+                            onClick={() => setOnlinePaySrc("knet")}
+                          >
+                            <p className="text-xs text-ld dark:text-white/70 mt-3">{t("enterSaleOrder.paymentKnetHint")}</p>
+                          </TabItem>
+                          <TabItem
+                            active={onlinePaySrc === "cc"}
+                            title={t("enterSaleOrder.paymentCreditCard")}
+                            onClick={() => setOnlinePaySrc("cc")}
+                          >
+                            <p className="text-xs text-ld dark:text-white/70 mt-3">{t("enterSaleOrder.paymentCreditCardHint")}</p>
+                          </TabItem>
+                        </Tabs>
+                      </div>
+                    )}
                   </div>
+                </div>
+
+                {/* Delivery Date & Time */}
+                <div>
+                  <Label className="mb-3 block font-semibold">{t("enterSaleOrder.deliveryDateTime")}</Label>
+
+                  {/* Date cards */}
+                  <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
+                    {deliveryDates.map((date) => {
+                      const dateStr = toDateParam(date);
+                      const isSelected = selectedDeliveryDate === dateStr;
+                      const dayName = date.toLocaleDateString(i18n.language === "ar" ? "ar-KW" : "en-US", { weekday: "short" });
+                      const dayNum = date.getDate();
+                      const monthName = date.toLocaleDateString(i18n.language === "ar" ? "ar-KW" : "en-US", { month: "short" });
+                      const isToday = dateStr === toDateParam(new Date());
+                      return (
+                        <button
+                          key={dateStr}
+                          type="button"
+                          onClick={() => handleSelectDeliveryDate(date)}
+                          className={`flex flex-col items-center justify-center min-w-[64px] px-3 py-2 rounded-xl border-2 transition-all cursor-pointer
+                            ${isSelected
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-200 dark:border-gray-600 bg-white dark:bg-darkgray hover:border-primary text-dark dark:text-white"
+                            }`}
+                        >
+                          <span className="text-xs font-medium opacity-80">{dayName}</span>
+                          <span className="text-lg font-bold leading-tight">{dayNum}</span>
+                          <span className="text-xs opacity-80">{monthName}</span>
+                          {isToday && (
+                            <span className={`text-[10px] mt-0.5 font-semibold ${isSelected ? "text-white/80" : "text-primary"}`}>
+                              {t("enterSaleOrder.today")}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Time slots */}
+                  {selectedDeliveryDate && (
+                    <div>
+                      {loadingSlots ? (
+                        <div className="flex items-center gap-2 text-sm text-ld">
+                          <Spinner size="sm" />
+                          <span>{t("enterSaleOrder.loadingSlots")}</span>
+                        </div>
+                      ) : isDayOff ? (
+                        <p className="text-sm text-error">{t("enterSaleOrder.dayOff")}</p>
+                      ) : isOutOfRange ? (
+                        <p className="text-sm text-error">{t("enterSaleOrder.outOfRange")}</p>
+                      ) : deliverySlots.length === 0 ? (
+                        <p className="text-sm text-error">{t("enterSaleOrder.noSlots")}</p>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {deliverySlots.map((slot) => {
+                            const isSelected = selectedDeliveryTime === slot.delivery_time;
+                            const isFull = slot.remaining <= 0;
+                            return (
+                              <button
+                                key={slot.delivery_time}
+                                type="button"
+                                disabled={isFull}
+                                onClick={() => setSelectedDeliveryTime(slot.delivery_time)}
+                                className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all
+                                  ${isFull
+                                    ? "border-gray-200 dark:border-gray-600 text-gray-400 cursor-not-allowed opacity-50"
+                                    : isSelected
+                                      ? "border-primary bg-primary text-white"
+                                      : "border-gray-200 dark:border-gray-600 bg-white dark:bg-darkgray hover:border-primary text-dark dark:text-white cursor-pointer"
+                                  }`}
+                              >
+                                <div>{slot.delivery_time}</div>
+                                <div className={`text-[11px] ${isSelected ? "text-white/80" : "text-ld"}`}>
+                                  {slot.remaining}/{slot.capacity}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {deliveryType === "delivery" && (
@@ -1249,7 +1409,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
 
                 <Button
                   onClick={handleCreateOrder}
-                  disabled={creatingOrder || (deliveryType === "delivery" && !selectedAddressId)}
+                  disabled={creatingOrder || (deliveryType === "delivery" && !selectedAddressId) || !selectedDeliveryDate || !selectedDeliveryTime}
                   className="w-full bg-primary hover:bg-primary/90"
                 >
                   {creatingOrder ? (
@@ -1345,7 +1505,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
         </div>
       </Modal>
 
-      {/* Payment link modal (KNET / credit card — API uses online_link + src) */}
+      {/* Payment Link Modal (online_link orders) */}
       <Modal
         show={showPaymentLinkModal}
         onClose={() => {

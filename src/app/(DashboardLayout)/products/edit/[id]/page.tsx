@@ -156,7 +156,7 @@ const EditProduct = ({ params }: EditProductProps) => {
         variantErrors.short_item = t("products.enterShortItem");
         hasVariantErrors = true;
       }
-      if (variant.quantity <= 0) {
+      if (variant.quantity < 0) {
         variantErrors.quantity = t("products.enterValidQuantity");
         hasVariantErrors = true;
       }
@@ -814,6 +814,7 @@ const EditProduct = ({ params }: EditProductProps) => {
                   <Label className="mb-2 block">{t("products.quantity")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
+                    min={0}
                     placeholder="0" 
                     value={variant.quantity} 
                     onChange={(e) => handleVariantChange(variant.id, 'quantity', parseInt(e.target.value) || 0)}

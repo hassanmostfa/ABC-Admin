@@ -39,8 +39,9 @@ const EnterSaleOrderPage = () => {
       if (result.success && result.data) {
         setCustomerFound(result.data);
         setCustomerNotFound(false);
-        // Navigate to next page with customer data
-        router.push(`/enter-sale-order/create?customer_id=${result.data.id}`);
+        // Navigate to next page with customer phone (without 965 country code)
+        const localPhone = result.data.phone.replace(/^\+?965/, '');
+        router.push(`/enter-sale-order/create?customer_phone=${localPhone}`);
       }
     } catch (err: unknown) {
       setCustomerNotFound(true);
@@ -76,8 +77,9 @@ const EnterSaleOrderPage = () => {
 
       if (result.success && result.data) {
         showNotification("success", t("enterSaleOrder.success"), t("enterSaleOrder.customerCreated"));
-        // Navigate to next page with new customer data
-        router.push(`/enter-sale-order/create?customer_id=${result.data.id}`);
+        // Navigate to next page with customer phone (without 965 country code)
+        const localPhone = result.data.phone.replace(/^\+?965/, '');
+        router.push(`/enter-sale-order/create?customer_phone=${localPhone}`);
       }
     } catch (err: unknown) {
       const e = err as { data?: { errors?: Record<string, string[]> } };

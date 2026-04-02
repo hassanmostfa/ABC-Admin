@@ -302,6 +302,8 @@ const OrderShow = ({ params }: OrderShowProps) => {
                       <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.quantity")}</th>
                       <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.unitPrice")}</th>
                       <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.totalPrice")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.taxAmount")}</th>
+                      <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.offerDiscount")}</th>
                       <th className="px-4 py-3 text-center font-semibold text-dark dark:text-white">{t("orders.isOffer")}</th>
                     </tr>
                   </thead>
@@ -319,6 +321,18 @@ const OrderShow = ({ params }: OrderShowProps) => {
                         <td className="px-4 py-3 text-center text-dark dark:text-white">{item.quantity}</td>
                         <td className="px-4 py-3 text-center text-dark dark:text-white">{formatCurrency(item.unit_price)}</td>
                         <td className="px-4 py-3 text-center text-dark dark:text-white font-semibold">{formatCurrency(item.total_price)}</td>
+                        <td className="px-4 py-3 text-center text-dark dark:text-white">
+                          {Number((item as any).tax ?? 0) > 0
+                            ? formatCurrency(Number((item as any).tax))
+                            : <span className="text-ld">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {Number((item as any).discount ?? 0) > 0 ? (
+                            <span className="text-success font-semibold">-{formatCurrency(Number((item as any).discount))}</span>
+                          ) : (
+                            <span className="text-ld">—</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-center">
                           {item.is_offer ? (
                             <Badge color="success" className="w-fit mx-auto">{t("orders.yes")}</Badge>

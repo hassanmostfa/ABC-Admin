@@ -16,3 +16,4 @@ import './contactUsApi';
 import './socialMediaLinksApi';
 import './careersApi';
 import './slidersApi';
+import './deliverySlotsApi';

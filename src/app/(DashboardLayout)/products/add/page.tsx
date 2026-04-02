@@ -110,7 +110,7 @@ const AddProduct = () => {
         variantErrors.short_item = t("products.enterShortItem");
         hasVariantErrors = true;
       }
-      if (variant.quantity <= 0) {
+      if (variant.quantity < 0) {
         variantErrors.quantity = t("products.enterValidQuantity");
         hasVariantErrors = true;
       }
@@ -739,6 +739,7 @@ const AddProduct = () => {
                   <Label className="mb-2 block">{t("products.quantity")} <span className="text-error">*</span></Label>
                   <TextInput 
                     type="number"
+                    min={0}
                     placeholder={t("products.quantityPlaceholder")} 
                     value={variant.quantity} 
                     onChange={(e) => handleVariantChange(variant.id, 'quantity', parseInt(e.target.value) || 0)}

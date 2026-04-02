@@ -14,7 +14,7 @@ const SettingsPage = () => {
   const [updateSettings, { isLoading: updating }] = useUpdateSettingsMutation();
 
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<"general" | "delivery" | "welcomeCoupon" | "content">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "delivery" | "welcomeCoupon" | "content" | "customerCodes">("general");
 
   useEffect(() => {
     if (settingsData?.data) {
@@ -57,6 +57,7 @@ const SettingsPage = () => {
         "minimum_wallet_charge", "one_point_money_value", "opening_time", "otp_test_code",
         "slot_interval", "tax", "wallet_charge_gift",
         "welcome_coupon_enabled", "welcome_coupon_discount_type", "welcome_coupon_discount_value", "welcome_coupon_minimum_order_amount",
+        "cash_customer_code", "credit_card_customer_code", "knet_customer_code", "wallet_customer_code",
       ];
       valueOnlyKeys.forEach((key) => {
         if (settings[key] !== undefined) {
@@ -296,6 +297,27 @@ const SettingsPage = () => {
                   placeholder="0"
                 />
               </div>
+            </div>
+          </TabItem>
+
+          <TabItem active={activeTab === "customerCodes"} title={t("settings.customerCodes")} onClick={() => setActiveTab("customerCodes")}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {[
+                { key: "cash_customer_code", label: t("settings.cashCustomerCode") },
+                { key: "credit_card_customer_code", label: t("settings.creditCardCustomerCode") },
+                { key: "knet_customer_code", label: t("settings.knetCustomerCode") },
+                { key: "wallet_customer_code", label: t("settings.walletCustomerCode") },
+              ].map((item) => (
+                <div key={item.key}>
+                  <Label className="mb-2 block">{item.label}</Label>
+                  <TextInput
+                    type="text"
+                    value={settings[item.key] || ""}
+                    onChange={(e) => handleInputChange(item.key, e.target.value)}
+                    placeholder={item.label}
+                  />
+                </div>
+              ))}
             </div>
           </TabItem>
 
