@@ -660,15 +660,15 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                 <div className="grid grid-cols-4 gap-3">
                   <div>
                     <Label className="text-xs text-ld">{t("orders.name")}</Label>
-                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.name || "-"}</p>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer?.name || "-"}</p>
                   </div>
                   <div>
                     <Label className="text-xs text-ld">{t("orders.phone")}</Label>
-                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.phone || "-"}</p>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer?.phone || "-"}</p>
                   </div>
                   <div>
                     <Label className="text-xs text-ld">{t("orders.email")}</Label>
-                    <p className="font-semibold text-dark dark:text-white text-sm">{customer.email || "-"}</p>
+                    <p className="font-semibold text-dark dark:text-white text-sm">{customer?.email || "-"}</p>
                   </div>
                   <div className="flex items-end">
                     <Button
