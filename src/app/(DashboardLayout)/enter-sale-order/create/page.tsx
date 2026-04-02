@@ -1194,7 +1194,7 @@ const { data: ordersData, isLoading: loadingOrders } = useGetOrdersQuery(
                                       : "border-gray-200 dark:border-gray-600 bg-white dark:bg-darkgray hover:border-primary text-dark dark:text-white cursor-pointer"
                                   }`}
                               >
-                                <div>{slot.delivery_time}</div>
+                                <div>{slot.start} – {slot.end}</div>
                                 <div className={`text-[11px] ${isSelected ? "text-white/80" : "text-ld"}`}>
                                   {slot.remaining}/{slot.capacity}
                                 </div>
