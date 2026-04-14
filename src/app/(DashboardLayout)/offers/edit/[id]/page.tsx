@@ -884,8 +884,8 @@ const EditOfferPage = ({ params }: EditOfferPageProps) => {
                       <Label className="mb-1 block">{t("offers.value")}</Label>
                       <TextInput
                         type="number"
-                        step="0.01"
-                        min="0"
+                        step="0.001"
+git                         min="0"
                         value={reward.discount_amount || ""}
                         onChange={(e) => updateReward(index, "discount_amount", parseFloat(e.target.value) || 0)}
                         placeholder={t("offers.valuePlaceholder")}

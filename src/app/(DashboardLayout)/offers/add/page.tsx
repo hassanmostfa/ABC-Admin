@@ -794,7 +794,7 @@ const AddOfferPage = () => {
                       <Label className="mb-1 block">{t("offers.value")}</Label>
                       <TextInput
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min="0"
                         value={reward.discount_amount || ""}
                         onChange={(e) => updateReward(index, "discount_amount", parseFloat(e.target.value) || 0)}
